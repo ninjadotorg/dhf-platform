@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+   proxy:
+      container_name: dhf-proxy
+      build:
+         ./dhf_devops/base/nginx
+      volumes:
+         - /var/run/docker.sock:/tmp/docker.sock:ro
+         - ./nginx.tmpl:/app/nginx.tmpl
+      ports:
+         - "80:80"
+
+   blackend-api:
+      build: ./dhf_devops/dhf_backend
+      depends_on:
+         - proxy
+      links:
+         - mongo
+      volumes:
+         # files
+         - ./dhf_backend/server:/dhf_backend/server
+         - ./dhf_backend/common:/dhf_backend/common
+         - ./dhf_backend/test:/dhf_backend/test
+         - ./dhf_backend/package.json:/dhf_backend/package.json
+      environment:
+         APP_ENV: development
+         NODE_ENV: development
+         VIRTUAL_PORT: 9000
+         VIRTUAL_HOST: api.dhf.nyc
+
+
+   # DATABASE ---------------------------------------------------
+   mongo:
+    image: mongo
+    container_name: dhf-mongodb
+    restart: always
+    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: dhfadmin
+      MONGO_INITDB_DATABASE: dhf-platform
+    volumes:
+      - /tmp/mongodb:/data/db
+#      - mongodb_config:/data/configdb
+    ports: 
+      - "27017:27017"
+#    command: mongo dhf-platform --eval "db.dropDatabase();"

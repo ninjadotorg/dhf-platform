@@ -1,0 +1,27 @@
+{
+  "name": "user",
+  "base": "User",
+  "idInjection": true,
+  "properties": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "userType": {
+      "type": "string",
+      "enum": ["user", "trader", "admin"]
+    }
+  },
+  "validations": [],
+  "relations": {
+    "projects": {
+      "type": "hasMany",
+      "model": "project",
+      "foreignKey": "ownerId"
+    }
+  },
+  "acls": [],
+  "methods": []
+}
