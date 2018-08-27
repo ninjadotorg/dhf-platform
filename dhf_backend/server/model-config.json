@@ -45,10 +45,6 @@
     "dataSource": "mongodb",
     "public": false
   },
-  "AccountToken": {
-    "dataSource": "mongodb",
-    "public": false
-  },
   "user": {
     "dataSource": "mongodb",
     "public": true

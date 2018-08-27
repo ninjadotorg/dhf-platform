@@ -1,32 +1,12 @@
 {
   "name": "Account",
-  "base": "User",
+  "base": "PersistedModel",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "properties": {
-    "firstName": {
-      "type": "string"
-    },
-    "lastName": {
-      "type": "string"
-    },
-    "userType": {
-      "type": "string",
-      "enum": ["user", "trader", "admin"]
-    }
+
   },
   "validations": [],
   "relations": {
-    "accessTokens": {
-      "type": "hasMany",
-      "model": "AccountToken",
-      "foreignKey": "userId",
-      "options": {
-        "disableInclude": true
-      }
-    }
   },
   "acls": [
     {

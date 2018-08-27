@@ -6,9 +6,42 @@
     "name": {
       "type": "string"
     },
-    "status": {
+    "owner": {
+      "type": "string"
+    },
+    "target": {
+      "type": "number"
+    },
+    "max": {
+      "type": "number"
+    },
+    "fundingAmount": {
+      "type": "number"
+    },
+    "updatedAmmount": {
+      "type": "number"
+    },
+    "releasedAmount": {
+      "type": "number"
+    },
+    "startTime": {
+      "type": "number"
+    },
+    "deadline": {
+      "type": "number"
+    },
+    "lifeTime": {
+      "type": "number"
+    },
+    "funds": {
+      "type": "object"
+    },
+    "cancelRequests": {
+      "type": "object"
+    },
+    "state": {
       "type": "string",
-      "enum": ["open", "started"]
+      "enum": ["INITFUND", "APPROVED", "READY", "RELEASEED", "TOP", "WITHDRAW"]
     }
   },
   "validations": [],
