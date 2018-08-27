@@ -18,6 +18,10 @@ get api up with command
 ```
     $ npm start
 ```
+if you dev of modify code, you can run command below for auto reload
+```
+  $ npm run dev
+```
 
 or run test with command  
 ```
