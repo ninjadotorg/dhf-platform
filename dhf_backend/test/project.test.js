@@ -16,7 +16,7 @@ function json(verb, url, accessToken) {
     .expect('Content-Type', /json/);
 }
 let accessToken;
-before(function() {
+before(function(done) {
   let trader = {
     firstName: 'tuan anh',
     lastName: 'blackbean',
@@ -56,7 +56,7 @@ describe('REST API request project', function() {
       .end(function(err, res) {
         console.log(res.body);
         assert(typeof res.body === 'object');
-        assert(res.body.productId === 1);
+        assert(res.body.id === 1);
         done();
       });
   });
