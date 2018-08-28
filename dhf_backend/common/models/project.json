@@ -41,12 +41,19 @@
     },
     "state": {
       "type": "string",
-      "enum": ["INITFUND", "APPROVED", "READY", "RELEASEED", "TOP", "WITHDRAW"]
+      "enum": [
+        "INITFUND",
+        "APPROVED",
+        "READY",
+        "RELEASEED",
+        "TOP",
+        "WITHDRAW"
+      ]
     }
   },
   "validations": [],
   "relations": {
-    "account": {
+    "User": {
       "type": "belongsTo",
       "model": "user",
       "foreignKey": "ownerId"
@@ -62,16 +69,15 @@
     {
       "accessType": "READ",
       "principalType": "ROLE",
-      "principalId": "$everyone",
+      "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "list"
     },
     {
-      "accessType": "READ",
+      "accessType": "WRITE",
       "principalType": "ROLE",
-      "principalId": "$authenticated",
-      "permission": "ALLOW",
-      "property": "findById"
+      "principalId": "trader",
+      "permission": "ALLOW"
     },
     {
       "accessType": "EXECUTE",
@@ -82,9 +88,10 @@
     {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$owner",
+      "principalId": "admin",
       "permission": "ALLOW"
     }
   ],
-  "methods": []
+  "methods": {
+  }
 }

@@ -20,8 +20,8 @@ before(function(done) {
   let trader = {
     firstName: 'tuan anh',
     lastName: 'blackbean',
-    username: 'user',
-    email: 'user@autonomous.nyc',
+    username: 'trader',
+    email: 'trader@autonomous.nyc',
     password: 'DHF@123',
     userType: 'user',
   };
@@ -50,7 +50,7 @@ describe('REST API request project', function() {
     status: 'open',
   };
   it('should be create product successful', function(done) {
-    json('post', '/api/Projects?access_token=' + accessToken)
+    json('post', '/api/Projects', accessToken)
       .send(product)
       .expect(200)
       .end(function(err, res) {

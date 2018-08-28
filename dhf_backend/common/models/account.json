@@ -2,12 +2,9 @@
   "name": "Account",
   "base": "PersistedModel",
   "idInjection": true,
-  "properties": {
-
-  },
+  "properties": {},
   "validations": [],
-  "relations": {
-  },
+  "relations": {},
   "acls": [
     {
       "principalType": "ROLE",

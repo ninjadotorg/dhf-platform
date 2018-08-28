@@ -13,7 +13,6 @@
       "./mixins"
     ]
   },
-
   "User": {
     "dataSource": "mongodb",
     "public": false
@@ -39,7 +38,19 @@
   },
   "Project": {
     "dataSource": "mongodb",
-    "public": true
+    "public": true,
+    "options": {
+      "remoting": {
+        "sharedMethods" : {
+          "*": false,
+          "create": true,
+          "updateAll": true,
+          "deleteById": true,
+          "listProjects": true,
+          "findById": true
+        }
+      }
+    }
   },
   "Account": {
     "dataSource": "mongodb",
@@ -48,5 +59,22 @@
   "user": {
     "dataSource": "mongodb",
     "public": true
+  },
+  "link-to-contract": {
+    "dataSource": "mongodb",
+    "public": true,
+    "options": {
+      "remoting": {
+        "sharedMethods" : {
+          "*": false,
+          "create": true,
+          "updateAll": true,
+          "deleteById": true,
+          "listProjects": true,
+          "findById": true,
+          "verify": true
+        }
+      }
+    }
   }
 }

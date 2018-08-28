@@ -24,7 +24,6 @@ describe('REST API request create trader', function() {
       .send(trader)
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body);
         assert(typeof res.body === 'object');
         assert(res.body.username === 'trader');
         assert(res.body.id !== '');
@@ -39,7 +38,6 @@ describe('REST API request create trader', function() {
       })
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body);
         assert(typeof res.body === 'object');
         assert(res.body.userId !== '');
         assert(res.body.id !== '');
@@ -55,7 +53,6 @@ describe('REST API request create trader', function() {
         })
         .expect(200)
         .end(function(err, res) {
-          console.log(res.body);
           assert(typeof res.body === 'object');
           assert(res.body.error != null);
           assert(res.body.error.statusCode === 401);
@@ -78,7 +75,6 @@ describe('REST API request create user', function() {
       .send(trader)
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body);
         assert(typeof res.body === 'object');
         assert(res.body.username === 'user');
         assert(res.body.id !== '');
@@ -93,7 +89,6 @@ describe('REST API request create user', function() {
       })
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body);
         assert(typeof res.body === 'object');
         assert(res.body.userId !== '');
         assert(res.body.id !== '');

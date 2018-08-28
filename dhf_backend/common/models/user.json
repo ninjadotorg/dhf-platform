@@ -11,7 +11,11 @@
     },
     "userType": {
       "type": "string",
-      "enum": ["user", "trader", "admin"]
+      "enum": [
+        "user",
+        "trader",
+        "admin"
+      ]
     }
   },
   "validations": [],
@@ -23,5 +27,5 @@
     }
   },
   "acls": [],
-  "methods": []
+  "methods": {}
 }

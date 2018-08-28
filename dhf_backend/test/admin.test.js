@@ -61,7 +61,6 @@ describe('REST API request login', function() {
         })
         .expect(200)
         .end(function(err, res) {
-          console.log(res.body);
           assert(typeof res.body === 'object');
           assert(res.body.error != null);
           assert(res.body.error.statusCode === 401);
