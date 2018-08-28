@@ -1,4 +1,5 @@
 'use strict';
+var async = require('async');
 
 module.exports = function(Linktocontract) {
   Linktocontract.verify = function(smartAddress, amount, callback) {
@@ -21,10 +22,18 @@ module.exports = function(Linktocontract) {
   });
   Linktocontract.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      ctx.instance.status = 'pendding';
-      ctx.instance.requestDate = new Date();
-      ctx.instance.activeDate = new Date();
+      let verify = require('../lib/verify-smart-contract-link')(Linktocontract.app);
+      let value = verify.getVerifyAmount();
+      value.then(function(val) {
+        console.log(val);
+        ctx.instance.status = 'pendding';
+        ctx.instance.requestDate = new Date();
+        ctx.instance.activeDate = new Date();
+        ctx.instance.verifyAmount = val;
+        next();
+      });
+    } else {
+      next();
     }
-    next();
   });
 };

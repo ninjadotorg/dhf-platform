@@ -36,21 +36,10 @@
     "dataSource": "mongodb",
     "public": false
   },
-  "Project": {
+  "project": {
     "dataSource": "mongodb",
     "public": true,
-    "options": {
-      "remoting": {
-        "sharedMethods" : {
-          "*": false,
-          "create": true,
-          "updateAll": true,
-          "deleteById": true,
-          "listProjects": true,
-          "findById": true
-        }
-      }
-    }
+    "options": {}
   },
   "Account": {
     "dataSource": "mongodb",
@@ -63,18 +52,6 @@
   "link-to-contract": {
     "dataSource": "mongodb",
     "public": true,
-    "options": {
-      "remoting": {
-        "sharedMethods" : {
-          "*": false,
-          "create": true,
-          "updateAll": true,
-          "deleteById": true,
-          "listProjects": true,
-          "findById": true,
-          "verify": true
-        }
-      }
-    }
+    "options": {}
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Project",
+  "name": "project",
   "base": "PersistedModel",
   "idInjection": true,
   "properties": {
@@ -92,6 +92,16 @@
       "permission": "ALLOW"
     }
   ],
-  "methods": {
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "create",
+        "findById",
+        "deleteById",
+        "replaceById",
+        "listProjects"
+      ]
+    }
   }
 }

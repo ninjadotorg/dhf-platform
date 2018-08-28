@@ -48,18 +48,15 @@ before(function(done) {
 describe('REST API request link to smart contract', function() {
   let contractAddress = {
     smartAddress: 'string',
-    amountTest: 123,
     status: 'pedding',
-    activeDate: '2018-08-28T03:15:51.863Z',
-    'requestDate': '2018-08-28T03:15:51.863Z',
-    'ownerId': 1,
+    verifyAmount: 0,
+    ownerId: 1,
   };
   it('should not create address successful with out permission', function(done) {
     json('post', '/api/link-to-contract?access_token')
       .send(contractAddress)
       .expect(200)
       .end(function(err, res) {
-        console.log(res);
         assert(typeof res.body === 'object');
         assert(res.body.error != null);
         assert(res.body.error.statusCode === 401);
@@ -72,10 +69,10 @@ describe('REST API request link to smart contract', function() {
       .send(contractAddress)
       .expect(200)
       .end(function(err, res) {
-        console.log(res.body);
         assert(typeof res.body === 'object');
         assert(res.body.id === 1);
         assert(res.body.smartAddress === contractAddress.smartAddress);
+        console.log(res.body);
         done();
       });
   });

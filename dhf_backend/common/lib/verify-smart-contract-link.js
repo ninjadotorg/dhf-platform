@@ -11,10 +11,14 @@ module.exports = function(app) {
         code: 2,
         mess: 'Your session has expired!',
       });
-      if (data.amountTest !== amount) callback({
-        code: 3,
-        mess: 'Your amount test not validated!',
-      });
+      if (data.amountTest !== amount) {
+        data.status = 'rejected';
+        data.activeDate = new Date();
+        data.save(data, callback({
+          code: 3,
+          mess: 'Your amount test not validated!',
+        }));
+      }
       data.status = 'approved';
       data.activeDate = new Date();
       data.save(data, callback);
@@ -25,6 +29,11 @@ module.exports = function(app) {
       let validated = (now - createdDate) / 1000; // convert to  minutes;
       return (validated <= limistTime);
     },
+  };
+  self.getVerifyAmount = async function() {
+    let val = await Math.floor(1000 + Math.random() * 9000);
+    //val = parseFloat('0.0000000' + val);
+    return Promise.resolve(val);
   };
   return self;
 };

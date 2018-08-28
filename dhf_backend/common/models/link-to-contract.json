@@ -11,9 +11,8 @@
       "type": "string",
       "required": true
     },
-    "amountTest": {
+    "verifyAmount": {
       "type": "number",
-      "required": true,
       "default": 0
     },
     "status": {
@@ -22,14 +21,13 @@
       "emun": ["pending", "approved", "rejected"]
     },
     "activeDate": {
-      "type": "date",
-      "required": true
+      "type": "date"
     },
     "requestDate": {
-      "type": "date",
-      "required": true
+      "type": "date"
     }
   },
+  "hidden": ["activeDate"],
   "validations": [],
   "relations": {
     "User": {
@@ -64,5 +62,16 @@
       "permission": "ALLOW"
     }
   ],
-  "methods": {}
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "create",
+        "findById",
+        "deleteById",
+        "replaceById",
+        "verify"
+      ]
+    }
+  }
 }
