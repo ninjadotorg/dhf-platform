@@ -1,0 +1,117 @@
+
+
+// Your customize CSS
+.header{
+  padding-top:4em;
+}
+.heading-desc{
+  color:#fff;
+  font-size: 18px;
+  font-weight: 400;
+}
+.heading-block{
+  margin-top:3em;
+}
+.item-block-heading{
+  font-weight: bold;
+  margin-top:2em;
+  font-size: 16px;
+  color:"#000";
+  letter-spacing: 6px;
+}
+.item-block-title{
+  font-weight: bold;
+  font-size: 32px;
+  margin-top:5px;
+}
+.item-block-desc{
+  margin-top:1em;
+  font-size: 18px;
+}
+.no-pad{
+  padding:0 !important;
+
+}
+.item-section{
+  margin-bottom: 7em;
+}
+.custom-email-button{
+  background-color: #13CE66;
+  color:#fff;
+  padding:0 1em;
+}
+.subscription-form{
+  margin-top:1.5em;
+}
+.ld-spin{
+  margin-left:0px !important;
+}
+.email-heading-hero{
+  font-size: 18px;
+  color:#fff;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.header-form{
+  .custom-email-button{
+    background-color:#333;
+    border-radius: 0 !important;
+  }
+}
+.hero{
+  min-height: 65vh;
+}
+.hero-image{
+  margin-top:1.5em;
+  margin-left:1.5em;
+}
+.hide{
+  display: none !important;
+}
+#log{
+  position: fixed;
+  bottom:0;
+  padding:1em 0 0 0;
+  margin:0 auto;
+  left:0;
+  right:0;
+  z-index: 99999;
+  background-color: #35c37d;
+  display:none;
+  .subscribe-success{
+    margin:0 auto;
+    text-align: center;
+  }
+  .header-form{
+    margin : 0 auto !important;
+    text-align: center;
+    width:40em;
+  }
+}
+.email-field{
+  width: 7em !important;
+  border-radius: 0 !important;
+}
+#inputGroupSelect01{
+  border-radius: 0 !important;
+  padding:0.375rem 0rem 0.375rem 0.6rem;
+}
+select:not([multiple]) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+}
+.subscribe-success-2{
+  margin : 0 auto 1em auto;
+}
+.subscribe-success-1{
+  margin-top:4em;
+}
+.email-danger-1{
+  margin-top:-1em;
+}
+.email-danger-2{
+  margin-top: -1em;
+  text-align: left;
+  margin-bottom: 0.5em;
+}
