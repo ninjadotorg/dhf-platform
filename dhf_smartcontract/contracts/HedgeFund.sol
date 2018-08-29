@@ -70,7 +70,7 @@ contract HedgeFund {
     }
 
     //Constructor
-    constructor() public {
+    constructor () public {
         contractOwner = msg.sender;
     }
 
