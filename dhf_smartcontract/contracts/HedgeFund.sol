@@ -50,7 +50,7 @@ contract HedgeFund {
     Project[] public projects;
     
     //event
-    event __init(address owner, uint pid, bytes32 offchain);
+    event __init(address owner, uint pid);
     event __funding(uint pid, address funder,  uint amount);
     event __withdraw(uint pid, address requester, uint fundAmount, uint withdrawAmount);
     event __release(uint pid, address exchange, uint amount);
@@ -75,7 +75,7 @@ contract HedgeFund {
     }
 
     //POST function
-    function initProject(uint max, uint deadline, uint lifeTime, bytes32 offchain) public {
+    function initProject(uint max, uint deadline, uint lifeTime) public {
         Project memory p;
         
         p.owner = msg.sender;
@@ -96,7 +96,7 @@ contract HedgeFund {
         p.releasedAmount = 0;
 
         projects.push(p);
-        emit __init(msg.sender, projects.length - 1, offchain);
+        emit __init(msg.sender, projects.length - 1);
         emit __changeState(projects.length - 1, "NULL", "INITFUND");
     }
     
