@@ -6,6 +6,7 @@ module.exports = function(app) {
     APIKEY: app.get('binance').APIKEY,
     APISECRET: app.get('binance').APISECRET,
     useServerTime: app.get('binance').useServerTime,
+    verbose: true,
     test: app.get('binance').test,
   });
   return {

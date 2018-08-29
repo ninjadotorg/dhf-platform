@@ -9,7 +9,7 @@ WORKDIR /app
 
 USER root
 
-ENV NODE_PATH /usr/local/lib/node/node_modules
+ENV NODE_PATH /usr/local/lib/node
 ENV NPM_CONFIG_PREFIX=/usr/local/lib/node/.npm-global
 RUN npm config set user 0
 RUN npm config set unsafe-perm true
@@ -19,4 +19,3 @@ RUN npm set progress=false && \
 # launch
 EXPOSE 9000
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["node server/server.js"]

@@ -1,5 +1,5 @@
 {
-  "name": "info",
+  "name": "trader",
   "base": "PersistedModel",
   "properties": {},
   "validations": [],
@@ -16,11 +16,17 @@
   "mixins": {
     "DisableMethods": {
       "expose": [
-        "exchangeInfo",
-        "depositHistory",
-        "status",
-        "prices",
-        "balance"
+        "buy",
+        "sell",
+        "marketBuy",
+        "marketSell",
+        "cancel",
+        "cancelOrders",
+        "orderStatus",
+        "allOrders",
+        "trades",
+        "prevDay",
+        "candlesticks"
       ]
     }
   }
