@@ -1,37 +1,60 @@
 version: '3.3'
 
 services:
-   proxy:
+  proxy:
       container_name: dhf-proxy
       build:
-         ./dhf_devops/base/nginx
+          context: dhf_devops/base/nginx
+          dockerfile: Dockerfile
       volumes:
          - /var/run/docker.sock:/tmp/docker.sock:ro
          - ./nginx.tmpl:/app/nginx.tmpl
       ports:
          - "80:80"
 
-   blackend-api:
-      build: ./dhf_devops/dhf_backend
+  blackend-api:
+      build: 
+        context: dhf_backend
+        dockerfile: Dockerfile
       depends_on:
          - proxy
       links:
          - mongo
       volumes:
          # files
-         - ./dhf_backend/server:/dhf_backend/server
-         - ./dhf_backend/common:/dhf_backend/common
-         - ./dhf_backend/test:/dhf_backend/test
-         - ./dhf_backend/package.json:/dhf_backend/package.json
+         - ./dhf_backend/server:/app/server
+         - ./dhf_backend/common:/app/common
+         - ./dhf_backend/test:/app/test
+         - ./dhf_backend/package.json:/app/package.json
       environment:
          APP_ENV: development
          NODE_ENV: development
          VIRTUAL_PORT: 9000
-         VIRTUAL_HOST: api.dhf.nyc
+         VIRTUAL_HOST: api.blackend.nyc
+
+  trader-api:
+      build: 
+        context: dhf_trader
+        dockerfile: Dockerfile
+      depends_on:
+         - proxy
+      links:
+         - mongo
+      volumes:
+         # files
+         - ./dhf_trader/server:/app/server
+         - ./dhf_trader/common:/app/common
+         - ./dhf_trader/test:/app/test
+         - ./dhf_trader/package.json:/app/package.json
+      environment:
+         APP_ENV: development
+         NODE_ENV: development
+         VIRTUAL_PORT: 9000
+         VIRTUAL_HOST: api.trader.nyc
 
 
    # DATABASE ---------------------------------------------------
-   mongo:
+  mongo:
     image: mongo
     container_name: dhf-mongodb
     restart: always

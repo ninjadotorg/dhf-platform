@@ -15,6 +15,7 @@ module.exports = function(Info) {
       accepts: [],
       http: {
         verb: 'GET',
+        path: '/exchange-info',
       },
       returns: {arg: 'data', root: true, type: 'Object'},
     }
@@ -33,12 +34,50 @@ module.exports = function(Info) {
     {
       accepts: [],
       http: {
+        path: '/deposit-history',
         verb: 'GET',
       },
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
 
+  Info.prices = function(callback) {
+    const binance = require('../lib/binance')(Info.app).binance;
+    binance.prices(function(err, resp) {
+      if (err)
+        return callback(err);
+      callback(null, resp);
+    });
+  };
+  Info.remoteMethod(
+    'prices',
+    {
+      accepts: [],
+      http: {
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Info.balance = function(callback) {
+    const binance = require('../lib/binance')(Info.app).binance;
+    binance.balance((err, resp) => {
+      if (err)
+        return callback(err);
+      callback(null, resp);
+    });
+  };
+  Info.remoteMethod(
+    'balance',
+    {
+      accepts: [],
+      http: {
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
   Info.status = function(callback) {
     callback(null, 'I\'m Okie!');
   };

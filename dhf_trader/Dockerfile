@@ -19,5 +19,6 @@ RUN chown -R node:node /app
 
 USER node
 
+
 EXPOSE 9000
-CMD ["node "]
+CMD ["node /app/server/server.js"]
