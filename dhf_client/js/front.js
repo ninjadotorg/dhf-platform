@@ -99,7 +99,7 @@ $(function() {
     console.log(data);
     jQuery
       .ajax({
-        url: 'https://staging.ninja.org/api/user/subscribe',
+        url: 'https://ninja.org/api/user/subscribe',
         method: 'POST',
         processData: true,
         data: data,
@@ -135,7 +135,7 @@ $(function() {
     console.log(data);
     jQuery
       .ajax({
-        url: 'https://staging.ninja.org/api/user/subscribe',
+        url: 'https://ninja.org/api/user/subscribe',
         method: 'POST',
         processData: true,
         data: data,
