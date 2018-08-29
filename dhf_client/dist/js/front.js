@@ -96,6 +96,9 @@ $(function() {
       product: 'ninjafunds',
       type: type,
     };
+    mixpanel.people.set({
+      $email: email
+  });
     console.log(data);
     jQuery
       .ajax({
@@ -132,6 +135,10 @@ $(function() {
       product: 'ninjafunds',
       type: type,
     };
+
+    mixpanel.people.set({
+      $email: email
+  });
     console.log(data);
     jQuery
       .ajax({
