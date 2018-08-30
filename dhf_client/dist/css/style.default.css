@@ -100,9 +100,6 @@ button {
   .hero-image{
     display: none !important;
   }
-  .main-header {
-    background: #39c07c !important;
-  }
   .first-item-block{
     background:#fff !important;
     border:0 !important;
@@ -120,7 +117,7 @@ button {
   }
 
   .custom-email-button{
-    padding: 1em 1em !important;
+    padding: 0.4em 1em !important;
   }
   #log .header-form{
     width: 21em !important;
@@ -134,13 +131,7 @@ button {
 @media only screen /* adding only query */
 and (min-width: 600px)
 and (max-width: 900px) {
-  .heading-block{
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-  }
-  .hero-image{
-    display: none !important;
-  }
+  
   .custom-email-button{
     padding: 1em 1em !important;
   }
@@ -148,12 +139,13 @@ and (max-width: 900px) {
  @media only screen /* adding only query */
 and (min-width: 600px)
 and (max-width: 800px) {
-  #log .header-form,.header-form .custom-email-button{
+  #log .header-form{
     width: 30em !important;
   }
 
   .custom-email-button{
-    padding: 1em 1em !important;
+    padding: 0.4em 1em !important;
+    width:33em !important;
   }
 #inputGroupSelect01{
   width:100% !important;
@@ -162,13 +154,7 @@ and (max-width: 800px) {
  @media only screen /* adding only query */
  and (min-width: 900px)
  and (max-width: 1400px) {
-  .heading-block{
-    flex: 0 0 85% !important;
-    max-width: 85% !important;
-  }
-  .hero-image{
-    display: none !important;
-  }
+
  }
 
 
@@ -178,8 +164,6 @@ and (max-width: 800px) {
 */
 .main-header {
   margin: 0 auto;
-  max-width: 1445px;
-  background: url(../img/hero-bg.svg) no-repeat;
 }
 .hero{
   padding: 0rem 7rem;
@@ -1022,7 +1006,6 @@ a.text-primary:hover, a.text-primary:focus {
 .hero-heading{
   font-size: 54px;
   font-weight: 700;
-  color:#fff;
 
 }
 /*

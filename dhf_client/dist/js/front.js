@@ -84,9 +84,6 @@ $(function() {
     const email = $(this)
       .find('input')
       .val();
-    const type = $(this)
-      .find('select')
-      .val();
     if (/\S+@\S+\.\S+/.test(email) == false) {
       $('.email-danger-2').removeClass('hide');
       return null;
@@ -94,8 +91,10 @@ $(function() {
     var data = {
       email: email,
       product: 'ninjafunds',
-      type: type,
     };
+    mixpanel.people.set({
+      $email: email
+  });
     console.log(data);
     jQuery
       .ajax({
@@ -119,9 +118,6 @@ $(function() {
     const email = $(this)
       .find('input')
       .val();
-    const type = $(this)
-      .find('select')
-      .val();
 
     if (/\S+@\S+\.\S+/.test(email) == false) {
       $('.email-danger-1').removeClass('hide');
@@ -130,8 +126,11 @@ $(function() {
     var data = {
       email: email,
       product: 'ninjafunds',
-      type: type,
     };
+
+    mixpanel.people.set({
+      $email: email
+  });
     console.log(data);
     jQuery
       .ajax({
