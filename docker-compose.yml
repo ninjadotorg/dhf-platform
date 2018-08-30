@@ -79,7 +79,7 @@ services:
 #      MONGO_INITDB_ROOT_PASSWORD: dhfadmin
       MONGO_INITDB_DATABASE: dhf-platform
     volumes:
-      - /data/mongodb:/data/db
+      - /tmp/mongodb:/data/db
 #      - mongodb_config:/data/configdb
     ports: 
       - "27018:27018"
