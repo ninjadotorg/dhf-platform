@@ -2,6 +2,8 @@ FROM dauden/strongloop-base:latest
 
 MAINTAINER Black Bean, tuananh@autonomous.nyc
 
+RUN mkdir -p /app
+
 WORKDIR /app
 
 # Exclude npm cache from the image
@@ -14,11 +16,6 @@ RUN npm set progress=false && \
    npm install #--cache-min 9999999999
 
 COPY . /app
-USER root
-RUN chown -R node:node /app
 
-USER node
-
-
-EXPOSE 9000
-CMD ["node /app/server/server.js"]
+EXPOSE 9000 9001
+CMD ["/app/node_modules/.bin/node server/server.js"]

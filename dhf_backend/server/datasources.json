@@ -1,7 +1,7 @@
 {
   "mongodb": {
-    "host": "localhost",
-    "port": 27017,
+    "host": "dhf-mongodb",
+    "port": 27018,
     "url": "",
     "database": "dhf-platform",
     "password": "",

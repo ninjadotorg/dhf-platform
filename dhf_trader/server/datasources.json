@@ -2,5 +2,16 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+  "mongodb": {
+    "host": "dhf-mongodb",
+    "port": 27018,
+    "url": "",
+    "database": "dhf-platform",
+    "password": "",
+    "name": "mongodb",
+    "user": "",
+    "connector": "mongodb"
   }
 }
+

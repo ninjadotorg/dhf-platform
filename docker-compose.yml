@@ -18,6 +18,7 @@ services:
         dockerfile: Dockerfile
       depends_on:
          - proxy
+         - mongo
       links:
          - mongo
       volumes:
@@ -31,6 +32,13 @@ services:
          NODE_ENV: development
          VIRTUAL_PORT: 9000
          VIRTUAL_HOST: api.blackend.nyc
+      ports:
+        - "9000:9000"
+      expose:
+        - "9000"
+      command:
+        - /app/node_modules/.bin/nodemon
+        - .
 
   trader-api:
       build: 
@@ -38,6 +46,7 @@ services:
         dockerfile: Dockerfile
       depends_on:
          - proxy
+         - mongo
       links:
          - mongo
       volumes:
@@ -49,15 +58,22 @@ services:
       environment:
          APP_ENV: development
          NODE_ENV: development
-         VIRTUAL_PORT: 9000
+         VIRTUAL_PORT: 9001
          VIRTUAL_HOST: api.trader.nyc
-
+      ports:
+        - "9001:9001"
+      expose:
+        - "9001"
+      command:
+        - /app/node_modules/.bin/nodemon
+        - .
 
    # DATABASE ---------------------------------------------------
   mongo:
-    image: mongo
+    image: 'mongo:latest'
     container_name: dhf-mongodb
     restart: always
+    command: mongod --port 27018
     environment:
 #      MONGO_INITDB_ROOT_USERNAME: root
 #      MONGO_INITDB_ROOT_PASSWORD: dhfadmin
@@ -66,5 +82,5 @@ services:
       - /tmp/mongodb:/data/db
 #      - mongodb_config:/data/configdb
     ports: 
-      - "27017:27017"
+      - "27018:27018"
 #    command: mongo dhf-platform --eval "db.dropDatabase();"
