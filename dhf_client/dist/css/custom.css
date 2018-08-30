@@ -2,12 +2,13 @@
   padding-top: 4em; }
 
 .heading-desc {
-  color: #fff;
   font-size: 18px;
-  font-weight: 400; }
+  font-weight: 400; 
+  color:#484848;
+}
 
 .heading-block {
-  margin-top: 3em; }
+  margin-top: 5em; }
 
 .item-block-heading {
   font-weight: bold;
@@ -23,7 +24,9 @@
 
 .item-block-desc {
   margin-top: 1em;
-  font-size: 18px; }
+  font-size: 18px;
+  color:#484848;
+ }
 
 .no-pad {
   padding: 0 !important; }
