@@ -7,15 +7,16 @@ module.exports = function(Trader) {
     let orderResult;
     let currentProject;
     let totalAmount;
-    let series = async.series([
+    async.series([
       function validateProduct(callback) {
         Trader.app.models.project.findById(projectId, function(err, project) {
-          if (err) callback(err);
-          if (!project) callback('Project was not existed!');
-          if (project.userId !== Trader.app.currentUserId) {
-            callback('You don\'t have permission on this project');
+          if (err) return callback(err);
+          if (!project) return callback('Project was not existed!');
+          console.log(project.userId, Trader.app.currentUserId);
+          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+            return callback('You don\'t have permission on this project');
           }
-          if (project.state !== 'RELEASEED') callback('Project not ready or finished');
+          if (project.state !== 'RELEASEED') return callback('Project not ready or finished');
           currentProject = project;
           callback();
         });
@@ -23,7 +24,7 @@ module.exports = function(Trader) {
       function validateOrder(callback) {
         totalAmount = quantity * price;
         if (totalAmount > currentProject.availableAmount) {
-          callback('Your balance of this project was not enough.');
+          return callback('Your balance of this project was not enough.');
         }
         // maybe need more validation here
         callback();
@@ -33,7 +34,7 @@ module.exports = function(Trader) {
           binance.buy(symbol, quantity, price, {type: 'LIMIT'}, function(err, result) {
             if (err) {
               err = errorHandler.filler(err);
-              callback(err);
+              return callback(err);
             } else {
               orderResult = result;
               resolve(result);
@@ -44,8 +45,14 @@ module.exports = function(Trader) {
         });
       },
       function saveTrader(callback) {
+        let orderId;
+        if (!orderResult.orderId) { // only for test
+          orderId = 'test_' + Math.random();
+        } else {
+          orderId = orderResult.orderId;
+        }
         Trader.create({
-          orderId: orderResult.orderId,
+          orderId: orderId,
           symbol: symbol,
           quantity: quantity,
           price: price,
@@ -56,12 +63,13 @@ module.exports = function(Trader) {
           state: 'PENDING',
           projectId: currentProject.id,
           userId: Trader.app.currentUserId,
-        }, function(err) {
+        }, function(err, resp) {
           if (err)
             return callback(err);
+          if (!orderResult.orderId)
+            orderResult = resp;
           callback();
         });
-        callback();
       },
     ], function onComplete(err) {
       if (err)

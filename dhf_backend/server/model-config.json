@@ -59,7 +59,7 @@
     "public": true
   },
   "trader": {
-    "dataSource": "db",
+    "dataSource": "mongodb",
     "public": true
   }
 }
