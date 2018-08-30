@@ -1,23 +1,23 @@
 version: '3.3'
 
 services:
-  proxy:
-      container_name: dhf-proxy
-      build:
-          context: dhf_devops/base/nginx
-          dockerfile: Dockerfile
-      volumes:
-         - /var/run/docker.sock:/tmp/docker.sock:ro
-         - ./nginx.tmpl:/app/nginx.tmpl
-      ports:
-         - "80:80"
+#  proxy:
+#      container_name: dhf-proxy
+#      build:
+#          context: dhf_devops/base/nginx
+#          dockerfile: Dockerfile
+#      volumes:
+#         - /var/run/docker.sock:/tmp/docker.sock:ro
+#         - ./nginx.tmpl:/app/nginx.tmpl
+#      ports:
+#         - "80:80"
 
   blackend-api:
       build: 
         context: dhf_backend
         dockerfile: Dockerfile
       depends_on:
-         - proxy
+#         - proxy
          - mongo
       links:
          - mongo
@@ -45,7 +45,7 @@ services:
         context: dhf_trader
         dockerfile: Dockerfile
       depends_on:
-         - proxy
+#         - proxy
          - mongo
       links:
          - mongo
