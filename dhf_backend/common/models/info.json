@@ -1,0 +1,27 @@
+{
+  "name": "info",
+  "base": "PersistedModel",
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "exchangeInfo",
+        "depositHistory",
+        "status",
+        "prices",
+        "balance"
+      ]
+    }
+  }
+}

@@ -2,6 +2,7 @@
   "name": "project",
   "base": "PersistedModel",
   "idInjection": true,
+  "hidden": ["ownerId"],
   "properties": {
     "name": {
       "type": "string"
@@ -22,6 +23,9 @@
       "type": "number"
     },
     "releasedAmount": {
+      "type": "number"
+    },
+    "availableAmount": {
       "type": "number"
     },
     "startTime": {
@@ -56,7 +60,8 @@
     "User": {
       "type": "belongsTo",
       "model": "user",
-      "foreignKey": "ownerId"
+      "foreignKey": "",
+      "required": true
     }
   },
   "acls": [
@@ -71,7 +76,7 @@
       "principalType": "ROLE",
       "principalId": "$authenticated",
       "permission": "ALLOW",
-      "property": "list"
+      "property": "listProjects"
     },
     {
       "accessType": "WRITE",
@@ -86,7 +91,14 @@
       "permission": "ALLOW"
     },
     {
-      "accessType": "EXECUTE",
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW",
+      "property": "myProjects"
+    },
+    {
+      "accessType": "*",
       "principalType": "ROLE",
       "principalId": "admin",
       "permission": "ALLOW"
@@ -100,7 +112,8 @@
         "findById",
         "deleteById",
         "replaceById",
-        "listProjects"
+        "listProjects",
+        "myProjects"
       ]
     }
   }

@@ -53,5 +53,13 @@
     "dataSource": "mongodb",
     "public": true,
     "options": {}
+  },
+  "info": {
+    "dataSource": "db",
+    "public": true
+  },
+  "trader": {
+    "dataSource": "db",
+    "public": true
   }
 }

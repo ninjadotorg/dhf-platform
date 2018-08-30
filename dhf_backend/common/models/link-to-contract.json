@@ -56,7 +56,7 @@
       "permission": "ALLOW"
     },
     {
-      "accessType": "EXECUTE",
+      "accessType": "*",
       "principalType": "ROLE",
       "principalId": "admin",
       "permission": "ALLOW"

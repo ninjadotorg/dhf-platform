@@ -21,6 +21,13 @@ app.use(loopback.token({
   model: app.models.user,
 }));
 
+app.use(function(req, res, next) {
+  app.currentUserId = null;
+  if (!req.accessToken) return next();
+  app.currentUserId = req.accessToken.userId;
+  next();
+});
+
 app.middleware('auth', loopback.token());
 
 // Bootstrap the application, configure models, datasources and middleware.

@@ -20,10 +20,18 @@
   },
   "hidden": ["realm"],
   "relations": {
-    "projects": {
+    "project": {
       "type": "hasMany",
       "model": "project",
-      "foreignKey": "ownerId"
+      "foreignKey": ""
+    },
+    "accessToken": {
+      "type": "hasMany",
+      "model": "accessToken",
+      "foreignKey": "userId",
+      "options": {
+        "disableInclude": true
+      }
     }
   },
   "acls": [],

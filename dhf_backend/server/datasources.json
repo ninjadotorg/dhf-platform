@@ -8,5 +8,8 @@
     "name": "mongodb",
     "user": "",
     "connector": "mongodb"
+  },
+  "db": {
+    "connector": "memory"
   }
 }

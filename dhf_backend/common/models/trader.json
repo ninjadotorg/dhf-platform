@@ -27,10 +27,18 @@
       "required": true,
       "type": "string"
     },
+    "totalAmount": {
+      "required": true,
+      "type": "number"
+    },
+    "totalMatchedAmount": {
+      "required": true,
+      "type": "number"
+    },
     "state":  {
       "type": "string",
       "required": true,
-      "emun": ["pending", "approved", "rejected"]
+      "emun": ["PENDING", "MATCHED", "CANCEL"]
     }
   },
   "validations": [],

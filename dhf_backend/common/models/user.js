@@ -7,7 +7,7 @@ module.exports = function(User) {
   });
   User.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      if ((ctx.instance.userType === 'admin' || ctx.instance.userType !== 'backend') &&
+      if ((ctx.instance.userType === 'admin' || ctx.instance.userType === 'backend') &&
         ctx.instance.realm !== 'backend') {
         throw Error('Admin type can\'t create from rest api');
       }
