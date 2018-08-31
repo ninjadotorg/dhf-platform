@@ -4,6 +4,8 @@ module.exports = function(Project) {
   Project.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
       ctx.instance.userId = Project.app.currentUserId;
+      ctx.instance.refundAmount = 0;
+      ctx.instance.pendingAmount = 0;
     }
     next();
   });

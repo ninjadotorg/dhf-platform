@@ -5,26 +5,41 @@ module.exports = function(Trader) {
   Trader.buy = function(projectId, symbol, quantity, price, callback) {
     const binance = require('../lib/binance')(Trader.app).binance;
     let orderResult;
-    let currentProject;
-    let totalAmount;
+    let currentProject = null;
+    let totalAmount = 0;
+    let error = new Error();
     async.series([
       function validateProduct(callback) {
         Trader.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
-          if (!project) return callback('Project was not existed!');
-          console.log(project.userId, Trader.app.currentUserId);
-          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
-            return callback('You don\'t have permission on this project');
+          if (!project) {
+            error.status = 404;
+            error.message = 'Project was not existed!';
+            return callback(error);
           }
-          if (project.state !== 'RELEASEED') return callback('Project not ready or finished');
+          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+            error.status = 404;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== 'RELEASEED') {
+            error.status = 404;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
           currentProject = project;
           callback();
         });
       },
       function validateOrder(callback) {
         totalAmount = quantity * price;
-        if (totalAmount > currentProject.availableAmount) {
-          return callback('Your balance of this project was not enough.');
+        // available amount is subtract of total  from releasedAmount
+        let availableAmount = currentProject.releasedAmount -
+          (currentProject.pendingAmount - currentProject.refundAmount);
+        if (totalAmount > availableAmount) {
+          error.status = 404;
+          error.message = 'Your balance of this project was not enough.';
+          return callback(error);
         }
         // maybe need more validation here
         callback();
@@ -34,7 +49,9 @@ module.exports = function(Trader) {
           binance.buy(symbol, quantity, price, {type: 'LIMIT'}, function(err, result) {
             if (err) {
               err = errorHandler.filler(err);
-              return callback(err);
+              error.status = 404;
+              error.message = err;
+              return callback(error);
             } else {
               orderResult = result;
               resolve(result);
@@ -71,6 +88,14 @@ module.exports = function(Trader) {
           callback();
         });
       },
+      function SaveProject(callback) {
+        currentProject.pendingAmount += totalAmount;
+        currentProject.save(function(err) {
+          if (err)
+            return callback(err);
+          callback();
+        });
+      },
     ], function onComplete(err) {
       if (err)
         return callback(err);
@@ -78,33 +103,78 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.sell = function(symbol, quantity, price, callback) {
+  Trader.sell = function(projectId, symbol, quantity, price, callback) {
     const binance = require('../lib/binance')(Trader.app).binance;
     let orderResult;
+    let currentProject = null;
+    let totalAmount = 0;
+    let error = new Error();
     async.series([
-      function validateOrder(callback) {
-        // we will verify order here
-        console.log('we will verify order here');
-        callback();
+      function validateProduct(callback) {
+        Trader.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 404;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+            error.status = 404;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== 'RELEASEED') {
+            error.status = 404;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
       },
-      function buy(callback) {
-        new Promise(function(resolve, reject) {
+      function sell(callback) {
+        new Promise(function(resolve) {
           binance.sell(symbol, quantity, price, {type: 'LIMIT'}, function(err, result) {
             if (err) {
               err = errorHandler.filler(err);
-              callback(err);
+              error.status = 404;
+              error.message = err;
+              return callback(error);
             } else {
               orderResult = result;
               resolve(result);
             }
           });
-        }).then(function(resp) {
+        }).then(function() {
           callback();
         });
       },
       function saveTrader(callback) {
-        // we will tracking order here
-        callback();
+        let orderId;
+        if (!orderResult.orderId) { // only for test
+          orderId = 'test_' + Math.random();
+        } else {
+          orderId = orderResult.orderId;
+        }
+        Trader.create({
+          orderId: orderId,
+          symbol: symbol,
+          quantity: quantity,
+          price: price,
+          flags: 'LIMIT',
+          function: 'SELL',
+          totalAmount: totalAmount,
+          totalMatchedAmount: 0,
+          state: 'PENDING',
+          projectId: currentProject.id,
+          userId: Trader.app.currentUserId,
+        }, function(err, resp) {
+          if (err)
+            return callback(err);
+          if (!orderResult.orderId)
+            orderResult = resp;
+          callback();
+        });
       },
     ], function onComplete(err) {
       if (err)

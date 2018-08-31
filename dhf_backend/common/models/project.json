@@ -2,7 +2,7 @@
   "name": "project",
   "base": "PersistedModel",
   "idInjection": true,
-  "hidden": ["ownerId"],
+  "hidden": ["UserId"],
   "properties": {
     "name": {
       "type": "string"
@@ -25,7 +25,10 @@
     "releasedAmount": {
       "type": "number"
     },
-    "availableAmount": {
+    "pendingAmount": {
+      "type": "number"
+    },
+    "refundAmount": {
       "type": "number"
     },
     "startTime": {
