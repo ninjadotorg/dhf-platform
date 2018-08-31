@@ -47,9 +47,11 @@ contract HedgeFund {
     }
 
     address contractOwner;
-    Project[] public projects;
-    
+    mapping(bytes32 => Project) public projects;
+    bytes32[] PIDs;
+
     //event
+<<<<<<< Updated upstream
     event __init(address owner, uint pid, bytes32 offchain);
     event __funding(uint pid, address funder,  uint amount);
     event __withdraw(uint pid, address requester, uint fundAmount, uint withdrawAmount);
@@ -58,13 +60,23 @@ contract HedgeFund {
     event __voteStop(address sender, uint pid, uint8 stop);
     event __stop(address sender, uint pid);
     event __changeState(uint pid, bytes32 from, bytes32 to);
+=======
+    event __init(address sender, address owner, bytes32 pid);
+    event __funding(bytes32 pid, address funder,  uint amount);
+    event __withdraw(bytes32 pid, address requester, uint fundAmount, uint withdrawAmount);
+    event __release(bytes32 pid, address exchange, uint amount);
+    event __retract(bytes32 pid, uint from, uint to);
+    event __voteStop(address sender, bytes32 pid, uint8 stop);
+    event __stop(address sender, bytes32 pid);
+    event __changeState(bytes32 pid, bytes32 from, bytes32 to);
+>>>>>>> Stashed changes
 
     modifier onlyContractOwner() {
         require(contractOwner == msg.sender, "101");
         _;
     }
 
-    modifier onlyProjectOwner(uint pid) {
+    modifier onlyProjectOwner(bytes32 pid) {
         require(msg.sender == projects[pid].owner || contractOwner == msg.sender, "101");
         _;
     }
@@ -75,7 +87,11 @@ contract HedgeFund {
     }
 
     //POST function
+<<<<<<< Updated upstream
     function initProject(uint max, uint deadline, uint lifeTime, bytes32 offchain) public {
+=======
+    function initProject(uint max, uint deadline, uint lifeTime, address owner, bytes32 pid) public {
+>>>>>>> Stashed changes
         Project memory p;
         
         p.owner = msg.sender;
@@ -95,12 +111,19 @@ contract HedgeFund {
         p.updatedAmmount = 0;
         p.releasedAmount = 0;
 
+<<<<<<< Updated upstream
         projects.push(p);
         emit __init(msg.sender, projects.length - 1, offchain);
         emit __changeState(projects.length - 1, "NULL", "INITFUND");
+=======
+        projects[pid] = p;
+        PIDs.push(pid);
+        emit __init(msg.sender, owner, pid);
+        emit __changeState(pid, "NULL", "INITFUND");
+>>>>>>> Stashed changes
     }
     
-    function stopProject(uint pid) public onlyProjectOwner(pid) {
+    function stopProject(bytes32 pid) public onlyProjectOwner(pid) {
         Project storage p = projects[pid];
         emit __stop(msg.sender, pid);
         if (p.state == S.INITFUND || p.state == S.APPROVED || p.state == S.READY || p.state == S.WITHDRAW){
@@ -127,7 +150,7 @@ contract HedgeFund {
         else return false;
     }
 
-    function fundProject(uint pid) public payable {
+    function fundProject(bytes32 pid) public payable {
         Project storage p = projects[pid];
         require(p.state == S.INITFUND || p.state == S.APPROVED, "100");
 
@@ -181,7 +204,7 @@ contract HedgeFund {
         }
     }
 
-    function withdrawFund(uint pid) public {
+    function withdrawFund(bytes32 pid) public {
         Project storage p = projects[pid];
         
         if (isReachlifeTime(p.lifeTime + p.startTime) ){ //if this project reach lifeTime
@@ -207,7 +230,7 @@ contract HedgeFund {
         }
     } 
 
-    function release(uint pid, address exchange, uint amount) public {
+    function release(bytes32 pid, address exchange, uint amount) public {
         Project storage p = projects[pid];
         require(p.state == S.APPROVED || p.state == S.READY || p.state == S.RELEASED, "100"); //should be in ready or release state
         require(p.releasedAmount + amount <= p.fundingAmount, "102"); //should not release fund larger than funding amount
@@ -222,7 +245,7 @@ contract HedgeFund {
         
     }
 
-    function retract(uint pid, uint scale, uint denominator) public onlyContractOwner() { //0.017 => scale=17 
+    function retract(bytes32 pid, uint scale, uint denominator) public onlyContractOwner() { //0.017 => scale=17 
         Project storage p = projects[pid];
         require(p.state == S.RELEASED || p.state == S.STOP, "100");
         p.state == S.WITHDRAW;
@@ -235,7 +258,7 @@ contract HedgeFund {
         emit __retract(pid, scale, denominator);
     }
 
-    function voteStop(uint pid, uint8 stop) public {
+    function voteStop(bytes32 pid, uint8 stop) public {
         Project storage p = projects[pid];
         require(p.state != S.INITFUND, "100"); // except in init state, user can vote to stop or continue project
         p.cancelRequests[msg.sender] = stop;
@@ -244,7 +267,7 @@ contract HedgeFund {
     
     //GET function
     function getProjectSize() public view returns (uint size) {
-        return projects.length;
+        return PIDs.length;
     }
 
 }
