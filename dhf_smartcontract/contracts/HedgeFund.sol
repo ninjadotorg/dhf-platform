@@ -51,16 +51,6 @@ contract HedgeFund {
     bytes32[] PIDs;
 
     //event
-<<<<<<< Updated upstream
-    event __init(address owner, uint pid, bytes32 offchain);
-    event __funding(uint pid, address funder,  uint amount);
-    event __withdraw(uint pid, address requester, uint fundAmount, uint withdrawAmount);
-    event __release(uint pid, address exchange, uint amount);
-    event __retract(uint pid, uint from, uint to);
-    event __voteStop(address sender, uint pid, uint8 stop);
-    event __stop(address sender, uint pid);
-    event __changeState(uint pid, bytes32 from, bytes32 to);
-=======
     event __init(address sender, address owner, bytes32 pid);
     event __funding(bytes32 pid, address funder,  uint amount);
     event __withdraw(bytes32 pid, address requester, uint fundAmount, uint withdrawAmount);
@@ -69,7 +59,6 @@ contract HedgeFund {
     event __voteStop(address sender, bytes32 pid, uint8 stop);
     event __stop(address sender, bytes32 pid);
     event __changeState(bytes32 pid, bytes32 from, bytes32 to);
->>>>>>> Stashed changes
 
     modifier onlyContractOwner() {
         require(contractOwner == msg.sender, "101");
@@ -87,11 +76,7 @@ contract HedgeFund {
     }
 
     //POST function
-<<<<<<< Updated upstream
-    function initProject(uint max, uint deadline, uint lifeTime, bytes32 offchain) public {
-=======
     function initProject(uint max, uint deadline, uint lifeTime, address owner, bytes32 pid) public {
->>>>>>> Stashed changes
         Project memory p;
         
         p.owner = msg.sender;
@@ -111,16 +96,10 @@ contract HedgeFund {
         p.updatedAmmount = 0;
         p.releasedAmount = 0;
 
-<<<<<<< Updated upstream
-        projects.push(p);
-        emit __init(msg.sender, projects.length - 1, offchain);
-        emit __changeState(projects.length - 1, "NULL", "INITFUND");
-=======
         projects[pid] = p;
         PIDs.push(pid);
         emit __init(msg.sender, owner, pid);
         emit __changeState(pid, "NULL", "INITFUND");
->>>>>>> Stashed changes
     }
     
     function stopProject(bytes32 pid) public onlyProjectOwner(pid) {
