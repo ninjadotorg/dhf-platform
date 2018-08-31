@@ -1,0 +1,123 @@
+{
+  "name": "project",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "hidden": ["UserId"],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "target": {
+      "type": "number"
+    },
+    "max": {
+      "type": "number"
+    },
+    "fundingAmount": {
+      "type": "number"
+    },
+    "updatedAmmount": {
+      "type": "number"
+    },
+    "releasedAmount": {
+      "type": "number"
+    },
+    "pendingAmount": {
+      "type": "number"
+    },
+    "refundAmount": {
+      "type": "number"
+    },
+    "startTime": {
+      "type": "number"
+    },
+    "deadline": {
+      "type": "number"
+    },
+    "lifeTime": {
+      "type": "number"
+    },
+    "funds": {
+      "type": "object"
+    },
+    "cancelRequests": {
+      "type": "object"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "INITFUND",
+        "APPROVED",
+        "READY",
+        "RELEASEED",
+        "TOP",
+        "WITHDRAW"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {
+    "User": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "",
+      "required": true
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "listProjects"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW",
+      "property": "myProjects"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "create",
+        "findById",
+        "deleteById",
+        "replaceById",
+        "listProjects",
+        "myProjects"
+      ]
+    }
+  }
+}

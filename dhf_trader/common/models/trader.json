@@ -3,8 +3,10 @@
   "base": "PersistedModel",
   "idInjection": true,
   "properties": {
+    "parentId":{
+      "type": "string"
+    },
     "orderId":  {
-      "required": true,
       "type": "string"
     },
     "symbol":  {
@@ -21,16 +23,24 @@
     },
     "flags":  {
       "required": true,
-      "type": "object"
+      "type": "string"
     },
     "function":  {
       "required": true,
       "type": "string"
     },
+    "totalAmount": {
+      "required": true,
+      "type": "number"
+    },
+    "totalMatchedAmount": {
+      "required": true,
+      "type": "number"
+    },
     "state":  {
       "type": "string",
       "required": true,
-      "emun": ["pending", "approved", "rejected"]
+      "emun": ["PENDING", "MATCHED", "DONE", "CANCEL"]
     }
   },
   "validations": [],

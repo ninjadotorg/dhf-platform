@@ -1,0 +1,51 @@
+{
+  "name": "user",
+  "base": "User",
+  "idInjection": true,
+  "properties": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "userType": {
+      "type": "string",
+      "enum": [
+        "user",
+        "trader",
+        "admin"
+      ]
+    }
+  },
+  "hidden": ["realm"],
+  "relations": {
+    "project": {
+      "type": "hasMany",
+      "model": "project",
+      "foreignKey": ""
+    },
+    "accessToken": {
+      "type": "hasMany",
+      "model": "accessToken",
+      "foreignKey": "userId",
+      "options": {
+        "disableInclude": true
+      }
+    }
+  },
+  "acls": [],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "create",
+        "findById",
+        "deleteById",
+        "replaceById",
+        "login",
+        "logout"
+      ]
+    }
+  }
+}

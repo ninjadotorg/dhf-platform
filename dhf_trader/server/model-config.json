@@ -38,10 +38,10 @@
   },
   "info": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "trader": {
     "dataSource": "db",
-    "public": true
+    "public": false
   }
 }

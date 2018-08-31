@@ -1,28 +1,35 @@
 {
-  "restApiRoot": "/api",
-  "host": "0.0.0.0",
-  "port": 9001,
-  "remoting": {
-    "context": false,
-    "rest": {
-      "handleErrors": false,
-      "normalizeHttpPath": false,
-      "xml": false
+    "restApiRoot": "/api",
+    "host": "0.0.0.0",
+    "port": 9001,
+    "remoting": {
+        "context": false,
+        "rest": {
+            "handleErrors": false,
+            "normalizeHttpPath": false,
+            "xml": false
+        },
+        "json": {
+            "strict": false,
+            "limit": "100kb"
+        },
+        "urlencoded": {
+            "extended": true,
+            "limit": "100kb"
+        },
+        "cors": false
     },
-    "json": {
-      "strict": false,
-      "limit": "100kb"
+    "binance": {
+        "APIKEY": "xxxxxxxx",
+        "APISECRET": "xxxxxxxxxx",
+        "useServerTime": true,
+        "test": false
     },
-    "urlencoded": {
-      "extended": true,
-      "limit": "100kb"
-    },
-    "cors": false
-  },
-  "binance" : {
-    "APIKEY": "xxxxxxxx",
-    "APISECRET": "xxxxxxxxxx",
-    "useServerTime": true,
-    "test": false
-  }
+    "crons": {
+        "aggregation": {
+            "enable": true,
+            "jobClass": "lib/trader/transform-job",
+            "interval": "0    *     * * * *"
+        }
+    }
 }

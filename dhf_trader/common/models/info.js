@@ -79,7 +79,7 @@ module.exports = function(Info) {
     }
   );
   Info.status = function(callback) {
-    callback(null, 'I\'m Okie!');
+    callback(null, {'I\'m': 'Okie!', 'Your ID is': Info.app.currentUserId});
   };
   Info.remoteMethod(
     'status',
