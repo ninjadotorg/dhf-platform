@@ -54,6 +54,10 @@
     "public": true,
     "options": {}
   },
+  "transaction": {
+    "dataSource": "db",
+    "public": true
+  },
   "info": {
     "dataSource": "db",
     "public": true
