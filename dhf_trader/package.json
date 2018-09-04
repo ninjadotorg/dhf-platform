@@ -1,0 +1,21 @@
+{
+  "name": "trader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "PORT=3000 nodemon server/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "binance-api-node": "^0.8.3",
+    "body-parser": "^1.18.3",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.12",
+    "response-time": "^2.3.2",
+    "swagger-ui-express": "^4.0.1",
+    "yamljs": "^0.3.0"
+  }
+}
