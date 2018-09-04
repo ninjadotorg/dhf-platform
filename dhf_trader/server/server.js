@@ -19,7 +19,7 @@ if (process.env["NODE_ENV"] !== "production"){
 var router = express.Router(); 
 require('./router.js')(app, router)
 
-var port = process.env["PORT"] || 10000 
+var port = process.env["PORT"] || 9001 
 var tester = createServer(port);
 function createServer(port){
 	var tester = app.listen(port)

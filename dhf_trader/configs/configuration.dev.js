@@ -1,6 +1,6 @@
 var Config = {
-    exchangeDB: "mongodb://localhost:27017/Exchange",
-    
+    exchangeDB: "mongodb://35.240.197.175:27018/Exchange",
+    transactionDB: "mongodb://35.240.197.175:27018/Transaction",
 }
 
 Object.defineProperty(global, '__Config', {

@@ -9,22 +9,31 @@ module.exports = class Binance {
         })
     }
 
-    updateCredential(cred){
+    async updateCredential(cred){
         this.client = BinanceAPI({
             apiKey: cred.key,
             apiSecret: cred.secret,
         })
+        // console.log(await this.client.trades({ symbol: 'EDOETH' }))
     }
 
     async buyLimit(params){
-        if (typeof params.symbol == "undefined" ||
-            typeof params.price == "undefined" ||
-            typeof params.quantity == "undefined")
-            throw new Error("Missing params")
-            
         let result = await this.client.order({
             symbol: params.symbol,
             side: 'BUY',
+            type: "LIMIT",
+            quantity: params.quantity,
+            price: params.price,
+            newClientOrderId: params.clientOrderId,
+            newOrderRespType: "FULL"
+        })
+        return JSON.stringify(result)
+    }
+
+    async sellLimit(params){
+        let result = await this.client.order({
+            symbol: params.symbol,
+            side: 'SELL',
             type: "LIMIT",
             quantity: params.quantity,
             price: params.price,
@@ -32,18 +41,18 @@ module.exports = class Binance {
         return JSON.stringify(result)
     }
 
-    async sellLimit(params){
-        if (typeof params.symbol == "undefined" ||
-            typeof params.price == "undefined" ||
-            typeof params.quantity == "undefined")
-            throw new Error("Missing params")
-
-        let result = await this.client.order({
+    async getOrder(params){
+        let result = await this.client.getOrder({
             symbol: params.symbol,
-            side: 'SELL',
-            type: "LIMIT",
-            quantity: params.quantity,
-            price: params.price,
+            origClientOrderId: params.clientOrderId,
+        })
+        return JSON.stringify(result)
+    }
+
+    async cancelOrder(params){
+        let result = await this.client.cancelOrder({
+            symbol: params.symbol,
+            origClientOrderId: params.clientOrderId,
         })
         return JSON.stringify(result)
     }
@@ -63,7 +72,7 @@ module.exports = class Binance {
     async myTrades(params){
         console.log(await this.client.myTrades({
             symbol: 'ETHBTC',
-          }))
+        }))
     }
 
     async accountInfo() {
