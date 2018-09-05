@@ -41,9 +41,9 @@
     "public": true,
     "options": {}
   },
-  "Account": {
-    "dataSource": "mongodb",
-    "public": false
+  "funding": {
+    "dataSource": "db",
+    "public": true
   },
   "user": {
     "dataSource": "mongodb",
@@ -63,7 +63,11 @@
     "public": true
   },
   "trader": {
-    "dataSource": "mongodb",
+    "dataSource": "db",
+    "public": true
+  },
+  "exchange": {
+    "dataSource": "db",
     "public": true
   }
 }

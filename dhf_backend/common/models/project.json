@@ -5,13 +5,20 @@
   "hidden": ["UserId"],
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "owner": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "target": {
-      "type": "number"
+      "type": "number",
+      "required": true
+    },
+    "exchange": {
+      "type": "string",
+      "required": true
     },
     "max": {
       "type": "number"
@@ -32,10 +39,12 @@
       "type": "number"
     },
     "startTime": {
-      "type": "number"
+      "type": "number",
+      "required": true
     },
     "deadline": {
-      "type": "number"
+      "type": "number",
+      "required": true
     },
     "lifeTime": {
       "type": "number"
@@ -48,6 +57,7 @@
     },
     "state": {
       "type": "string",
+      "required": true,
       "enum": [
         "INITFUND",
         "APPROVED",
