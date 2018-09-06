@@ -1,4 +1,6 @@
 'use strict';
+
+const {EXCHANGE} = require('../lib/constants');
 module.exports = function(Exchange) {
   Exchange.observe('after save', function(ctx, next) {
     next();
@@ -6,9 +8,9 @@ module.exports = function(Exchange) {
   Exchange.afterRemote('create', function(context, user, next) {
     next();
   });
-  const exchanges = ['binance'];
+
   Exchange.listExchange = function(callback) {
-    callback(null, exchanges);
+    callback(null, EXCHANGE);
   };
   Exchange.remoteMethod('listExchange', {
     description: 'Get all exchange',

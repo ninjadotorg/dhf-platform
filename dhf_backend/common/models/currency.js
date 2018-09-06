@@ -1,5 +1,5 @@
 'use strict';
-let {CURRENCIES} = require('../lib/constants');
+const {CURRENCIES} = require('../lib/constants');
 module.exports = function(Exchange) {
   Exchange.observe('after save', function(ctx, next) {
     next();
