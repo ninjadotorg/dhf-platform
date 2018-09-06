@@ -17,6 +17,18 @@ module.exports = class Binance {
         // console.log(await this.client.trades({ symbol: 'EDOETH' }))
     }
 
+    async getBalance(currencies){
+        let result =  await this.client.accountInfo();
+        var returnList = []
+        for (var i in result.balances){
+            let asset = result.balances[i]
+            if (Number(asset.free) != 0 || Number(asset.locked) != 0){                
+                if (!currencies || currencies.indexOf(asset.asset)>-1) returnList.push(asset)
+            }   
+        }
+        return returnList
+    }
+
     async buyLimit(params){
         let result = await this.client.order({
             symbol: params.symbol,
@@ -58,11 +70,23 @@ module.exports = class Binance {
     }
 
     async buyMarket(params){
-
+        let result = await this.client.order({
+            symbol: params.symbol,
+            side: 'BUY',
+            type: "MARKET",
+            quantity: params.quantity,
+        })
+        return JSON.stringify(result)
     }
 
     async sellMarket(params){
-
+        let result = await this.client.order({
+            symbol: params.symbol,
+            side: 'SELL',
+            type: "MARKET",
+            quantity: params.quantity,
+        })
+        return JSON.stringify(result)
     }
 
     async tradeHistory(params){
@@ -71,7 +95,7 @@ module.exports = class Binance {
 
     async myTrades(params){
         console.log(await this.client.myTrades({
-            symbol: 'ETHBTC',
+            symbol: 'EDOETH',
         }))
     }
 

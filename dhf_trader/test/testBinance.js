@@ -32,7 +32,9 @@ async function test() {
     // console.log(result)
 
 
-    await gateway.action("myTrades", {})
+    // await gateway.action("myTrades", {})
+
+    
 
 }
 
