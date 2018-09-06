@@ -2,7 +2,7 @@
   "name": "project",
   "base": "PersistedModel",
   "idInjection": true,
-  "hidden": ["UserId"],
+  "hidden": ["UserId", "isTransfer"],
   "properties": {
     "name": {
       "type": "string",
@@ -49,16 +49,18 @@
     "lifeTime": {
       "type": "number"
     },
-    "funds": {
-      "type": "object"
+    "currency": {
+      "type": "string",
+      "required": true
     },
-    "cancelRequests": {
-      "type": "object"
+    "isTransfer": {
+      "type": "boolean"
     },
     "state": {
       "type": "string",
       "required": true,
       "enum": [
+        "NEW",
         "INITFUND",
         "APPROVED",
         "READY",

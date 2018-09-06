@@ -2,10 +2,33 @@
 let async = require('async');
 
 module.exports = function(Funding) {
-  Funding.observe('after save', function(ctx, next) {
+  Funding.observe('before save', function(ctx, next) {
+    if (ctx.instance && ctx.isNewInstance) {
+      ctx.instance.state = 'INITFUND';
+      Funding.app.models.project.findById(ctx.instance.projectId, function(err, project) {
+        if (err) return next(err);
+        let error = new Error();
+        if (!project) {
+          error.status = 404;
+          error.message = 'Project was not existed!';
+          return next(error);
+        }
+        next();
+      });
+    }
     next();
   });
-  Funding.afterRemote('create', function(context, user, next) {
+  Funding.observe('after save', function(ctx, next) {
+    if (ctx.instance && ctx.isNewInstance) {
+      Funding.app.models.project.findById(ctx.instance.projectId, function(err, project) {
+        if (err) return next(err);
+        project.refundAmount += ctx.Model.amount;
+        project.save(project, function(err) {
+          if (err) return next(err);
+          next();
+        });
+      });
+    }
     next();
   });
   Funding.listFunding = function(projectId, callback) {

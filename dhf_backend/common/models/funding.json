@@ -21,7 +21,6 @@
     },
     "state": {
       "type": "string",
-      "required": true,
       "enum": [
         "INITFUND",
         "WITHDRAW"

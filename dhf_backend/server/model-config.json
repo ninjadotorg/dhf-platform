@@ -69,5 +69,9 @@
   "exchange": {
     "dataSource": "db",
     "public": true
+  },
+  "currency": {
+    "dataSource": "db",
+    "public": true
   }
 }
