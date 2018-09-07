@@ -2,6 +2,7 @@
   "name": "user",
   "base": "User",
   "idInjection": true,
+  "strict": true,
   "properties": {
     "firstName": {
       "type": "string"
@@ -23,6 +24,16 @@
     "project": {
       "type": "hasMany",
       "model": "project",
+      "foreignKey": ""
+    },
+    "funding": {
+      "type": "hasMany",
+      "model": "funding",
+      "foreignKey": ""
+    },
+    "contract": {
+      "type": "hasMany",
+      "model": "link-to-contract",
       "foreignKey": ""
     },
     "accessToken": {

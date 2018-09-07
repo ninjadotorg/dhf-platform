@@ -2,9 +2,12 @@
   "name": "trader",
   "base": "PersistedModel",
   "idInjection": true,
+  "strict": true,
   "properties": {
+    "parentId":{
+      "type": "string"
+    },
     "orderId":  {
-      "required": true,
       "type": "string"
     },
     "symbol":  {
@@ -38,7 +41,7 @@
     "state":  {
       "type": "string",
       "required": true,
-      "emun": ["PENDING", "MATCHED", "CANCEL"]
+      "emun": ["PENDING", "MATCHED", "DONE", "CANCEL"]
     }
   },
   "validations": [],

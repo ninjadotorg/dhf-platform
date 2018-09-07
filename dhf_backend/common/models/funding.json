@@ -1,36 +1,40 @@
 {
-  "name": "link-to-contract",
-  "plural": "link-to-contract",
+  "name": "funding",
   "base": "PersistedModel",
   "idInjection": true,
   "strict": true,
-  "options": {
-    "validateUpsert": true
-  },
   "properties": {
-    "smartAddress": {
+    "userId": {
       "type": "string",
       "required": true
     },
-    "status": {
+    "projectId": {
       "type": "string",
-      "required": true,
-      "emun": ["pending", "approved", "rejected"]
+      "required": true
     },
-    "activeDate": {
-      "type": "date"
+    "owner": {
+      "type": "string",
+      "required": true
     },
-    "requestDate": {
-      "type": "date"
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "INITFUND",
+        "WITHDRAW"
+      ]
     }
   },
-  "hidden": ["activeDate"],
   "validations": [],
   "relations": {
     "User": {
       "type": "belongsTo",
       "model": "user",
-      "foreignKey": "userId"
+      "foreignKey": "",
+      "required": true
     }
   },
   "acls": [
@@ -41,21 +45,8 @@
       "permission": "DENY"
     },
     {
-      "accessType": "WRITE",
       "principalType": "ROLE",
-      "principalId": "trader",
-      "permission": "ALLOW"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW"
-    },
-    {
-      "accessType": "*",
-      "principalType": "ROLE",
-      "principalId": "admin",
+      "principalId": "$authenticated",
       "permission": "ALLOW"
     }
   ],
@@ -67,7 +58,7 @@
         "findById",
         "deleteById",
         "replaceById",
-        "verify"
+        "listFunding"
       ]
     }
   }

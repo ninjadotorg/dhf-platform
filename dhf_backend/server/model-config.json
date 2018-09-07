@@ -41,9 +41,9 @@
     "public": true,
     "options": {}
   },
-  "Account": {
-    "dataSource": "mongodb",
-    "public": false
+  "funding": {
+    "dataSource": "db",
+    "public": true
   },
   "user": {
     "dataSource": "mongodb",
@@ -54,12 +54,29 @@
     "public": true,
     "options": {}
   },
+  "link-to-wallet": {
+    "dataSource": "mongodb",
+    "public": true,
+    "options": {}
+  },
+  "transaction": {
+    "dataSource": "db",
+    "public": true
+  },
   "info": {
     "dataSource": "db",
     "public": true
   },
   "trader": {
-    "dataSource": "mongodb",
+    "dataSource": "db",
+    "public": true
+  },
+  "exchange": {
+    "dataSource": "db",
+    "public": true
+  },
+  "currency": {
+    "dataSource": "db",
     "public": true
   }
 }

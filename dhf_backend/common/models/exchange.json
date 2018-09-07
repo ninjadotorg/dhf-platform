@@ -1,0 +1,29 @@
+{
+  "name": "exchange",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "listExchange"
+      ]
+    }
+  }
+}

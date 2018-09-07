@@ -1,9 +1,9 @@
 'use strict';
 var async = require('async');
 
-module.exports = function(LinkToContract) {
-  LinkToContract.verify = function(smartAddress, userId, callback) {
-    LinkToContract.findOne({
+module.exports = function(LinkToWallet) {
+  LinkToWallet.verify = function(smartAddress, userId, callback) {
+    LinkToWallet.findOne({
       smartAddress: smartAddress,
       status: 'pending',
       userId: userId,
@@ -14,7 +14,7 @@ module.exports = function(LinkToContract) {
       data.save(data, callback);
     });
   };
-  LinkToContract.remoteMethod('verify', {
+  LinkToWallet.remoteMethod('verify', {
     accepts: [
       {arg: 'smartAddress', type: 'string'},
       {arg: 'amount', type: 'number'},
@@ -22,7 +22,7 @@ module.exports = function(LinkToContract) {
     returns: {arg: 'success', type: 'boolean'},
     http: {path: '/verify', verb: 'post'},
   });
-  LinkToContract.observe('before save', function(ctx, next) {
+  LinkToWallet.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
       ctx.instance.status = 'pendding';
       ctx.instance.requestDate = new Date();

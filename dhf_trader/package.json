@@ -1,39 +1,23 @@
 {
-  "name": "dhf_trader",
+  "name": "trader",
   "version": "1.0.0",
-  "main": "server/server.js",
-  "engines": {
-    "node": ">=4"
-  },
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
-    "start": "node .",
-    "dev": "nodemon server/server.js --watch common --watch server",
-    "posttest": "npm run lint"
+    "start": "nodemon server/server.js"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "compression": "^1.0.3",
-    "cors": "^2.5.2",
-    "helmet": "^3.10.0",
-    "loopback": "^3.19.0",
-    "loopback-boot": "^2.6.5",
-    "loopback-component-explorer": "^6.0.0",
-    "loopback-connector-mongodb": "^1.18.1",
-    "node-binance-api": "^0.8.1",
-    "serve-favicon": "^2.0.1",
-    "strong-error-handler": "^3.0.0"
-  },
-  "devDependencies": {
-    "eslint": "^3.17.1",
-    "eslint-config-loopback": "^8.0.0",
-    "mocha": "^5.2.0",
-    "nodemon": "^1.18.3",
-    "supertest": "^3.1.0"
-  },
-  "repository": {
-    "type": "",
-    "url": ""
-  },
-  "license": "UNLICENSED",
-  "description": "dhf_trader"
+    "async": "^2.6.1",
+    "binance-api-node": "^0.8.3",
+    "body-parser": "^1.18.3",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.12",
+    "request": "^2.88.0",
+    "response-time": "^2.3.2",
+    "swagger-ui-express": "^4.0.1",
+    "yamljs": "^0.3.0"
+  }
 }

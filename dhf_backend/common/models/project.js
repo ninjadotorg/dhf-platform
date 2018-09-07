@@ -1,11 +1,44 @@
 'use strict';
 
+let {PROJECT_STATE} = require('../lib/constants');
 module.exports = function(Project) {
   Project.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
       ctx.instance.userId = Project.app.currentUserId;
       ctx.instance.refundAmount = 0;
       ctx.instance.pendingAmount = 0;
+    }
+    if (ctx.instance.state === PROJECT_STATE.READY) {
+      ctx.instance.isTransfer = true;
+    }
+    next();
+  });
+  Project.observe('after save', function(ctx, next) {
+    if (ctx.Model.state === PROJECT_STATE.READY) {
+      let async = require('async');
+      let exchangeAccount = {};
+      let depositAddress = '';
+      async.series([
+        function pickUpExchangeAccount(next) {
+          next();
+        },
+        function getDepositAddress(next) {
+          next();
+        },
+        function transferMoneyToExchange(next) {
+          next();
+        },
+        function initProject() {
+          next();
+        },
+        function updateProject(next) {
+          next();
+        },
+      ], function onComplete(err) {
+        if (err)
+          return next(err);
+        next();
+      });
     }
     next();
   });

@@ -1,6 +1,6 @@
 {
-  "name": "link-to-contract",
-  "plural": "link-to-contract",
+  "name": "link-to-wallet",
+  "plural": "link-to-wallet",
   "base": "PersistedModel",
   "idInjection": true,
   "strict": true,
@@ -8,23 +8,15 @@
     "validateUpsert": true
   },
   "properties": {
-    "smartAddress": {
+    "auth_token": {
       "type": "string",
       "required": true
     },
-    "status": {
-      "type": "string",
-      "required": true,
-      "emun": ["pending", "approved", "rejected"]
-    },
-    "activeDate": {
-      "type": "date"
-    },
-    "requestDate": {
-      "type": "date"
+    "wallets_address": {
+      "type": "object",
+      "required": true
     }
   },
-  "hidden": ["activeDate"],
   "validations": [],
   "relations": {
     "User": {
@@ -44,6 +36,12 @@
       "accessType": "WRITE",
       "principalType": "ROLE",
       "principalId": "trader",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "user",
       "permission": "ALLOW"
     },
     {

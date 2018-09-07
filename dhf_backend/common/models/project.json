@@ -2,16 +2,24 @@
   "name": "project",
   "base": "PersistedModel",
   "idInjection": true,
-  "hidden": ["UserId"],
+  "hidden": ["UserId", "isTransfer"],
+  "strict": true,
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "owner": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "target": {
-      "type": "number"
+      "type": "number",
+      "required": true
+    },
+    "exchange": {
+      "type": "string",
+      "required": true
     },
     "max": {
       "type": "number"
@@ -32,23 +40,28 @@
       "type": "number"
     },
     "startTime": {
-      "type": "number"
+      "type": "number",
+      "required": true
     },
     "deadline": {
-      "type": "number"
+      "type": "number",
+      "required": true
     },
     "lifeTime": {
       "type": "number"
     },
-    "funds": {
-      "type": "object"
+    "currency": {
+      "type": "string",
+      "required": true
     },
-    "cancelRequests": {
-      "type": "object"
+    "isTransfer": {
+      "type": "boolean"
     },
     "state": {
       "type": "string",
+      "required": true,
       "enum": [
+        "NEW",
         "INITFUND",
         "APPROVED",
         "READY",
