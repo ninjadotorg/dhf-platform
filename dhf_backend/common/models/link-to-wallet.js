@@ -39,6 +39,7 @@ module.exports = function(LinkToWallet) {
       ctx.instance.status = 'pendding';
       ctx.instance.requestDate = new Date();
       ctx.instance.activeDate = new Date();
+      ctx.instance.verifyCode = Math.random().toString(36).substring(4);
       next();
     } else {
       next();
