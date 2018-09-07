@@ -54,6 +54,11 @@
     "public": true,
     "options": {}
   },
+  "link-to-wallet": {
+    "dataSource": "mongodb",
+    "public": true,
+    "options": {}
+  },
   "transaction": {
     "dataSource": "db",
     "public": true

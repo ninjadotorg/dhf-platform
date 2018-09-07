@@ -3,6 +3,7 @@
   "base": "PersistedModel",
   "idInjection": true,
   "hidden": ["UserId", "isTransfer"],
+  "strict": true,
   "properties": {
     "name": {
       "type": "string",
