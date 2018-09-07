@@ -39,7 +39,6 @@ class App extends React.Component {
   }
 
   PrivateRoute = () => {
-    console.log('PrivateRoute');
     const { classes } = this.props;
     return (
       <Route

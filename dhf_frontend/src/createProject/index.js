@@ -145,7 +145,9 @@ class createProject extends React.Component {
   };
 
   handleSubmit = () => {
-    const data = this.state;
+    const data = Object.assign({}, this.state);
+    delete data.exchangeList;
+    delete data.currencyList;
     this.setState({
       error: '',
     });

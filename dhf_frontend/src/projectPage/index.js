@@ -91,8 +91,8 @@ class projectPage extends React.Component {
       startTime: 0,
       deadline: 0,
       lifeTime: 0,
-      readOnly:false,
-      state:'',
+      readOnly: false,
+      state: '',
       exchangeList: [],
     };
     this.moment = moment;
@@ -131,8 +131,8 @@ class projectPage extends React.Component {
           currency: response.currency,
           target: response.target,
           max: response.max,
-          state : response.state,
-          readOnly : response.state !== 'NEW',
+          state: response.state,
+          readOnly: response.state !== 'NEW',
           startTime: response.startTime,
           deadline: response.deadline,
           lifeTime: response.lifeTime,
@@ -142,7 +142,7 @@ class projectPage extends React.Component {
   };
 
   handleTimeChange = event => {
-    const time = moment(`${event.target.value}:00Z`);
+    const time = moment(event.target.value);
     this.setState({
       [event.target.id]: time.unix(),
     });
@@ -159,7 +159,10 @@ class projectPage extends React.Component {
   };
 
   handleSubmit = () => {
-    const data = this.state;
+    const data = Object.assign({}, this.state);
+    delete data.exchangeList;
+    delete data.currencyList;
+    delete data.readOnly;
     this.setState({
       error: '',
     });
@@ -169,7 +172,7 @@ class projectPage extends React.Component {
       data,
     })
       .then(response => {
-        console.log("submitForm",response);
+        console.log('submitForm', response);
       })
       .catch(error => {
         error.data
@@ -189,7 +192,9 @@ class projectPage extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Edit Project : {this.state.name}
+              Edit Project :
+              {' '}
+              {this.state.name}
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -294,60 +299,61 @@ class projectPage extends React.Component {
                       />
                     </FormControl>
                   </Grid>
-                   {
-                     this.state.startTime && 
-                   <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="startTime"
-                        label="startTime"
-                        type="date"
-                        readOnly={this.state.readOnly}
-                        className={classes.textField}
-                        onChange={this.handleTimeChange}
-                        value={moment(this.state.startTime*1000).format('YYYY-MM-DD')}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </FormControl>
-                  </Grid>
-                }
+                  {this.state.startTime && (
+                    <Grid item xs>
+                      <FormControl margin="normal" required fullWidth>
+                        <TextField
+                          id="startTime"
+                          label="startTime"
+                          type="date"
+                          readOnly={this.state.readOnly}
+                          className={classes.textField}
+                          onChange={this.handleTimeChange}
+                          value={moment(this.state.startTime * 1000).format('YYYY-MM-DD')}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                  )}
                 </Grid>
-                {this.state.startTime && <Grid container spacing={24}>
-                  <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="deadline"
-                        label="deadline"
-                        type="date"
-                        readOnly={this.state.readOnly}
-                        onChange={this.handleTimeChange}
-                        className={classes.textField}
-                        value={moment(this.state.deadline*1000).format('YYYY-MM-DD')}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </FormControl>
+                {this.state.startTime && (
+                  <Grid container spacing={24}>
+                    <Grid item xs>
+                      <FormControl margin="normal" required fullWidth>
+                        <TextField
+                          id="deadline"
+                          label="deadline"
+                          type="date"
+                          readOnly={this.state.readOnly}
+                          onChange={this.handleTimeChange}
+                          className={classes.textField}
+                          value={moment(this.state.deadline * 1000).format('YYYY-MM-DD')}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs>
+                      <FormControl margin="normal" required fullWidth>
+                        <TextField
+                          id="lifeTime"
+                          label="lifeTime"
+                          type="date"
+                          readOnly={this.state.readOnly}
+                          onChange={this.handleTimeChange}
+                          className={classes.textField}
+                          value={moment(this.state.lifeTime * 1000).format('YYYY-MM-DD')}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
                   </Grid>
-                  <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="lifeTime"
-                        label="lifeTime"
-                        type="date"
-                        readOnly={this.state.readOnly}
-                        onChange={this.handleTimeChange}
-                        className={classes.textField}
-                        value={moment(this.state.lifeTime*1000).format('YYYY-MM-DD')}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid> }
+                )}
                 <FormHelperText id="name-helper-text" error>
                   {this.state.error}
                 </FormHelperText>

@@ -9,6 +9,7 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
+import axios from 'axios';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
 const styles = theme => ({
@@ -62,6 +63,7 @@ class Login extends React.Component {
       email,
       password: '',
       error: '',
+      success: '',
     };
   }
 
@@ -85,6 +87,7 @@ class Login extends React.Component {
     };
     this.setState({
       error: '',
+      success: '',
     });
     request({
       method: 'post',
@@ -93,9 +96,16 @@ class Login extends React.Component {
     })
       .then(response => {
         localStorage.setItem('token', response.id);
-        return this.props.history.push({
-          pathname: '/',
+        axios.defaults.headers.common = { Authorization: response.id };
+        this.setState({
+          success: 'Login Successful. Redirecting to dashboard..',
         });
+        setTimeout(() => {
+          this.props.history.push({
+            pathname: '/',
+          });
+        }, 5000);
+        return null;
       })
       .catch(error => {
         console.log(error.data.error.message);
@@ -143,6 +153,9 @@ class Login extends React.Component {
               <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                 Submit
               </Button>
+              <Typography color="primary" style={{ marginTop: 20 }}>
+                {this.state.success}
+              </Typography>
             </ValidatorForm>
           </Paper>
         </main>

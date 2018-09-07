@@ -5,13 +5,15 @@ import axios from 'axios';
  */
 const client = axios.create({
   baseURL: 'http://35.240.197.175:9000/api/',
-  params: { access_token: localStorage.getItem('token') },
 });
 
 /**
  * Request Wrapper with default success/error actions
  */
 const request = options => {
+  options.params = {
+    access_token: localStorage.getItem('token'),
+  };
   const onSuccess = response => {
     console.log('Request Successful!', response);
     return response.data;
