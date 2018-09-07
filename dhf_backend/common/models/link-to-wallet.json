@@ -15,6 +15,20 @@
     "wallets_address": {
       "type": "object",
       "required": true
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "emun": ["pending", "approved", "rejected"]
+    },
+    "activeDate": {
+      "type": "date"
+    },
+    "requestDate": {
+      "type": "date"
+    },
+    "verifyCode": {
+      "type": "string"
     }
   },
   "validations": [],

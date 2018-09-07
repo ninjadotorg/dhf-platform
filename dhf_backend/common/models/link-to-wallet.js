@@ -2,13 +2,24 @@
 var async = require('async');
 
 module.exports = function(LinkToWallet) {
-  LinkToWallet.verify = function(smartAddress, userId, callback) {
+  LinkToWallet.verify = function(authToken, verifyCode, userId, callback) {
     LinkToWallet.findOne({
-      smartAddress: smartAddress,
+      smartAddress: authToken,
       status: 'pending',
       userId: userId,
     }, function(err, data) {
       if (err) callback(err);
+      let error = new Error();
+      if (!data) {
+        error.status = 404;
+        error.message = 'Token not found!';
+        return callback(error);
+      }
+      if (data.verifyCode !== verifyCode) {
+        error.status = 401;
+        error.message = 'Verify code invalided';
+        return callback(error);
+      }
       data.status = 'approved';
       data.activeDate = new Date();
       data.save(data, callback);
@@ -16,8 +27,9 @@ module.exports = function(LinkToWallet) {
   };
   LinkToWallet.remoteMethod('verify', {
     accepts: [
-      {arg: 'smartAddress', type: 'string'},
-      {arg: 'amount', type: 'number'},
+      {arg: 'authToken', type: 'string'},
+      {arg: 'verifyCode', type: 'string'},
+      {arg: 'userId', type: 'string'},
     ],
     returns: {arg: 'success', type: 'boolean'},
     http: {path: '/verify', verb: 'post'},

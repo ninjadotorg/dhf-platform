@@ -9,6 +9,12 @@ module.exports = function(LinkToContract) {
       userId: userId,
     }, function(err, data) {
       if (err) callback(err);
+      let error = new Error();
+      if (!data) {
+        error.status = 404;
+        error.message = 'Contract not found!';
+        return callback(error);
+      }
       data.status = 'approved';
       data.activeDate = new Date();
       data.save(data, callback);
@@ -17,7 +23,6 @@ module.exports = function(LinkToContract) {
   LinkToContract.remoteMethod('verify', {
     accepts: [
       {arg: 'smartAddress', type: 'string'},
-      {arg: 'amount', type: 'number'},
     ],
     returns: {arg: 'success', type: 'boolean'},
     http: {path: '/verify', verb: 'post'},
