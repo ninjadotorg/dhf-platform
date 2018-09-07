@@ -99,8 +99,8 @@ module.exports = class Binance {
         }))
     }
 
-    async accountInfo() {
-        console.log(await this.client.accountInfo())
+    async exchangeInfo() {
+        return await this.client.exchangeInfo()
     }
 
 }

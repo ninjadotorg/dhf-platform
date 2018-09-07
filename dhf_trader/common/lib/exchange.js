@@ -7,15 +7,10 @@ module.exports = {
         let exchange = new GateWay(result.name, result.account)
         await exchange.init()
         result = await exchange.action("getBalance")
-        console.log(result)
-        for (var i  in result){
-            let asset = result[i]
-            if (asset.asset !== "BTC" && asset.asset !== "BNB"  ){
-                console.log(asset)
-                let sellR = await exchange.action("sellMarket", {symbol: asset.asset + "BTC" , quantity: asset.free})
-                console.log(sellR)
-                process.exit()
-            }
+        for (var i in result){
+            if (result[i].asset == currency)
+                return parseFloat(result[i].free)
         }
+        return 0
     }
 }

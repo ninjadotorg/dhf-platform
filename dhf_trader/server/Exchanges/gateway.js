@@ -2,25 +2,24 @@
 
 let Binance = require('./binance')
 let ExchangeDB = require("../../common/models/exchanges")
-let ExchageList = {}
+
+var projectAccount = {}
 
 module.exports = class Gateway {
 
-    constructor(name, account){
-        this.name = name
-        this.account = account
+    constructor(){
     }
 
-    async init(name, account){
-        var self = this
-        this.name = name || this.name
-        this.account = account || this.account
-        
-        let cred = await ExchangeDB.findOne({name: this.name, account: this.account})
-        
-        switch (this.name) {
+    async init(project){
+        var exchangeAccount = projectAccount[project]
+        if (!projectAccount[project]){
+            exchangeAccount =  await ExchangeDB.getProjectAccount(project);
+            projectAccount[project] = exchangeAccount
+            if (!exchangeAccount) throw new Error("Cannot find project")
+        }
+        switch (exchangeAccount.name) {
             case "binance": 
-                this.exchange = new Binance(cred);
+                this.exchange = new Binance(exchangeAccount);
                 break;
             default:
                 break;
