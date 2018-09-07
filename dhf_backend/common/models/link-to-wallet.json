@@ -1,0 +1,86 @@
+{
+  "name": "link-to-wallet",
+  "plural": "link-to-wallet",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "strict": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "auth_token": {
+      "type": "string",
+      "required": true
+    },
+    "wallets_address": {
+      "type": "object",
+      "required": true
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "emun": ["pending", "approved", "rejected"]
+    },
+    "activeDate": {
+      "type": "date"
+    },
+    "requestDate": {
+      "type": "date"
+    },
+    "verifyCode": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "User": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "WRITE",
+      "principalType": "ROLE",
+      "principalId": "user",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "create",
+        "findById",
+        "deleteById",
+        "replaceById",
+        "verify"
+      ]
+    }
+  }
+}

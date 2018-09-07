@@ -2,6 +2,7 @@
   "name": "funding",
   "base": "PersistedModel",
   "idInjection": true,
+  "strict": true,
   "properties": {
     "userId": {
       "type": "string",

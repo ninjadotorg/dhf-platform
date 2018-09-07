@@ -2,6 +2,7 @@
   "name": "trader",
   "base": "PersistedModel",
   "idInjection": true,
+  "strict": true,
   "properties": {
     "parentId":{
       "type": "string"
