@@ -1,0 +1,29 @@
+{
+  "name": "ninjafund",
+  "version": "1.0.0",
+  "description": "trader and investor",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "self"
+  },
+  "keywords": [
+    "metronics"
+  ],
+  "author": "me",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-clean-css": "^3.10.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlclean": "^2.7.22",
+    "gulp-uglify": "^3.0.1",
+    "gulp-webserver": "^0.9.1"
+  },
+  "dependencies": {
+    "gulp-live-server": "0.0.31"
+  }
+}
