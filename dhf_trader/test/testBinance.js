@@ -1,7 +1,8 @@
 require("../configs/configuration")
 const request = require("request")
 const Gateway = require("../server/Exchanges/gateway")
- async function test() {
+
+async function test() {
     var gateway = new Gateway("binance", "test");
     await gateway.init()
 
@@ -13,19 +14,25 @@ const Gateway = require("../server/Exchanges/gateway")
     // }
     // var result = await gateway.action("buyLimit", params)
     // console.log(result)
-     // params = {
+
+
+    // params = {
     //     symbol: "EDOETH",
     //     clientOrderId: "hihihi1"
     // }
     // result = await gateway.action("getOrder", params)
     // console.log(result)
-     // params = {
+
+    // params = {
     //     symbol: "ADAETH",
     //     clientOrderId: "hihihi1"
     // }
     // result = await gateway.action("cancelOrder", params)
     // console.log(result)
+
+
     let result = await gateway.action("getDepositAddress", {asset: "BTC"})
     console.log(result)
 }
- test()
+
+test()
