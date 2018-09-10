@@ -12,5 +12,12 @@ module.exports = {
                 return parseFloat(result[i].free)
         }
         return 0
+    },
+
+    getDepositAddress: async function(name, account, asset){
+        let result = await ExchangeDB.findOne({name, account})
+        let exchange = new GateWay(result.name, result.account)
+        await exchange.init()
+        return await exchange.action("getDepositAddress", {asset: asset})
     }
 }

@@ -24,7 +24,7 @@ exports = module.exports = function (app, router){
     router.get("/trade/exchange/:exchange/listAvailableAccount", listAvailableAccount);
 
     router.all("/trade/project/:project/getOrSetAccount", getOrSetAccount);
-    router.all("/trade/project/:project/unLockAccount", removeAccount);
+    router.all("/trade/project/:project/unLockAccount", unLockAccount);
     router.all("/trade/project/:project/:action", action);
     
     router.all('*', function(req, res) {
@@ -34,8 +34,16 @@ exports = module.exports = function (app, router){
 }
 
 async function getOrSetAccount(req, res){
-    let result = await ExchangeDB.getOrSetProjectAccount(req.params.project, req.query.exchange)
-    res.end(JSON.stringify(result))
+    let exchange = await ExchangeDB.getOrSetProjectAccount(req.params.project, req.query.exchange)
+    if (exchange && req.query.depositAsset){
+        var address = await ExchangeUtil.getDepositAddress(exchange.name, exchange.account, req.query.depositAsset)
+        console.log(address)
+        if (address.address) {
+            exchange.despositAddress = address.address
+        }
+    }
+
+    res.end(JSON.stringify(exchange))
 }
 
 async function unLockAccount(req, res){
@@ -63,8 +71,8 @@ async function action(req, res){
         let params = (req.method == "POST") ? req.body : req.query
 
         if (!GatewayList[req.params.project]) {
-            GatewayList[req.params.project] = new Gateway()
-            await GatewayList[req.params.project].init(req.params.project)
+            GatewayList[req.params.project] = new Gateway(req.params.project)
+            await GatewayList[req.params.project].init()
         }
         var gateway = GatewayList[req.params.project]
         if (!gateway.exchange) throw new Error("Exchange name incorrect")

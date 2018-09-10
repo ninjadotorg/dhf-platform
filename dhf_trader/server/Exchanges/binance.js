@@ -94,13 +94,16 @@ module.exports = class Binance {
     }
 
     async myTrades(params){
-        console.log(await this.client.myTrades({
-            symbol: 'EDOETH',
-        }))
+        return await this.client.myTrades({
+            symbol: params.symbol,
+        })
     }
 
     async exchangeInfo() {
         return await this.client.exchangeInfo()
     }
 
+    async getDepositAddress(params) {
+        return await this.client.depositAddress({ asset: params.asset })
+    }
 }

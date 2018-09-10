@@ -31,8 +31,8 @@ async function test() {
     // console.log(result)
 
 
-    // await gateway.action("myTrades", {})
-
+    let result = await gateway.action("getDepositAddress", {asset: "BTC"})
+    console.log(result)
 }
 
 test()

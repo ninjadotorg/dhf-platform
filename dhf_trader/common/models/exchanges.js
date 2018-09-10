@@ -5,8 +5,11 @@ var Exchange   = new Schema({
     name: {type: String, index: true},
     email: {type: String, index: true},
     account: {type: String, index: true},
-    permission: {type: String, index: true, default: "trade"}, // trade | withdraw
+    password: {type: String},
+    
     type: {type: String, index: true, default: "single"}, // single | share
+    
+    permission: {type: String, index: true, default: "trade"}, // trade | withdraw
     key: {type: String},
     secret: {type: String},
 
@@ -40,14 +43,15 @@ DBModel.getProjectAccount = async function(project){
 }
 
 DBModel.getOrSetProjectAccount = async function(project, exchange){
-    let lockAccount = await this.findOne({isLock: true, "lock.project": project})
+    let lockAccount = await this.findOne({isLock: true, "lock.project": project}).lean()
     if (lockAccount) return lockAccount
     else {
         //get single type
         let getOne = await this.findOneAndUpdate
             ({name: exchange, isLock: false, type: "single", permission:"trade"}, 
             {isLock: true, "lock.project": project, "lock.time": new Date()}, 
-            {new: true});
+            {new: true})
+            .lean();
         return getOne
     }    
 }
