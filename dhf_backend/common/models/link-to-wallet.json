@@ -12,6 +12,10 @@
       "type": "string",
       "required": true
     },
+    "walletName": {
+      "type": "string",
+      "required": true
+    },
     "wallets": {
       "type": "string",
       "required": true
@@ -64,7 +68,9 @@
   "mixins": {
     "DisableMethods": {
       "expose": [
+        "myWallet",
         "create",
+        "replaceById",
         "isLinked",
         "verify"
       ]

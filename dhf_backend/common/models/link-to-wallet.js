@@ -34,6 +34,16 @@ module.exports = function(LinkToWallet) {
       }
     });
   };
+
+  LinkToWallet.myWallet = function( callback) {
+    LinkToWallet.find({where:{
+        userId: LinkToWallet.app.currentUserId,
+      }}, function(err, data) {
+      if (err) callback(err);
+      callback(null, data );
+    });
+  };
+
   LinkToWallet.isLinked = function(walletId, callback) {
     LinkToWallet.findOne({where:{
         walletId: walletId
@@ -42,6 +52,12 @@ module.exports = function(LinkToWallet) {
       callback(null, data !== null);
     });
   };
+  LinkToWallet.remoteMethod('myWallet', {
+    accepts: [
+    ],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/my-wallet', verb: 'get'},
+  });
   LinkToWallet.remoteMethod('isLinked', {
     accepts: [
       {arg: 'walletId', type: 'string'},
@@ -59,7 +75,8 @@ module.exports = function(LinkToWallet) {
   });
 
   LinkToWallet.createVerifyCode = async function(){
-    let key = await Math.random().toString(36).substring(4);
+    let key = await Math.random().toString(36);
+    key = key.substring(key.length - 8);
     return new Promise(function(resolve, reject){
       LinkToWallet.findOne({where: {
           verifyCode: key
@@ -76,14 +93,24 @@ module.exports = function(LinkToWallet) {
 
   LinkToWallet.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      LinkToWallet.createVerifyCode().then(function (key) {
-        ctx.instance.status = 'pending';
-        ctx.instance.requestDate = new Date();
-        ctx.instance.activeDate = new Date();
-        ctx.instance.verifyCode = key;
-        next();
+      LinkToWallet.findOne({where: {
+          walletId: ctx.instance.walletId
+        }}, function (err, data) {
+        if (err) return next(err);
+        if (data) {
+          let err = new Error();
+          err.status = 401;
+          err.message = 'Wallet existed';
+          return next(err);
+        }
+        LinkToWallet.createVerifyCode().then(function (key) {
+          ctx.instance.status = 'pending';
+          ctx.instance.requestDate = new Date();
+          ctx.instance.activeDate = new Date();
+          ctx.instance.verifyCode = key;
+          next();
+        });
       });
-
     } else {
       next();
     }
