@@ -20,11 +20,11 @@ exports = module.exports = function (app, router){
 
     app.use("/", router)
 
-    router.all("/trade/exchange/:exchange/listLockAccount", listLockAccount);
-    router.all("/trade/exchange/:exchange/listAvailableAccount", listAvailableAccount);
+    router.get("/trade/exchange/:exchange/listLockAccount", listLockAccount);
+    router.get("/trade/exchange/:exchange/listAvailableAccount", listAvailableAccount);
 
     router.all("/trade/project/:project/getOrSetAccount", getOrSetAccount);
-    router.all("/trade/project/:project/removeAccount", removeAccount);
+    router.all("/trade/project/:project/unLockAccount", removeAccount);
     router.all("/trade/project/:project/:action", action);
     
     router.all('*', function(req, res) {
@@ -38,8 +38,8 @@ async function getOrSetAccount(req, res){
     res.end(JSON.stringify(result))
 }
 
-async function removeAccount(req, res){
-    let result = await ExchangeDB.removeProjectAccount(req.params.project)
+async function unLockAccount(req, res){
+    let result = await ExchangeDB.unlockProjectAccount(req.params.project)
     delete GatewayList[req.params.project]
     res.end(JSON.stringify(result))
 }

@@ -52,7 +52,7 @@ DBModel.getOrSetProjectAccount = async function(project, exchange){
     }    
 }
 
-DBModel.removeProjectAccount = async function(project){
+DBModel.unlockProjectAccount = async function(project){
     return await this.findOneAndUpdate({"lock.project": project}, {isLock: false}, {new: true}).select({"key": 0, "secret": 0});
 }
 
