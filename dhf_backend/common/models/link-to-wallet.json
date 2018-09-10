@@ -8,12 +8,12 @@
     "validateUpsert": true
   },
   "properties": {
-    "auth_token": {
+    "walletId": {
       "type": "string",
       "required": true
     },
-    "wallets_address": {
-      "type": "object",
+    "wallets": {
+      "type": "string",
       "required": true
     },
     "status": {
@@ -28,6 +28,7 @@
       "type": "date"
     },
     "verifyCode": {
+      "id":true,
       "type": "string"
     }
   },
@@ -47,21 +48,9 @@
       "permission": "DENY"
     },
     {
-      "accessType": "WRITE",
+      "accessType": "*",
       "principalType": "ROLE",
-      "principalId": "trader",
-      "permission": "ALLOW"
-    },
-    {
-      "accessType": "WRITE",
-      "principalType": "ROLE",
-      "principalId": "user",
-      "permission": "ALLOW"
-    },
-    {
-      "accessType": "EXECUTE",
-      "principalType": "ROLE",
-      "principalId": "$owner",
+      "principalId": "$authenticated",
       "permission": "ALLOW"
     },
     {
@@ -76,9 +65,7 @@
     "DisableMethods": {
       "expose": [
         "create",
-        "findById",
-        "deleteById",
-        "replaceById",
+        "isLinked",
         "verify"
       ]
     }
