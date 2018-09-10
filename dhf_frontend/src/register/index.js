@@ -24,7 +24,7 @@ const styles = theme => ({
       marginLeft: 'auto',
       marginRight: 'auto',
     },
-  },
+},
   paper: {
     marginTop: theme.spacing.unit * 8,
     display: 'flex',
@@ -120,7 +120,7 @@ class Register extends React.Component {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <CssBaseline />
+        <CssBaseline/>
         <main className={classes.layout}>
           <Paper className={classes.paper}>
             <Typography variant="headline">Register as a trader</Typography>

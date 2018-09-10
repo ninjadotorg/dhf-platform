@@ -18,5 +18,11 @@
       "limit": "100kb"
     },
     "cors": false
+  },
+  "binance" : {
+    "APIKEY": "MXCeKzgZScAKo6DglG0aZz5PECnVAjXoh3ilqOh0xBnhxC199rg09aBR7Kaj6baQ",
+    "APISECRET": "Vp0AyrlOXc4GDLRm9TbpABeKE5JDGFj3cpfz7qqBQjE9Tjb7rYj5ako72yEVrs1m",
+    "useServerTime": true,
+    "test": true
   }
 }

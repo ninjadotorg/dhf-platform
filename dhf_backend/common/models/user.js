@@ -9,7 +9,10 @@ module.exports = function(User) {
     if (ctx.instance && ctx.isNewInstance) {
       if ((ctx.instance.userType === 'admin' || ctx.instance.userType === 'backend') &&
         ctx.instance.realm !== 'backend') {
-        throw Error('Admin type can\'t create from rest api');
+        let err = new Error();
+        err.status = 401;
+        err.message = 'Admin type can\'t create from rest api';
+        return next(err);
       }
     }
     next();
@@ -20,12 +23,12 @@ module.exports = function(User) {
     * */
     let models = User.app.models;
     models.Role.findOne({where: {name: user.userType}}, function(err, role) {
-      if (err) throw err;
+      if (err) return next(err);
       role.principals.create({
         principalType: models.RoleMapping.USER,
         principalId: user.id,
       }, function(err, principal) {
-        if (err) throw err;
+        if (err) return next(err);
         console.log('user has been added to role', principal);
       });
     });

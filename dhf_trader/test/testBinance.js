@@ -5,7 +5,7 @@ const Gateway = require("../server/Exchanges/gateway")
 async function test() {
     var gateway = new Gateway("binance", "test");
     await gateway.init()
-    
+
     // var params = {
     //     symbol: "EDOETH",
     //     quantity: "10",

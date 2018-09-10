@@ -53,6 +53,8 @@ services:
          # files
          - ./dhf_trader/server:/app/server
          - ./dhf_trader/common:/app/common
+         - ./dhf_trader/configs:/app/configs
+         - ./dhf_trader/scripts:/app/scripts
          - ./dhf_trader/test:/app/test
          - ./dhf_trader/package.json:/app/package.json
       environment:
@@ -66,7 +68,7 @@ services:
         - "9001"
       command:
         - /app/node_modules/.bin/nodemon
-        - .
+        - server/server.js
 
    # DATABASE ---------------------------------------------------
   mongo:
@@ -79,7 +81,7 @@ services:
 #      MONGO_INITDB_ROOT_PASSWORD: dhfadmin
       MONGO_INITDB_DATABASE: dhf-platform
     volumes:
-      - /data/mongodb:/data/db
+      - /tmp/mongodb:/data/db
 #      - mongodb_config:/data/configdb
     ports: 
       - "27018:27018"
