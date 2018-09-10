@@ -1,11 +1,18 @@
 require("../configs/configuration")
-const request = require("request")
-const Gateway = require("../server/Exchanges/gateway")
+const expect = require('chai').expect
+const sinon = require('sinon')
+const sinonTestFactory = require('sinon-test')
+const sinonTest = sinonTestFactory(sinon)
+const BinanceAPI = require('binance-api-node').default
+const Binance = require("../server/Exchanges/binance")
 
-async function test() {
-    var gateway = new Gateway("binance", "test");
-    await gateway.init()
-    
+describe('Gateway', () => {
+})
+
+// async function test() {
+//     var gateway = new Gateway("binance", "test");
+//     await gateway.init()
+
     // var params = {
     //     symbol: "EDOETH",
     //     quantity: "10",
@@ -31,8 +38,9 @@ async function test() {
     // console.log(result)
 
 
-    let result = await gateway.action("getDepositAddress", {asset: "BTC"})
-    console.log(result)
-}
+//     let result = await gateway.action("getDepositAddress", {asset: "BTC"})
+//     console.log(result)
+// }
+//
+// test()
 
-test()
