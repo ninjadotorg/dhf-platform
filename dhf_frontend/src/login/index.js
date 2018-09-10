@@ -96,16 +96,12 @@ class Login extends React.Component {
     })
       .then(response => {
         localStorage.setItem('token', response.id);
-        axios.defaults.headers.common = { Authorization: response.id };
         this.setState({
           success: 'Login Successful. Redirecting to dashboard..',
         });
-        setTimeout(() => {
-          this.props.history.push({
-            pathname: '/',
-          });
-        }, 5000);
-        return null;
+        return this.props.history.push({
+          pathname: '/',
+        });
       })
       .catch(error => {
         console.log(error.data.error.message);

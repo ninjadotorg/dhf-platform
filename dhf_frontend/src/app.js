@@ -10,6 +10,7 @@ import HomePage from '@/homepage';
 import Typography from '@material-ui/core/Typography';
 import Register from '@/register';
 import createProject from '@/createProject';
+import wallet from '@/wallet';
 import Login from '@/login';
 import './style/index.scss';
 import history from '@/utils/history';
@@ -52,6 +53,7 @@ class App extends React.Component {
                   <div className={classes.appBarSpacer} />
                       <Route path="/create-project" component={createProject} />
                       <Route path="/projects/:id" exact component={projectPage} />
+                      <Route path="/wallet" exact component={wallet} />
                       <Route path="/" exact component={HomePage} />
                 </main>
               </div>

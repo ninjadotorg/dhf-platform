@@ -60,6 +60,11 @@ const styles = theme => ({
     marginBottom: 30,
     marginTop: 10,
   },
+
+  button2: {
+    marginLeft:30,
+    marginBottom:10,
+  },
   input: {
     display: 'none',
   },
@@ -93,6 +98,7 @@ class projectPage extends React.Component {
       lifeTime: 0,
       readOnly: false,
       state: '',
+      userId: '',
       exchangeList: [],
     };
     this.moment = moment;
@@ -136,6 +142,7 @@ class projectPage extends React.Component {
           startTime: response.startTime,
           deadline: response.deadline,
           lifeTime: response.lifeTime,
+          userId: response.userId,
         });
       })
       .catch(error => {});
@@ -182,6 +189,11 @@ class projectPage extends React.Component {
       });
   };
 
+  handleInitClick=()=>{
+    console.log("handleInitClick");
+    window.data={name:"a",age:24};
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -190,11 +202,12 @@ class projectPage extends React.Component {
         <React.Fragment>
           <CssBaseline />
           <main className={classes.content}>
-            <div className={classes.appBarSpacer} />
+            <div className={classes.appBarSpacer}/>
             <Typography variant="display1" gutterBottom>
               Edit Project :
               {' '}
               {this.state.name}
+              <Button variant="contained" color="primary" className={classes.button2} onClick={this.handleInitClick}>Initialize</Button>
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -358,7 +371,7 @@ class projectPage extends React.Component {
                   {this.state.error}
                 </FormHelperText>
                 <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
-                  Submit
+                  Update
                 </Button>
               </ValidatorForm>
             </Paper>

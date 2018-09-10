@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import history from '@/utils/history';
 /**
  * Create an Axios Client with defaults
  */
@@ -23,6 +23,7 @@ const request = options => {
     console.error('Request Failed:', error.config);
 
     if (error.response) {
+      if (error.response.status === 401) history.push('/login');
       // Request was made but server responded with something other than 2xx
       console.error('Status:', error.response.status);
       console.error('Data:', error.response.data);
