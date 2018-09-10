@@ -25,6 +25,8 @@ exports = module.exports = function (app, router){
 
     router.all("/trade/project/:project/getOrSetAccount", getOrSetAccount);
     router.all("/trade/project/:project/unLockAccount", unLockAccount);
+
+    //trade
     router.all("/trade/project/:project/:action", action);
     
     router.all('*', function(req, res) {
