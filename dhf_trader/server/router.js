@@ -15,7 +15,7 @@ YAML = require('yamljs'),
 swaggerDocument = YAML.load(__dirname + '/../configs/swagger.yaml')
 
 exports = module.exports = function (app, router){
-    
+
     app.use('/trade/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     app.use("/", router)
@@ -28,7 +28,7 @@ exports = module.exports = function (app, router){
 
     //trade
     router.all("/trade/project/:project/:action", action);
-    
+
     router.all('*', function(req, res) {
 		console.error("Not found: %s %s",req.method,req.url)
   		res.status("404").end();
@@ -45,6 +45,10 @@ async function getOrSetAccount(req, res){
         }
     }
 
+    if (!exchange) {
+        res.status(400)
+        return res.json({status: 'fail', message: 'No available exchange'})
+    }
     res.end(JSON.stringify(exchange))
 }
 
