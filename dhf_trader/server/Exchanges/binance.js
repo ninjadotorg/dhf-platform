@@ -1,6 +1,5 @@
 "use strict";
 var BinanceAPI = require('binance-api-node').default;
-let OrderDB = require("../../common/models/orders")
 
 module.exports = class Binance {
     constructor(cred){
@@ -30,7 +29,7 @@ module.exports = class Binance {
         return returnList
     }
 
-    async buyLimit(params, project){
+    async buyLimit(params){
         // const clientOrderId = project + '-' + new Date().getTime()
 
         let result = await this.client.order({
@@ -43,23 +42,7 @@ module.exports = class Binance {
             newOrderRespType: "FULL"
         })
 
-        const order = new OrderDB({
-            project: project,
-            orderKey: result.clientOrderId,
-            symbol: params.symbol,
-            side: result.side,
-            type: result.type,
-            exchangeOrderID: result.orderId,
-            time: result.transactTime,
-            status: result.status,
-            price: params.price,
-            requestQty: params.quantity,
-            fillQty: 0,
-            fillQuoteQty: 0
-        })
-        await order.save()
-
-        return JSON.stringify(result)
+        return result
     }
 
     async sellLimit(params){
@@ -162,5 +145,21 @@ module.exports = class Binance {
 
     async getDepositAddress(params) {
         return await this.client.depositAddress({ asset: params.asset })
+    }
+
+    transformToOrder(result) {
+        return {
+            orderKey: result.clientOrderId,
+            symbol: result.symbol,
+            side: result.side,
+            type: result.type,
+            exchangeOrderID: result.orderId,
+            time: result.transactTime,
+            status: result.status,
+            price: result.price,
+            requestQty: result.origQty,
+            fillQty: 0,
+            fillQuoteQty: 0
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 let Binance = require('./binance')
 let ExchangeDB = require("../../common/models/exchanges")
+let OrderDB = require("../../common/models/orders")
 
 var projectList = {}
 var nameList = {}
@@ -44,9 +45,18 @@ module.exports = class Gateway {
         }
     }
 
-    async action(action, params, project){
+    async action(action, params){
         if (!this.exchange[action]) throw new Error("Action not found")
-        return await this.exchange[action](params, project)
+        const result = await this.exchange[action](params)
+
+        switch (action) {
+            case 'buyLimit':
+                const transformed = this.exchange.transformToOrder(result)
+                const order = new OrderDB({...transformed, project: this.project})
+                await order.save()
+        }
+
+        return JSON.stringify(result)
     }
 }
 
