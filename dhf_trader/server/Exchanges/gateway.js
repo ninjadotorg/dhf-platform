@@ -15,13 +15,13 @@ module.exports = class Gateway {
     }
 
     async init(){
-        
+
         if (this.project){
             console.log("project", this.project)
-            var exchangeAccount = projectList[project]
+            var exchangeAccount = projectList[this.project]
             if (!exchangeAccount){
-                exchangeAccount =  await ExchangeDB.findOne({project: this.project});
-                projectList[project] = exchangeAccount
+                exchangeAccount =  await ExchangeDB.findOne({'lock.project': this.project});
+                projectList[this.project] = exchangeAccount
                 if (!exchangeAccount) throw new Error("Cannot find project")
             }
         } else {
@@ -34,9 +34,9 @@ module.exports = class Gateway {
                 if (!exchangeAccount) throw new Error("Cannot find project")
             }
         }
-        
+
         switch (exchangeAccount.name) {
-            case "binance": 
+            case "binance":
                 this.exchange = new Binance(exchangeAccount);
                 break;
             default:
@@ -44,9 +44,9 @@ module.exports = class Gateway {
         }
     }
 
-    async action(action, params){
+    async action(action, params, project){
         if (!this.exchange[action]) throw new Error("Action not found")
-        return await this.exchange[action](params)
+        return await this.exchange[action](params, project)
     }
 }
 

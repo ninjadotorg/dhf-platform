@@ -80,12 +80,12 @@ async function action(req, res){
         let params = (req.method == "POST") ? req.body : req.query
 
         if (!GatewayList[req.params.project]) {
-            GatewayList[req.params.project] = new Gateway(req.params.project)
+            GatewayList[req.params.project] = new Gateway(null, null, req.params.project)
             await GatewayList[req.params.project].init()
         }
         var gateway = GatewayList[req.params.project]
         if (!gateway.exchange) throw new Error("Exchange name incorrect")
-        res.end(await gateway.action((req.params.action || params.action), params))
+        res.end(await gateway.action((req.params.action || params.action), params, project))
 
     } catch(err){
         console.error(err)
