@@ -54,6 +54,9 @@ async function getOrSetAccount(req, res){
 
 async function unLockAccount(req, res){
     let result = await ExchangeDB.unlockProjectAccount(req.params.project)
+    if (!result) {
+        return res.status(400).json({status: 'fail'})
+    }
     delete GatewayList[req.params.project]
     res.end(JSON.stringify(result))
 }
