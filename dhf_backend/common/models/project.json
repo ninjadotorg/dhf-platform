@@ -57,6 +57,9 @@
     "isTransfer": {
       "type": "boolean"
     },
+    "depositAddress": {
+      "type": "string"
+    },
     "state": {
       "type": "string",
       "required": true,

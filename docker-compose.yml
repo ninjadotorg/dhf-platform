@@ -16,6 +16,7 @@ services:
       build: 
         context: dhf_backend
         dockerfile: Dockerfile
+      container_name: blackend-api
       depends_on:
 #         - proxy
          - mongo
@@ -44,6 +45,7 @@ services:
       build: 
         context: dhf_trader
         dockerfile: Dockerfile
+      container_name: trader-api
       depends_on:
 #         - proxy
          - mongo
@@ -81,7 +83,7 @@ services:
 #      MONGO_INITDB_ROOT_PASSWORD: dhfadmin
       MONGO_INITDB_DATABASE: dhf-platform
     volumes:
-      - /tmp/mongodb:/data/db
+      - /data/mongodb:/data/db
 #      - mongodb_config:/data/configdb
     ports: 
       - "27018:27018"

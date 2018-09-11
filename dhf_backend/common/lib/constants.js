@@ -18,6 +18,7 @@ const USER_TYPE = {
   ADMIN: 'admin',
   TRADER: 'trader',
   USER: 'user',
+  BACKEND: 'backend',
 };
 const exchange = ['binance'];
 

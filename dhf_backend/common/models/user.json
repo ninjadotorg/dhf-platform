@@ -45,7 +45,15 @@
       }
     }
   },
-  "acls": [],
+  "acls": [
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "listTrader"
+    }
+  ],
   "methods": {},
   "mixins": {
     "DisableMethods": {
@@ -55,7 +63,8 @@
         "deleteById",
         "replaceById",
         "login",
-        "logout"
+        "logout",
+        "listTrader"
       ]
     }
   }

@@ -1,13 +1,26 @@
 'use strict';
+const {USER_TYPE} = require('../lib/constants');
 
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
     in: ['admin', 'trader', 'user', 'backend'],
     message: 'must be trader or user',
   });
+  User.listTrader = function(next) {
+    User.find({where: {
+      userType: USER_TYPE.TRADER,
+    }}, next);
+  };
+  User.remoteMethod('listTrader',
+    {
+      description: 'Get all trader',
+      returns: {arg: 'data', root: true, type: 'Object'},
+      http: {path: '/list-trader', verb: 'get'},
+    });
   User.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      if ((ctx.instance.userType === 'admin' || ctx.instance.userType === 'backend') &&
+      if ((ctx.instance.userType === USER_TYPE.ADMIN ||
+        ctx.instance.userType === USER_TYPE.BACKEND) &&
         ctx.instance.realm !== 'backend') {
         let err = new Error();
         err.status = 401;

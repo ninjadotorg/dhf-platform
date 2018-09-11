@@ -67,16 +67,20 @@
     "dataSource": "db",
     "public": true
   },
-  "trader": {
-    "dataSource": "db",
-    "public": true
-  },
   "exchange": {
     "dataSource": "db",
     "public": true
   },
   "currency": {
     "dataSource": "db",
+    "public": true
+  },
+  "test": {
+    "dataSource": "rest",
+    "public": true
+  },
+  "trader": {
+    "dataSource": "rest",
     "public": true
   }
 }
