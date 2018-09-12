@@ -41,7 +41,7 @@ async function getOrSetAccount(req, res){
         var address = await ExchangeUtil.getDepositAddress(exchange.name, exchange.account, req.query.depositAsset)
         console.log(address)
         if (address.address) {
-            exchange.despositAddress = address.address
+            exchange.depositAddress = address.address
         }
     }
 
