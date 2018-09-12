@@ -1,5 +1,5 @@
 {
-  "name": "trader",
+  "name": "trade",
   "strict": true,
   "properties": {
   },
@@ -36,17 +36,7 @@
   "mixins": {
     "DisableMethods": {
       "expose": [
-        "buy",
-        "sell",
-        "marketBuy",
-        "marketSell",
-        "cancel",
-        "cancelOrders",
-        "orderStatus",
-        "allOrders",
-        "trades",
-        "prevDay",
-        "candlesticks"
+        "buyLimit"
       ]
     }
   }

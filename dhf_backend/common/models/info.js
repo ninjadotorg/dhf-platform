@@ -1,5 +1,5 @@
 'use strict';
-
+let errorHandler = require('../lib/error-handler');
 module.exports = function(Info) {
   Info.exchangeInfo = function(callback) {
     const binance = require('../lib/binance')(Info.app).binance;
@@ -60,18 +60,25 @@ module.exports = function(Info) {
     }
   );
 
-  Info.balance = function(callback) {
-    const binance = require('../lib/binance')(Info.app).binance;
-    binance.balance((err, resp) => {
-      if (err)
-        return callback(err);
-      callback(null, resp);
-    });
+  Info.balance = function(projectId, currency, callback) {
+    Info.app.models.trade.action(projectId, 'getBalance', null, null, null, currency,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(resp);
+      });
   };
   Info.remoteMethod(
     'balance',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'currency', type: 'string'},
+      ],
       http: {
         verb: 'GET',
       },

@@ -82,14 +82,20 @@
       {
         "template": {
           "method": "POST",
-          "url": "http://trader-api:9001/trade/project/{projectId}/action",
+          "url": "http://trader-api:9001/trade/project/{projectId}/{action}",
           "options": {
             "strictSSL": false
+          },
+          "body": {
+            "symbol": "{symbol}",
+            "quantity": "{quantity}",
+            "price": "{price}",
+            "currency": "{currency}"
           },
           "responsePath": ""
         },
         "functions": {
-          "action": ["projectId"]
+          "action": ["projectId", "action", "symbol", "quantity", "price", "currency"]
         }
       }
   ]
