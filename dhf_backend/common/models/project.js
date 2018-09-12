@@ -11,32 +11,6 @@ module.exports = function(Project) {
     next();
   });
   Project.observe('after save', function(ctx, next) {
-    // if (ctx.instance.state === PROJECT_STATE.READY &&
-    //   (!ctx.instance.depositAddress || ctx.instance.depositAddress === '')) {
-    //   let depositAddress = '';
-    //   async.series([
-    //     function pickUpExchangeAccount(next) {
-    //       Project.app.models.trader.getOrSetAccount(
-    //         ctx.instance.id,
-    //         ctx.instance.exchange,
-    //         ctx.instance.currency, function(err, data) {
-    //           if (err) return next(err);
-    //           depositAddress = data.despositAddress;
-    //           next();
-    //         });
-    //     },
-    //     function transferMoneyToExchange(next) {
-    //       next();
-    //     },
-    //   ], function onComplete(err) {
-    //     if (err)
-    //       return next(err);
-    //     ctx.instance.updateAttributes({depositAddress: depositAddress});
-    //     next();
-    //   });
-    // } else {
-    //   next();
-    // }
     next();
   });
   // listProjects

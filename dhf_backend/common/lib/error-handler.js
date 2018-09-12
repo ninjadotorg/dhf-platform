@@ -2,7 +2,6 @@
 
 module.exports = {
   filler: function(error) {
-    console.log(error);
     let err;
     if (typeof error !== 'object') {
       error = JSON.parse(error);
@@ -15,6 +14,10 @@ module.exports = {
       } catch (e) {
         err = body;
       }
+    } else if (error && error.message) {
+      err = error.message;
+    } else {
+      err = error;
     }
     return err;
   },

@@ -1,22 +1,23 @@
 'use strict';
 let async = require('async');
 let {TRANSACTION_STATE, PROJECT_STATE} = require('../lib/constants');
-module.exports = function(Trader) {
-  Trader.buy = function(projectId, symbol, quantity, price, callback) {
+let errorHandler = require('../lib/error-handler');
+module.exports = function(Trade) {
+  Trade.buyLimit = function(projectId, symbol, quantity, price, callback) {
     let currentProject = null;
     let totalAmount = 0;
     let orderResult;
     let error = new Error();
     async.series([
       function validateProject(callback) {
-        Trader.app.models.project.findById(projectId, function(err, project) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
             error.status = 404;
             error.message = 'Project was not existed!';
             return callback(error);
           }
-          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
@@ -43,25 +44,17 @@ module.exports = function(Trader) {
         // maybe need more validation here
         callback();
       },
-      function saveTrader(callback) {
-        Trader.create({
-          orderId: null,
-          symbol: symbol,
-          quantity: quantity,
-          price: price,
-          flags: 'LIMIT',
-          function: 'BUY',
-          totalAmount: totalAmount,
-          totalMatchedAmount: 0,
-          state: PROJECT_STATE.PENDING,
-          projectId: currentProject.id,
-          userId: Trader.app.currentUserId,
-        }, function(err, resp) {
-          if (err)
-            return callback(err);
-          orderResult = resp;
-          callback();
-        });
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'buyLimit', symbol, quantity, price,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 404;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
       },
       function SaveProject(callback) {
         currentProject.pendingAmount += totalAmount;
@@ -78,21 +71,21 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.sell = function(projectId, symbol, quantity, price, callback) {
+  Trade.sell = function(projectId, symbol, quantity, price, callback) {
     let orderResult;
     let currentProject = null;
     let totalAmount = 0;
     let error = new Error();
     async.series([
       function validateProject(callback) {
-        Trader.app.models.project.findById(projectId, function(err, project) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
             error.status = 404;
             error.message = 'Project was not existed!';
             return callback(error);
           }
-          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
@@ -107,7 +100,7 @@ module.exports = function(Trader) {
         });
       },
       function saveTrader(callback) {
-        Trader.create({
+        Trade.create({
           orderId: null,
           symbol: symbol,
           quantity: quantity,
@@ -118,7 +111,7 @@ module.exports = function(Trader) {
           totalMatchedAmount: 0,
           state: TRANSACTION_STATE.PENDING,
           projectId: currentProject.id,
-          userId: Trader.app.currentUserId,
+          userId: Trade.app.currentUserId,
         }, function(err, resp) {
           if (err)
             return callback(err);
@@ -133,7 +126,7 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.marketBuy = function(symbol, quantity, callback) {
+  Trade.marketBuy = function(symbol, quantity, callback) {
     let orderResult;
     async.series([
       function validateOrder(callback) {
@@ -152,7 +145,7 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.marketSell = function(symbol, quantity, callback) {
+  Trade.marketSell = function(symbol, quantity, callback) {
     let orderResult;
     async.series([
       function validateOrder(callback) {
@@ -171,21 +164,21 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.cancel = function(projectId, symbol, orderId, callback) {
+  Trade.cancel = function(projectId, symbol, orderId, callback) {
     let orderResult;
     let currentProject = null;
     let currentOrder = null;
     let error = new Error();
     async.series([
       function validateProject(callback) {
-        Trader.app.models.project.findById(projectId, function(err, project) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
             error.status = 404;
             error.message = 'Project was not existed!';
             return callback(error);
           }
-          if (project.userId.toString() !== Trader.app.currentUserId.toString()) {
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
@@ -200,14 +193,14 @@ module.exports = function(Trader) {
         });
       },
       function validateOrder(callback) {
-        Trader.findById(orderId, function(err, order) {
+        Trade.findById(orderId, function(err, order) {
           if (err) return callback(err);
           if (!order) {
             error.status = 404;
             error.message = 'Order was not existed!';
             return callback(error);
           }
-          if (order.userId.toString() !== Trader.app.currentUserId.toString()) {
+          if (order.userId.toString() !== Trade.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this order';
             return callback(error);
@@ -232,7 +225,7 @@ module.exports = function(Trader) {
         });
       },
       function saveTrader(callback) {
-        Trader.create({
+        Trade.create({
           parentId: currentOrder.id,
           orderId: orderId,
           symbol: symbol,
@@ -244,7 +237,7 @@ module.exports = function(Trader) {
           totalMatchedAmount: 0,
           state: TRANSACTION_STATE.CANCEL,
           projectId: currentProject.id,
-          userId: Trader.app.currentUserId,
+          userId: Trade.app.currentUserId,
         }, function(err, resp) {
           if (err)
             return callback(err);
@@ -260,7 +253,7 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.cancelAll = function(symbol, orderid, callback) {
+  Trade.cancelAll = function(symbol, orderid, callback) {
     let orderResult;
     async.series([
       function validateOrder(callback) {
@@ -279,8 +272,8 @@ module.exports = function(Trader) {
     });
   };
 
-  Trader.remoteMethod(
-    'buy',
+  Trade.remoteMethod(
+    'buyLimit',
     {
       description: 'Placing a LIMIT or a MARKET order',
       accepts: [
@@ -289,12 +282,12 @@ module.exports = function(Trader) {
         {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
         {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
       ],
-      http: {verb: 'POST', path: '/buy'},
+      http: {verb: 'POST', path: '/buy-limit'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
 
-  Trader.remoteMethod(
+  Trade.remoteMethod(
     'marketBuy',
     {
       description: 'Placing a LIMIT or a MARKET order',
@@ -308,7 +301,7 @@ module.exports = function(Trader) {
     }
   );
 
-  Trader.remoteMethod(
+  Trade.remoteMethod(
     'sell',
     {
       description: 'Placing a LIMIT or a MARKET order',
@@ -323,7 +316,7 @@ module.exports = function(Trader) {
     }
   );
 
-  Trader.remoteMethod(
+  Trade.remoteMethod(
     'marketSell',
     {
       description: 'Placing a LIMIT or a MARKET order',
@@ -337,7 +330,7 @@ module.exports = function(Trader) {
     }
   );
 
-  Trader.remoteMethod(
+  Trade.remoteMethod(
     'cancel',
     {
       description: 'cancel an order',
@@ -351,7 +344,7 @@ module.exports = function(Trader) {
     }
   );
 
-  Trader.remoteMethod(
+  Trade.remoteMethod(
     'cancelAll',
     {
       description: 'Cancel all open orders of symbol.',

@@ -3,7 +3,7 @@ let async = require('async');
 let {PROJECT_STATE} = require('../../common/lib/constants');
 let FirstReleasedJob = module.exports = function(app, jobConfig) {
   this.Project = app.models.project;
-  this.Trader = app.models.trader;
+  this.Trade = app.models.trade;
   this.app = app;
   this.config = jobConfig;
   this.processing = false;
@@ -39,7 +39,7 @@ FirstReleasedJob.prototype.released = function() {
           if (!project.depositAddress || project.depositAddress === '') {
             console.log('get deposit address for project: ', project.id);
             project.isTransfer = false;
-            self.Trader.getOrSetAccount(
+            self.Trade.getOrSetAccount(
               project.id,
               project.exchange,
               project.currency, function(err, data) {
