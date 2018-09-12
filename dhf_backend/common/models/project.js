@@ -8,39 +8,35 @@ module.exports = function(Project) {
       ctx.instance.refundAmount = 0;
       ctx.instance.pendingAmount = 0;
     }
-    if (ctx.instance && ctx.instance.state === PROJECT_STATE.READY) {
-      ctx.instance.isTransfer = false;
-    }
-    if (ctx.data && ctx.data.state === PROJECT_STATE.READY) {
-      ctx.data.isTransfer = false;
-    }
     next();
   });
   Project.observe('after save', function(ctx, next) {
-    if (ctx.instance.state === PROJECT_STATE.READY &&
-      (!ctx.instance.depositAddress || ctx.instance.depositAddress === '')) {
-      let depositAddress = '';
-      async.series([
-        function pickUpExchangeAccount(calback) {
-          Project.app.models.trader.getOrSetAccount(
-            ctx.instance.id,
-            ctx.instance.exchange,
-            ctx.instance.currency, function(err, data) {
-              if (err) return calback(err);
-              depositAddress = data.despositAddress;
-              calback();
-            });
-        },
-        function transferMoneyToExchange(callback) {
-          callback();
-        },
-      ], function onComplete(err) {
-        if (err)
-          return next(err);
-        ctx.instance.updateAttributes({depositAddress: depositAddress});
-        next();
-      });
-    }
+    // if (ctx.instance.state === PROJECT_STATE.READY &&
+    //   (!ctx.instance.depositAddress || ctx.instance.depositAddress === '')) {
+    //   let depositAddress = '';
+    //   async.series([
+    //     function pickUpExchangeAccount(next) {
+    //       Project.app.models.trader.getOrSetAccount(
+    //         ctx.instance.id,
+    //         ctx.instance.exchange,
+    //         ctx.instance.currency, function(err, data) {
+    //           if (err) return next(err);
+    //           depositAddress = data.despositAddress;
+    //           next();
+    //         });
+    //     },
+    //     function transferMoneyToExchange(next) {
+    //       next();
+    //     },
+    //   ], function onComplete(err) {
+    //     if (err)
+    //       return next(err);
+    //     ctx.instance.updateAttributes({depositAddress: depositAddress});
+    //     next();
+    //   });
+    // } else {
+    //   next();
+    // }
     next();
   });
   // listProjects
