@@ -17,16 +17,20 @@ module.exports = class Binance {
         // console.log(await this.client.trades({ symbol: 'EDOETH' }))
     }
 
-    async getBalance(currencies){
-        let result =  await this.client.accountInfo();
-        var returnList = []
-        for (var i in result.balances){
-            let asset = result.balances[i]
-            if (Number(asset.free) != 0 || Number(asset.locked) != 0){
-                if (!currencies || currencies.indexOf(asset.asset)>-1) returnList.push(asset)
-            }
-        }
-        return returnList
+    async getBalance(params){
+
+       if (params.currencies) {
+           params.currencies = params.currencies.split(",")
+       }
+       let result =  await this.client.accountInfo();
+       var returnList = []
+       for (var i in result.balances){
+           let asset = result.balances[i]
+           if (Number(asset.free) != 0 || Number(asset.locked) != 0){
+               if (!params.currencies || params.currencies.indexOf(asset.asset)>-1 ) returnList.push(asset)
+           }
+       }
+       return returnList
     }
 
     async buyLimit(params){
