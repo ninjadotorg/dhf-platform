@@ -75,7 +75,7 @@ module.exports = function(Info) {
           error.status = 404;
           return callback(error);
         }
-        callback(resp);
+        callback(null, resp);
       });
   };
   Info.remoteMethod(
