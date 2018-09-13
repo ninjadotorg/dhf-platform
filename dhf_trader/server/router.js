@@ -87,7 +87,7 @@ async function action(req, res){
         }
         var gateway = GatewayList[req.params.project]
         if (!gateway.exchange) throw new Error("Exchange name incorrect")
-        res.end(await gateway.action((req.params.action || params.action), params))
+        res.json(await gateway.action((req.params.action || params.action), params))
 
     } catch(err){
         console.error(err)

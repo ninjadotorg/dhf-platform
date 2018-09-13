@@ -31,16 +31,14 @@ async function getGateway(project) {
 
 async function updateOrder(gateway, order) {
     const detail = await gateway.action('getOrder', { symbol: order.symbol, clientOrderId: order.orderKey })
-    const json = JSON.parse(detail)
-    return await OrderDB.updateOne({ orderId: order.orderId }, { status: json.status, fillQty: json.executedQty })
+    return await OrderDB.updateOne({ orderId: order.orderId }, { status: detail.status, fillQty: detail.executedQty })
 }
 
 async function getOrders(gateway) {
     // get all open orders
     const orders = await gateway.action('openOrders')
-    const json = JSON.parse(orders)
     const orderIds = []
-    json.forEach(o => orderIds.push(o.orderId))
+    orders.forEach(o => orderIds.push(o.orderId))
 
     return await OrderDB.find({ status: { $nin: ['FILLED', 'CANCELED'] }, exchangeOrderID: { $nin: orderIds } })
 }

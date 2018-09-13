@@ -56,7 +56,7 @@ module.exports = class Gateway {
                 await order.save()
         }
 
-        return JSON.stringify(result)
+        return result
     }
 }
 
