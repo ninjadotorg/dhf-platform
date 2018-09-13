@@ -65,7 +65,7 @@ module.exports = class Binance {
             symbol: params.symbol,
             origClientOrderId: params.clientOrderId,
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async cancelOrder(params){
@@ -76,18 +76,24 @@ module.exports = class Binance {
         return JSON.stringify(result)
     }
 
-    async openOrders(params) {
-        let result = await this.client.openOrders({
-          symbol: params.symbol
-        })
-        return JSON.stringify(result)
+    async openOrders({ symbol = '' } = {}) {
+        let result
+        if (!symbol) {
+            result = await this.client.openOrders()
+        } else {
+            result = await this.client.openOrders({ symbol })
+        }
+        return result
     }
 
-    async allOrders(params) {
-        let result = await this.client.allOrders({
-          symbol: params.symbol
-        })
-        return JSON.stringify(result)
+    async allOrders({ symbol = '' } = {}) {
+        let result
+        if (!symbol) {
+            result = await this.client.allOrders()
+        } else {
+            result = await this.client.allOrders({ symbol })
+        }
+        return result
     }
 
     async accountInfo(params) {

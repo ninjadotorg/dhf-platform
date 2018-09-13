@@ -6,8 +6,10 @@ const bodyParser = require('body-parser');
 const responseTime = require('response-time');
 const errorHandler = require('errorhandler');
 
+const updateService = require('./updateService')
+
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());	
+app.use(bodyParser.json());
 app.use(express.static( __dirname + `/../public`));
 
 if (process.env["NODE_ENV"] !== "production"){
@@ -16,10 +18,10 @@ if (process.env["NODE_ENV"] !== "production"){
 	app.use(errorHandler());
 }
 
-var router = express.Router(); 
+var router = express.Router();
 require('./router.js')(app, router)
 
-var port = process.env["PORT"] || 9001 
+var port = process.env["PORT"] || 9001
 var tester = createServer(port);
 function createServer(port){
 	var tester = app.listen(port)
@@ -34,5 +36,6 @@ function createServer(port){
 	});
 }
 
+updateService()
 
 process.on('unhandledRejection', r => console.log(r));
