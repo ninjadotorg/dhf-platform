@@ -76,24 +76,18 @@ module.exports = class Binance {
         return result
     }
 
-    async openOrders({ symbol = '' } = {}) {
-        let result
+    async openOrders({ symbol }) {
         if (!symbol) {
-            result = await this.client.openOrders()
-        } else {
-            result = await this.client.openOrders({ symbol })
+            throw new Error('symbol is required')
         }
-        return result
+        return await this.client.openOrders({ symbol })
     }
 
-    async allOrders({ symbol = '' } = {}) {
-        let result
+    async allOrders({ symbol }) {
         if (!symbol) {
-            result = await this.client.allOrders()
-        } else {
-            result = await this.client.allOrders({ symbol })
+            throw new Error('symbol is required')
         }
-        return result
+        return await this.client.allOrders({ symbol })
     }
 
     async accountInfo(params) {
@@ -146,6 +140,7 @@ module.exports = class Binance {
     async myTrades(params){
         return await this.client.myTrades({
             symbol: params.symbol,
+            limit: params.limit || 10
         })
     }
 
