@@ -36,7 +36,9 @@
   "mixins": {
     "DisableMethods": {
       "expose": [
-        "buyLimit"
+        "buyLimit",
+        "sellLimit",
+        "myTrades"
       ]
     }
   }

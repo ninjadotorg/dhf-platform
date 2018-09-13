@@ -71,7 +71,7 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.sell = function(projectId, symbol, quantity, price, callback) {
+  Trade.sellLimit = function(projectId, symbol, quantity, price, callback) {
     let orderResult;
     let currentProject = null;
     let totalAmount = 0;
@@ -99,25 +99,17 @@ module.exports = function(Trade) {
           callback();
         });
       },
-      function saveTrader(callback) {
-        Trade.create({
-          orderId: null,
-          symbol: symbol,
-          quantity: quantity,
-          price: price,
-          flags: 'LIMIT',
-          function: 'SELL',
-          totalAmount: totalAmount,
-          totalMatchedAmount: 0,
-          state: TRANSACTION_STATE.PENDING,
-          projectId: currentProject.id,
-          userId: Trade.app.currentUserId,
-        }, function(err, resp) {
-          if (err)
-            return callback(err);
-          orderResult = resp;
-          callback();
-        });
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'sellLimit', symbol, quantity, price,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 404;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
       },
     ], function onComplete(err) {
       if (err)
@@ -272,10 +264,23 @@ module.exports = function(Trade) {
     });
   };
 
+  Trade.myTrades = function(projectId, symbol, callback) {
+    Trade.action(projectId, 'myTrades', symbol,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
   Trade.remoteMethod(
     'buyLimit',
     {
-      description: 'Placing a LIMIT or a MARKET order',
+      description: 'Placing a LIMIT order',
       accepts: [
         {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
         {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
@@ -283,6 +288,21 @@ module.exports = function(Trade) {
         {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
       ],
       http: {verb: 'POST', path: '/buy-limit'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'sellLimit',
+    {
+      description: 'Placing a LIMIT order',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
+      ],
+      http: {verb: 'POST', path: '/sell-limit'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
@@ -297,21 +317,6 @@ module.exports = function(Trade) {
         {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
       ],
       http: {verb: 'POST', path: '/market-buy'},
-      returns: {arg: 'data', root: true, type: 'Object'},
-    }
-  );
-
-  Trade.remoteMethod(
-    'sell',
-    {
-      description: 'Placing a LIMIT or a MARKET order',
-      accepts: [
-        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
-        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
-        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
-        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
-      ],
-      http: {verb: 'POST', path: '/sell'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
@@ -353,6 +358,19 @@ module.exports = function(Trade) {
         {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
       ],
       http: {verb: 'POST', path: '/cancel-all'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'myTrades',
+    {
+      description: 'Get all  trade of current user.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'symbol', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/my-trades'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
