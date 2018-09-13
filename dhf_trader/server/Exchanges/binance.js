@@ -127,11 +127,11 @@ module.exports = class Binance {
     }
 
     async depositHistory() {
-        return JSON.stringify(await this.client.depositHistory())
+        return await this.client.depositHistory()
     }
 
     async withdrawHistory() {
-        return JSON.stringify(await this.client.withdrawHistory())
+        return await this.client.withdrawHistory()
     }
 
     async withdraw(params) {
