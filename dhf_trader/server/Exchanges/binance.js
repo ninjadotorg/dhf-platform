@@ -57,7 +57,7 @@ module.exports = class Binance {
             quantity: params.quantity,
             price: params.price,
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async getOrder(params){
@@ -73,7 +73,7 @@ module.exports = class Binance {
             symbol: params.symbol,
             origClientOrderId: params.clientOrderId,
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async openOrders({ symbol = '' } = {}) {
@@ -98,7 +98,7 @@ module.exports = class Binance {
 
     async accountInfo(params) {
         let result = await this.client.accountInfo()
-        return JSON.stringify(result)
+        return result
     }
 
     async buyMarket(params){
@@ -108,7 +108,7 @@ module.exports = class Binance {
             type: "MARKET",
             quantity: params.quantity,
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async sellMarket(params){
@@ -118,12 +118,12 @@ module.exports = class Binance {
             type: "MARKET",
             quantity: params.quantity,
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async tradeHistory(params){
         let result = await this.client.tradesHistory({ symbol: params.symbol})
-        return JSON.stringify(result)
+        return result
     }
 
     async depositHistory() {
@@ -140,7 +140,7 @@ module.exports = class Binance {
             address: params.address,
             amount: params.amount
         })
-        return JSON.stringify(result)
+        return result
     }
 
     async myTrades(params){
