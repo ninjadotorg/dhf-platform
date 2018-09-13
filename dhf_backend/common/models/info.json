@@ -20,7 +20,10 @@
         "depositHistory",
         "status",
         "prices",
-        "balance"
+        "balance",
+        "accountInfo",
+        "tradeHistory",
+        "withdrawHistory"
       ]
     }
   }
