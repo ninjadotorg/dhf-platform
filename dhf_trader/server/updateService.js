@@ -29,30 +29,44 @@ async function getGateway(project) {
     }
 }
 
-async function updateOrder(gateway, order) {
-    const detail = await gateway.action('getOrder', { symbol: order.symbol, clientOrderId: order.orderKey })
-    return await OrderDB.updateOne({ orderId: order.orderId }, { status: detail.status, fillQty: detail.executedQty })
+async function getOrderDetail(gateway, { orderId, symbol }) {
+    return await gateway.action('getOrder', { symbol, orderId })
 }
 
-async function getOrders(gateway) {
-    // get all open orders
-    const orders = await gateway.action('openOrders')
+async function updateOrder(orderId, status, fillQty) {
+    return await OrderDB.updateOne({ exchangeOrderID: orderId }, { status, fillQty })
+}
+
+async function updateOrdersNotIn(orders, gateway, project) {
     const orderIds = []
     orders.forEach(o => orderIds.push(o.orderId))
 
-    return await OrderDB.find({ status: { $nin: ['FILLED', 'CANCELED'] }, exchangeOrderID: { $nin: orderIds } })
+    const ordersNotIn = await OrderDB.find({ status: { $nin: ['FILLED', 'CANCELED'] }, exchangeOrderID: { $nin: orderIds } })
+    if (!ordersNotIn.length) {
+        console.log('project', project, 'doesn\'t have any open orders')
+        return
+    }
+
+    // orders get from DB
+    await Promise.each(ordersNotIn, async (o) => {
+        const detail = await getOrderDetail(gateway, { orderId: o.exchangeOrderID, symbol: o.symbol })
+        await updateOrder(o.exchangeOrderID, detail.status, detail.executedQty)
+    })
+}
+
+async function updateOpenOrders(openOrders, gateway) {
+    // openOrders get directly from binance api
+    await Promise.each(openOrders, o => updateOrder(o.orderId, o.status, o.executedQty))
 }
 
 async function updateOrders(project) {
     try {
         const gateway = await getGateway(project)
-        const orders = await getOrders(gateway)
-        if (!orders.length) {
-            console.log('project', project, 'doesn\'t have any open orders')
-            return
-        }
 
-        await Promise.each(orders, o => updateOrder(gateway, o))
+        const openOrders = await gateway.action('openOrders')
+
+        await updateOpenOrders(openOrders, gateway)
+        await updateOrdersNotIn(openOrders, gateway, project)
     } catch (e) {
         console.log(e)
     }

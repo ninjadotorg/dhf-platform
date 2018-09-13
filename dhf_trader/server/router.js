@@ -29,6 +29,8 @@ exports = module.exports = function (app, router){
     //trade
     router.all("/trade/project/:project/:action", action);
     // /trade/project/:project/buyLimit?symbol=ETHBTC&quantity=10&price=2
+    // /trade/project/:project/sellLimit?symbol=ETHBTC&quantity=10&price=2
+    // /trade/project/:project/getBalance?currencies=BTC
 
     router.all('*', function(req, res) {
 		console.error("Not found: %s %s",req.method,req.url)
