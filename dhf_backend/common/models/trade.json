@@ -38,7 +38,10 @@
       "expose": [
         "buyLimit",
         "sellLimit",
-        "myTrades"
+        "myTrades",
+        "allOrders",
+        "cancel",
+        "openOrders"
       ]
     }
   }

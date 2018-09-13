@@ -184,78 +184,17 @@ module.exports = function(Trade) {
           callback();
         });
       },
-      function validateOrder(callback) {
-        Trade.findById(orderId, function(err, order) {
-          if (err) return callback(err);
-          if (!order) {
-            error.status = 404;
-            error.message = 'Order was not existed!';
-            return callback(error);
-          }
-          if (order.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
-            error.message = 'You don\'t have permission on this order';
-            return callback(error);
-          }
-          if (order.projectId.toString() !== currentProject.id.toString()) {
-            error.status = 404;
-            error.message = 'Order not belong to current project: ' + currentProject.id;
-            return callback(error);
-          }
-          if (order.state === TRANSACTION_STATE.CANCEL) {
-            error.status = 404;
-            error.message = 'Order was canceled';
-            return callback(error);
-          }
-          if (order.state === TRANSACTION_STATE.DONE) {
-            error.status = 404;
-            error.message = 'Can not cancel the matched order';
-            return callback(error);
-          }
-          currentOrder = order;
-          callback();
-        });
-      },
-      function saveTrader(callback) {
-        Trade.create({
-          parentId: currentOrder.id,
-          orderId: orderId,
-          symbol: symbol,
-          quantity: 0,
-          price: currentOrder.price,
-          flags: currentOrder.flags,
-          function: currentOrder.function,
-          totalAmount: 0,
-          totalMatchedAmount: 0,
-          state: TRANSACTION_STATE.CANCEL,
-          projectId: currentProject.id,
-          userId: Trade.app.currentUserId,
-        }, function(err, resp) {
-          if (err)
-            return callback(err);
-          if (!orderResult || !orderResult.orderId)
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'cancelOrder', symbol,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 404;
+              return callback(error);
+            }
             orderResult = resp;
-          callback();
-        });
-      },
-    ], function onComplete(err) {
-      if (err)
-        return callback(err);
-      callback(null, orderResult);
-    });
-  };
-
-  Trade.cancelAll = function(symbol, orderid, callback) {
-    let orderResult;
-    async.series([
-      function validateOrder(callback) {
-        // we will verify order here
-        console.log('we will verify order here');
-        callback();
-      },
-      function saveTrader(callback) {
-        // we will tracking order here
-        callback();
+            callback();
+          });
       },
     ], function onComplete(err) {
       if (err)
@@ -266,6 +205,33 @@ module.exports = function(Trade) {
 
   Trade.myTrades = function(projectId, symbol, callback) {
     Trade.action(projectId, 'myTrades', symbol,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.openOrders = function(projectId, symbol, callback) {
+    Trade.action(projectId, 'openOrders', symbol,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.allOrders = function(projectId, symbol = '', callback) {
+    console.log(123, symbol);
+    Trade.action(projectId, 'allOrders', symbol,
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -350,19 +316,6 @@ module.exports = function(Trade) {
   );
 
   Trade.remoteMethod(
-    'cancelAll',
-    {
-      description: 'Cancel all open orders of symbol.',
-      accepts: [
-        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
-        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
-      ],
-      http: {verb: 'POST', path: '/cancel-all'},
-      returns: {arg: 'data', root: true, type: 'Object'},
-    }
-  );
-
-  Trade.remoteMethod(
     'myTrades',
     {
       description: 'Get all  trade of current user.',
@@ -371,6 +324,32 @@ module.exports = function(Trade) {
         {arg: 'symbol', type: 'string', required: true},
       ],
       http: {verb: 'GET', path: '/my-trades'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'openOrders',
+    {
+      description: 'Get all open orders of current user.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'symbol', type: 'string'},
+      ],
+      http: {verb: 'GET', path: '/orders-open'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'allOrders',
+    {
+      description: 'Get all  orders of current user.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'symbol', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/orders'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
