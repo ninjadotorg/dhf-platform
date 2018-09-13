@@ -157,6 +157,10 @@ module.exports = class Binance {
         return await this.client.depositAddress({ asset: params.asset })
     }
 
+    async getPrices() {
+        return await this.client.prices()
+    }
+
     transformToOrder(result) {
         return {
             orderKey: result.clientOrderId,
