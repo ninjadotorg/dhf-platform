@@ -72,6 +72,39 @@ services:
         - /app/node_modules/.bin/nodemon
         - server/server.js
 
+  smart-contract-api:
+    build: 
+      context: dhf_smartcontract/backend
+      dockerfile: Dockerfile
+    container_name: smartcontract-api
+    depends_on:
+#         - proxy
+       - mongo
+    links:
+       - mongo
+    volumes:
+       # files
+       - ./dhf_smartcontract/backend/jobs:/app/jobs
+       - ./dhf_smartcontract/backend/libs:/app/libs
+       - ./dhf_smartcontract/backend/models:/app/models
+       - ./dhf_smartcontract/backend/scripts:/app/scripts
+       - ./dhf_smartcontract/backend/configuration.js:/app/configuration.js
+       - ./dhf_smartcontract/backend/router.js:/app/router.js
+       - ./dhf_smartcontract/backend/server.js:/app/server.js
+       - ./dhf_smartcontract/backend/package.json:/app/package.json
+    environment:
+       APP_ENV: development
+       NODE_ENV: development
+       VIRTUAL_PORT: 9003
+       VIRTUAL_HOST: api.smart-contract.nyc
+    ports:
+      - "9003:9003"
+    expose:
+      - "9003"
+    command:
+      - /app/node_modules/.bin/nodemon
+      - server.js
+
    # DATABASE ---------------------------------------------------
   mongo:
     image: 'mongo:latest'
