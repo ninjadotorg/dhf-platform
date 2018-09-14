@@ -38,6 +38,8 @@
       "expose": [
         "buyLimit",
         "sellLimit",
+        "buyMarket",
+        "sellMarket",
         "myTrades",
         "allOrders",
         "cancel",

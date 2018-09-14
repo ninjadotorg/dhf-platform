@@ -31,19 +31,19 @@ module.exports = function(Trade) {
           callback();
         });
       },
-      function validateOrder(callback) {
-        totalAmount = quantity * price;
-        // available amount is subtract of total  from releasedAmount
-        let availableAmount = currentProject.releasedAmount -
-          (currentProject.pendingAmount - currentProject.refundAmount);
-        if (totalAmount > availableAmount) {
-          error.status = 404;
-          error.message = 'Your balance of this project was not enough.';
-          return callback(error);
-        }
-        // maybe need more validation here
-        callback();
-      },
+      // function validateOrder(callback) {
+      //   totalAmount = quantity * price;
+      //   // available amount is subtract of total  from releasedAmount
+      //   let availableAmount = currentProject.releasedAmount -
+      //     (currentProject.pendingAmount - currentProject.refundAmount);
+      //   if (totalAmount > availableAmount) {
+      //     error.status = 404;
+      //     error.message = 'Your balance of this project was not enough.';
+      //     return callback(error);
+      //   }
+      //   // maybe need more validation here
+      //   callback();
+      // },
       function callTrade(callback) {
         Trade.action(currentProject.id, 'buyLimit', symbol, quantity, price,
           function(err, resp) {
@@ -56,14 +56,14 @@ module.exports = function(Trade) {
             callback();
           });
       },
-      function SaveProject(callback) {
-        currentProject.pendingAmount += totalAmount;
-        currentProject.save(function(err) {
-          if (err)
-            return callback(err);
-          callback();
-        });
-      },
+      // function SaveProject(callback) {
+      //   currentProject.pendingAmount += totalAmount;
+      //   currentProject.save(function(err) {
+      //     if (err)
+      //       return callback(err);
+      //     callback();
+      //   });
+      // },
     ], function onComplete(err) {
       if (err)
         return callback(err);
@@ -74,7 +74,6 @@ module.exports = function(Trade) {
   Trade.sellLimit = function(projectId, symbol, quantity, price, callback) {
     let orderResult;
     let currentProject = null;
-    let totalAmount = 0;
     let error = new Error();
     async.series([
       function validateProject(callback) {
@@ -118,17 +117,44 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.marketBuy = function(symbol, quantity, callback) {
+  Trade.buyMarket = function(projectId, symbol, quantity, callback) {
+    let currentProject = null;
     let orderResult;
+    let error = new Error();
     async.series([
-      function validateOrder(callback) {
-        // we will verify order here
-        console.log('we will verify order here');
-        callback();
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 404;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 404;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASED) {
+            error.status = 404;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
       },
-      function saveTrader(callback) {
-        // we will tracking order here
-        callback();
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'buyMarket', symbol, quantity,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 404;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
       },
     ], function onComplete(err) {
       if (err)
@@ -137,17 +163,44 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.marketSell = function(symbol, quantity, callback) {
+  Trade.sellMarket = function(projectId, symbol, quantity, callback) {
     let orderResult;
+    let currentProject = null;
+    let error = new Error();
     async.series([
-      function validateOrder(callback) {
-        // we will verify order here
-        console.log('we will verify order here');
-        callback();
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 404;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 404;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASED) {
+            error.status = 404;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
       },
-      function saveTrader(callback) {
-        // we will tracking order here
-        callback();
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'sellMarket', symbol, quantity,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 404;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
       },
     ], function onComplete(err) {
       if (err)
@@ -274,29 +327,29 @@ module.exports = function(Trade) {
   );
 
   Trade.remoteMethod(
-    'marketBuy',
+    'buyMarket',
     {
-      description: 'Placing a LIMIT or a MARKET order',
+      description: 'Placing a  MARKET order',
       accepts: [
         {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
         {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
         {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
       ],
-      http: {verb: 'POST', path: '/market-buy'},
+      http: {verb: 'POST', path: '/buy-market'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
 
   Trade.remoteMethod(
-    'marketSell',
+    'sellMarket',
     {
-      description: 'Placing a LIMIT or a MARKET order',
+      description: 'Placing a MARKET order',
       accepts: [
         {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
         {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
         {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
       ],
-      http: {verb: 'POST', path: '/market-sell'},
+      http: {verb: 'POST', path: '/sell-market'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
