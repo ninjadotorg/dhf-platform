@@ -82,5 +82,9 @@
   "trade": {
     "dataSource": "rest",
     "public": true
+  },
+  "smart-contract": {
+    "dataSource": "rest",
+    "public": false
   }
 }

@@ -97,6 +97,50 @@
         "functions": {
           "action": ["projectId", "action", "symbol", "quantity", "price", "currencies"]
         }
+      },
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactGetVersion": ["version"]
+        }
+      },
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/info",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionInfo": ["version"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/release",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "depositAddress": "{depositAddress}",
+            "amount": "{amount}",
+            "projectId": "{projectId}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionRelease": ["version", "depositAddress", "amount", "projectId"]
+        }
       }
   ]
 }

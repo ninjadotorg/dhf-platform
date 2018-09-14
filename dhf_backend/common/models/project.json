@@ -60,7 +60,7 @@
     "depositAddress": {
       "type": "string"
     },
-    "smartcontractVersion": {
+    "smartContractVersion": {
       "type": "string"
     },
     "state": {

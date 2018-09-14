@@ -1,5 +1,5 @@
 'use strict';
-let async = require('async');
+let errorHandler = require('../lib/error-handler');
 let {PROJECT_STATE} = require('../lib/constants');
 module.exports = function(Project) {
   Project.observe('before save', function(ctx, next) {
@@ -7,8 +7,20 @@ module.exports = function(Project) {
       ctx.instance.userId = Project.app.currentUserId;
       ctx.instance.refundAmount = 0;
       ctx.instance.pendingAmount = 0;
+      Project.app.models.smartContract.smartContactGetVersion('currentVersion',
+        function(err, data) {
+          if (err) {
+            let error = new Error();
+            error.message = errorHandler.filler(err);
+            error.status = 404;
+            return next(error);
+          }
+          ctx.instance.smartContractVersion = data.version;
+          next();
+        });
+    } else {
+      next();
     }
-    next();
   });
   Project.observe('after save', function(ctx, next) {
     next();
