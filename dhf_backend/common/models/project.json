@@ -60,6 +60,9 @@
     "depositAddress": {
       "type": "string"
     },
+    "smartcontractVersion": {
+      "type": "string"
+    },
     "state": {
       "type": "string",
       "required": true,

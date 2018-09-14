@@ -51,12 +51,15 @@ module.exports = class Gateway {
 
         switch (action) {
             case 'buyLimit':
+            case 'sellLimit':
+            case 'buyMarket':
+            case 'sellMarket':
                 const transformed = this.exchange.transformToOrder(result)
                 const order = new OrderDB({...transformed, project: this.project})
                 await order.save()
         }
 
-        return JSON.stringify(result)
+        return result
     }
 }
 
