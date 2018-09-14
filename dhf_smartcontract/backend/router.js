@@ -13,7 +13,8 @@ exports = module.exports = function (app, router) {
 
     router.post("/eth/jsonrpc/:method", ethrpcHandler);
 
-    router.get("/smartcontract/list", getVersionList); //not require param
+    router.get("/smartcontract/listVersion", getVersionList); //not require param
+    router.get("/smartcontract/currentVersion", getCurrentVersion); //not require param
     router.get("/smartcontract/:version/info", getVersionInfo); //not require param
 
     router.post("/smartcontract/:version/release", releaseHandler);
@@ -62,11 +63,20 @@ async function releaseHandler(req, res){
 
 async function getVersionList(req, res){
     let versions = await SmartcontractDB.getVersionList()
-    for (var i in versions) delete versions[i].abi
+    for (var i in versions) {
+        delete versions[i]._id
+        delete versions[i].abi
+    }
     res.json(versions)
 }
 
 async function getVersionInfo(req, res){
     let version = await SmartcontractDB.getVersion(req.params.version)
+    delete version._id
+    res.json(version)
+}
+
+async function getCurrentVersion(req, res){
+    let version = await SmartcontractDB.getCurrentVersion()
     res.json(version)
 }
