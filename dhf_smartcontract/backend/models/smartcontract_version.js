@@ -7,6 +7,7 @@ var SmartContract   = new Schema({
     abi: Schema.Types.Mixed,
     owner: {type: String, index: true},
     createdTime: {type: Date, index: true},
+    isUsing: {type: Boolean, index: true}
 });
 
 SmartContract.set('autoIndex', true);
@@ -23,5 +24,10 @@ DBModel.getVersionList = async function(){
 
 DBModel.getVersion = async function(version){
     let result = await this.findOne({version}).lean()
+    return result
+}
+
+DBModel.getCurrentVersion = async function(){
+    let result = await this.findOne({isUsing: true}).lean()
     return result
 }
