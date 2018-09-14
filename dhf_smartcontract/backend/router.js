@@ -1,5 +1,6 @@
-let ethrpc = require("./rpcMethod")
-let smartContractAPI = require("./smartContractAPI")
+let ethrpc = require("./libs/rpcMethod")
+let smartContractAPI = require("./libs/smartContractAPI")
+let SmartcontractDB = require("./models/smartcontract_version")
 
 exports = module.exports = function (app, router) {
     app.use("/", router)
@@ -12,11 +13,13 @@ exports = module.exports = function (app, router) {
 
     router.post("/eth/jsonrpc/:method", ethrpcHandler);
 
-    router.get("/smartcontract/getVerison", getVersion);
+    router.get("/smartcontract/list", getVersionList); //not require param
+    router.get("/smartcontract/:version/info", getVersionInfo); //not require param
 
     router.post("/smartcontract/:version/release", releaseHandler);
 
-    // POST "/smartcontract/release" {depositAddress: string, amount: string, project: string}
+    // POST "/smartcontract/v1/release" {depositAddress: string, amount: string, project: string}
+
     router.all('*', function (req, res) {
         console.error("Not found: %s %s", req.method, req.url)
         res.status("404").end();
@@ -38,22 +41,17 @@ async function ethrpcHandler(req, res) {
 
 async function releaseHandler(req, res){
     let version = req.params.version
-    console.log(req.body)
-
     let depositAddress = req.body.depositAddress
     let amount = req.body.amount
     let project = req.body.project
-
     if (!smartContractAPI[version]) {
         console.log("Cannot find version " + version)
         return null
     }
-
     if (typeof depositAddress == "undefined" || typeof amount == "undefined" || typeof project == "undefined"){
         console.log("Param not valid")
         return null
     }
-
     let result = smartContractAPI[version].release(depositAddress, amount, project)
     if (!result) {
         res.json({status: "fail", message: "Cannot call smartcontract"})
@@ -62,11 +60,13 @@ async function releaseHandler(req, res){
     }
 }
 
-async function getVersion(req, res){
-    let version = require("./version");
-    for (var key in version) {
-        if (version[key].abi)
-            delete version[key].abi
-    }
+async function getVersionList(req, res){
+    let versions = await SmartcontractDB.getVersionList()
+    for (var i in versions) delete versions[i].abi
+    res.json(versions)
+}
+
+async function getVersionInfo(req, res){
+    let version = await SmartcontractDB.getVersion(req.params.version)
     res.json(version)
 }

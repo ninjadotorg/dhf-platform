@@ -1,3 +1,5 @@
+
+const SmartContractDB = require("../models/smartcontract_version")
 const EthereumTx = require('ethereumjs-tx');
 const rpcMethod = require("./rpcMethod");
 const Web3 = require('web3');
@@ -60,12 +62,12 @@ class SmartContract {
 }
 
 !async function(){
-    let version = require("./version.json")
-    for (var key in version){
-        if (version[key].address){
-            smartcontract[key] = new SmartContract(version[key].address, key, version[key].abi)
+    setInterval(async function(){
+        let version = await SmartContractDB.getVersionList()
+        for (var i in version){
+            smartcontract[version[i].version] = new SmartContract(version[i].address, version[i].version, version[i].abi)
         }
-    }
+    },5000)
 }()
 
 exports = module.exports = smartcontract

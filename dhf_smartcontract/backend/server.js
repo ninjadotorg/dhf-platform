@@ -1,3 +1,4 @@
+require("./configuration")
 const express    = require('express');
 const app        = express();
 
