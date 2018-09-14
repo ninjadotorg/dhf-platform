@@ -2,14 +2,14 @@
 var BinanceAPI = require('binance-api-node').default;
 
 module.exports = class Binance {
-    constructor(cred){
+    constructor(cred) {
         this.client = BinanceAPI({
             apiKey: cred.key,
             apiSecret: cred.secret,
         })
     }
 
-    async updateCredential(cred){
+    async updateCredential(cred) {
         this.client = BinanceAPI({
             apiKey: cred.key,
             apiSecret: cred.secret,
@@ -17,23 +17,30 @@ module.exports = class Binance {
         // console.log(await this.client.trades({ symbol: 'EDOETH' }))
     }
 
-    async getBalance(params){
+    async getBalance(params) {
 
-       if (params.currencies) {
-           params.currencies = params.currencies.split(",")
-       }
-       let result =  await this.client.accountInfo();
-       var returnList = []
-       for (var i in result.balances){
-           let asset = result.balances[i]
-           if (Number(asset.free) != 0 || Number(asset.locked) != 0){
-               if (!params.currencies || params.currencies.indexOf(asset.asset)>-1 ) returnList.push(asset)
-           }
-       }
-       return returnList
+        var returnList = {}
+
+        if (params.currencies) {
+            params.currencies = params.currencies.split(",")
+            for (var i in params.currencies) {
+                returnList[params.currencies[i]] = { free: "0.00000000", locker: "0.00000000" }
+            }
+        }
+
+        let result = await this.client.accountInfo();
+
+        for (var i in result.balances) {
+            let asset = result.balances[i]
+            if (Number(asset.free) != 0 || Number(asset.locked) != 0) {
+                if (!params.currencies || params.currencies.indexOf(asset.asset) > -1) returnList[asset.asset] = { free: asset.free, locked: asset.locked }
+            }
+        }
+
+        return returnList
     }
 
-    async buyLimit(params){
+    async buyLimit(params) {
         // const clientOrderId = project + '-' + new Date().getTime()
 
         let result = await this.client.order({
@@ -49,7 +56,7 @@ module.exports = class Binance {
         return result
     }
 
-    async sellLimit(params){
+    async sellLimit(params) {
         let result = await this.client.order({
             symbol: params.symbol,
             side: 'SELL',
@@ -60,7 +67,7 @@ module.exports = class Binance {
         return result
     }
 
-    async getOrder(params){
+    async getOrder(params) {
         let result = await this.client.getOrder({
             symbol: params.symbol,
             origClientOrderId: params.clientOrderId,
@@ -68,7 +75,7 @@ module.exports = class Binance {
         return result
     }
 
-    async cancelOrder(params){
+    async cancelOrder(params) {
         let result = await this.client.cancelOrder({
             symbol: params.symbol,
             origClientOrderId: params.clientOrderId,
@@ -95,7 +102,7 @@ module.exports = class Binance {
         return result
     }
 
-    async buyMarket(params){
+    async buyMarket(params) {
         let result = await this.client.order({
             symbol: params.symbol,
             side: 'BUY',
@@ -105,7 +112,7 @@ module.exports = class Binance {
         return result
     }
 
-    async sellMarket(params){
+    async sellMarket(params) {
         let result = await this.client.order({
             symbol: params.symbol,
             side: 'SELL',
@@ -115,8 +122,8 @@ module.exports = class Binance {
         return result
     }
 
-    async tradeHistory(params){
-        let result = await this.client.tradesHistory({ symbol: params.symbol})
+    async tradeHistory(params) {
+        let result = await this.client.tradesHistory({ symbol: params.symbol })
         return result
     }
 
@@ -137,7 +144,7 @@ module.exports = class Binance {
         return result
     }
 
-    async myTrades(params){
+    async myTrades(params) {
         return await this.client.myTrades({
             symbol: params.symbol,
             limit: params.limit || 10
