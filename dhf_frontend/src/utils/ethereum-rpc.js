@@ -30,10 +30,7 @@ exposeAPIs.forEach((method) => {
             body: JSON.stringify({ params: params })
         });
         const content = await rawResponse.json();
-
-        console.log(content);
-
-        
+        return content
     }
 })
 

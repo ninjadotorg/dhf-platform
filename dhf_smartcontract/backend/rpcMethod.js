@@ -1,17 +1,21 @@
 const Web3 = require('web3')
-rpc_server = "http://35.240.197.175:16000"
+const rpc_server = "http://35.240.197.175:16000"
 var provider = new Web3.providers.HttpProvider(rpc_server)
 var web3 = new Web3(new Web3.providers.HttpProvider(rpc_server))
 
 exports = module.exports = {
     eth_getTransactionCount: async function(address, block){
-        console.log("eth_getTransactionCount", address, block)
         let result = await web3.eth.getTransactionCount(address, block)
-        console.log(result)
+        return result
 
     },
-    eth_sendRawTransaction: function(...params){
-        console.log("eth_sendRawTransaction", params)
+    eth_sendRawTransaction: async function(signedTx){
+        try {
+            let result = await web3.eth.sendSignedTransaction('0x' + signedTx)
+            return result
+        } catch(err){
+            console.log(err)
+        }
     }
 }
 
