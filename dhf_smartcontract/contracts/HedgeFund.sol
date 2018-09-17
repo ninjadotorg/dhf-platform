@@ -53,12 +53,15 @@ contract HedgeFund {
     //event
     event __init(address sender, address owner, bytes32 pid);
     event __funding(bytes32 pid, address funder,  uint amount);
+
     event __withdraw(bytes32 pid, address requester, uint fundAmount, uint withdrawAmount);
     event __release(bytes32 pid, address exchange, uint amount);
     event __retract(bytes32 pid, uint from, uint to);
     event __voteStop(address sender, bytes32 pid, uint8 stop);
     event __stop(address sender, bytes32 pid);
+
     event __changeState(bytes32 pid, bytes32 from, bytes32 to);
+    event __log(uint time1, uint time2);
 
     modifier onlyContractOwner() {
         require(contractOwner == msg.sender, "101");
@@ -76,7 +79,7 @@ contract HedgeFund {
     }
 
     //POST function
-    function initProject(uint max, uint deadline, uint lifeTime, address owner, bytes32 pid) public {
+    function initProject(uint target, uint max, uint deadline, uint lifeTime, address owner, bytes32 pid) public {
         Project memory p;
         
         p.owner = msg.sender;
@@ -89,9 +92,10 @@ contract HedgeFund {
         p.scale = scaleF;
 
         p.deadline = deadline;
-        p.lifeTime = lifeTime;
+        p.lifeTime = lifeTime * 1 days;
         
         p.max = max;
+        p.target = target;
         p.fundingAmount = 0;
         p.updatedAmmount = 0;
         p.releasedAmount = 0;
@@ -120,12 +124,12 @@ contract HedgeFund {
     }
     
     function isReachDeadline(uint deadline) public view returns (bool) {
-        if (deadline > 0 && now > deadline) return true; //Using timestamp in eth blockchain???
+        if (deadline > 0 && block.timestamp > deadline) return true; //Using timestamp in eth blockchain???
         else return false;
     }
 
     function isReachlifeTime(uint time) public view returns (bool) {
-        if (now > time) return true; //Using timestamp in eth blockchain???
+        if (block.timestamp > time) return true; //Using timestamp in eth blockchain???
         else return false;
     }
 
@@ -141,7 +145,7 @@ contract HedgeFund {
                 msg.sender.transfer(msg.value);
                 emit __changeState(pid, "INITFUND", "WITHDRAW");
                 return;
-            } else if (p.fundingAmount >= p.target) {
+            } else if (p.fundingAmount + msg.value >= p.target) {
                 p.state = S.APPROVED;
                 emit __changeState(pid, "INITFUND", "APPROVED");
             }
@@ -152,7 +156,6 @@ contract HedgeFund {
                 p.state = S.READY;
                 msg.sender.transfer(msg.value);
                 p.updatedAmmount = p.fundingAmount;
-                p.startTime = now;
                 emit __changeState(pid, "APPROVED", "READY");
                 return;
             } 
@@ -164,6 +167,7 @@ contract HedgeFund {
                 p.funds[msg.sender] = p.funds[msg.sender] + msg.value;
             else
                 p.funds[msg.sender] = msg.value;
+
             p.fundingAmount = p.fundingAmount + msg.value;
 
             //recheck the balance if fund is larger max
@@ -171,8 +175,8 @@ contract HedgeFund {
                 p.state = S.READY;
                 p.startTime = now;
                 emit __changeState(pid, "APPROVED", "READY");
-                if (p.fundingAmount - p.max > 10) { //TODO: check unit
-                    uint retractAmount = p.fundingAmount - p.max - 10;
+                if (p.fundingAmount - p.max > 0.1 ether) { 
+                    uint retractAmount = p.fundingAmount - p.max - 0.1 ether;
                     msg.sender.transfer(retractAmount);
                     p.funds[msg.sender] = p.funds[msg.sender] - retractAmount;
                     p.fundingAmount = p.fundingAmount - retractAmount;
@@ -194,16 +198,18 @@ contract HedgeFund {
         }
             
         if ( p.state == S.INITFUND && p.funds[msg.sender] > 0) {
+            emit __withdraw(pid, msg.sender, p.funds[msg.sender], p.funds[msg.sender]);
             p.updatedAmmount = p.updatedAmmount - p.funds[msg.sender];
             p.funds[msg.sender] = 0;
             msg.sender.transfer(p.funds[msg.sender]);
-            emit __withdraw(pid, msg.sender, p.funds[msg.sender], p.funds[msg.sender]);
+            
         } else  if ( p.state == S.WITHDRAW && p.funds[msg.sender] > 0) {
             uint256 withdrawAmount = (p.funds[msg.sender]*p.scale.scale)/p.scale.denominator;
+            emit __withdraw(pid, msg.sender, p.funds[msg.sender], withdrawAmount);
             p.updatedAmmount = p.updatedAmmount - withdrawAmount;
             p.funds[msg.sender] = 0;
             msg.sender.transfer(withdrawAmount);
-            emit __withdraw(pid, msg.sender, p.funds[msg.sender], withdrawAmount);
+            
         } else {
             revert("Cannot withdraw at this state");
         }
@@ -211,15 +217,15 @@ contract HedgeFund {
 
     function release(bytes32 pid, address exchange, uint amount) public {
         Project storage p = projects[pid];
-        require(p.state == S.APPROVED || p.state == S.READY || p.state == S.RELEASED, "100"); //should be in ready or release state
+        require(p.state == S.READY || p.state == S.RELEASED, "100"); //should be in ready or release state
         require(p.releasedAmount + amount <= p.fundingAmount, "102"); //should not release fund larger than funding amount
 
-        if (p.state == S.APPROVED) p.startTime = now; //release signal in approved state (means start project anyway), update start time to now
+        if (p.state == S.READY) p.startTime = now; //release signal in ready state (means first release), update start time to now
 
         exchange.transfer(amount);
         p.releasedAmount = p.releasedAmount + amount;
         p.state == S.RELEASED;
-        emit __changeState(pid, "APPROVED|READY|RELEASE", "RELEASE");
+        emit __changeState(pid, "READY|RELEASE", "RELEASE");
         emit __release(pid, exchange, amount);
         
     }
@@ -248,5 +254,14 @@ contract HedgeFund {
     function getProjectSize() public view returns (uint size) {
         return PIDs.length;
     }
+
+    function getProjectInfo(bytes32 pid) public view returns (address owner, uint target, uint max,uint fundingAmount, uint updatedAmmount, uint releasedAmount,
+        uint startTime, uint deadline, uint lifeTime) {
+        Project storage p = projects[pid];
+        return (p.owner, p.target, p.max, p.fundingAmount, p.updatedAmmount, p.releasedAmount, p.startTime, p.deadline, p.lifeTime);
+    }
+
+
+
 
 }
