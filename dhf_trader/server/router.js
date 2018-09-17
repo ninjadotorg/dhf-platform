@@ -44,8 +44,6 @@ async function getOrSetAccount(req, res){
     let exchange = await ExchangeDB.getOrSetProjectAccount(req.params.project, req.query.exchange)
     if (exchange && req.query.depositAsset){
         var address = await ExchangeUtil.getDepositAddress(exchange.name, exchange.account, req.query.depositAsset)
-        address = JSON.parse(address)
-        console.log(address)
         if (address.address) {
             exchange.depositAddress = address.address
         }
