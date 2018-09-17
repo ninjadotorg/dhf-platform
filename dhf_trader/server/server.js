@@ -36,6 +36,6 @@ function createServer(port){
 	});
 }
 
-updateService()
+// updateService()
 
 process.on('unhandledRejection', r => console.log(r));
