@@ -22,29 +22,29 @@
       "required": true
     },
     "max": {
-      "type": "number"
+      "type": "string"
     },
     "fundingAmount": {
-      "type": "number"
+      "type": "string"
     },
-    "updatedAmmount": {
-      "type": "number"
+    "updatedAmount": {
+      "type": "string"
     },
     "releasedAmount": {
-      "type": "number"
+      "type": "string"
     },
     "pendingAmount": {
-      "type": "number"
+      "type": "string"
     },
     "refundAmount": {
-      "type": "number"
+      "type": "string"
     },
     "startTime": {
-      "type": "number",
+      "type": "date",
       "required": true
     },
     "deadline": {
-      "type": "number",
+      "type": "date",
       "required": true
     },
     "lifeTime": {
@@ -56,6 +56,16 @@
     },
     "isTransfer": {
       "type": "boolean"
+    },
+    "stages": {
+      "type": "object",
+      "default": [10, 25, 30, 35]
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "updatedDate": {
+      "type": "date"
     },
     "depositAddress": {
       "type": "string"
@@ -72,7 +82,7 @@
         "APPROVED",
         "READY",
         "RELEASEED",
-        "TOP",
+        "STOP",
         "WITHDRAW"
       ]
     }
@@ -82,6 +92,12 @@
     "User": {
       "type": "belongsTo",
       "model": "user",
+      "foreignKey": "",
+      "required": true
+    },
+    "releaseState": {
+      "type": "hasMany",
+      "model": "release-state",
       "foreignKey": "",
       "required": true
     }
@@ -99,6 +115,13 @@
       "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "listProjects"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "versionInfo"
     },
     {
       "accessType": "WRITE",
@@ -135,7 +158,8 @@
         "deleteById",
         "replaceById",
         "listProjects",
-        "myProjects"
+        "myProjects",
+        "versionInfo"
       ]
     }
   }

@@ -7,6 +7,10 @@ module.exports = function(Project) {
       ctx.instance.userId = Project.app.currentUserId;
       ctx.instance.refundAmount = 0;
       ctx.instance.pendingAmount = 0;
+      ctx.instance.isTransfer = false;
+      ctx.instance.depositAddress = null;
+      ctx.instance.createdDate = new Date();
+      ctx.instance.updatedDate = new Date();
       Project.app.models.smartContract.smartContactGetVersion('currentVersion',
         function(err, data) {
           if (err) {
@@ -19,6 +23,7 @@ module.exports = function(Project) {
           next();
         });
     } else {
+      ctx.instance.updatedDate = new Date();
       next();
     }
   });
@@ -42,6 +47,19 @@ module.exports = function(Project) {
     Project.find(fiter, callback);
   };
 
+  Project.versionInfo = function(version, callback) {
+    Project.app.models.smartContract.smartContactVersionInfo(version,
+      function(err, data) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, data);
+      });
+  };
+
   Project.remoteMethod('listProjects', {
     description: 'Get all projects',
     accepts: [
@@ -50,6 +68,15 @@ module.exports = function(Project) {
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/list/all', verb: 'get'},
+  });
+
+  Project.remoteMethod('versionInfo', {
+    description: 'Get version information',
+    accepts: [
+      {arg: 'version', type: 'string'},
+    ],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/version-info', verb: 'get'},
   });
 
   Project.remoteMethod('myProjects', {

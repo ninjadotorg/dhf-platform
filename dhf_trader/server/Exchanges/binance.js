@@ -68,11 +68,17 @@ module.exports = class Binance {
     }
 
     async getOrder(params) {
-        let result = await this.client.getOrder({
-            symbol: params.symbol,
-            origClientOrderId: params.clientOrderId,
-        })
-        return result
+        const req = {
+            symbol: params.symbol
+        }
+        if (params.orderId) {
+            req.orderId = params.orderId
+        }
+        if (params.clientOrderId) {
+            req.origClientOrderId = params.clientOrderId
+        }
+
+        return await this.client.getOrder(req)
     }
 
     async cancelOrder(params) {

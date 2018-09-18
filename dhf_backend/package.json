@@ -13,6 +13,7 @@
     "test": "mocha test/*test.js"
   },
   "dependencies": {
+    "bignumber.js": "^7.2.1",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "cron": "^1.4.1",

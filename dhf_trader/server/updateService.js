@@ -59,14 +59,49 @@ async function updateOpenOrders(openOrders, gateway) {
     await Promise.each(openOrders, o => updateOrder(o.orderId, o.status, o.executedQty))
 }
 
+async function getSymbols(project) {
+    return new Promise((resolve, reject) => {
+        OrderDB.aggregate([
+            {
+                $match: { project }
+            },
+            {
+                $group: {
+                    _id: "$symbol"
+                }
+            }
+        ]).exec((err, results) => {
+            if (err) {
+                return reject(err)
+            }
+
+            const symbols = []
+            results.forEach(r => symbols.push(r._id))
+            resolve(symbols)
+        })
+    })
+}
+
 async function updateOrders(project) {
     try {
         const gateway = await getGateway(project)
 
-        const openOrders = await gateway.action('openOrders')
+        const symbols = await getSymbols(project)
+        if (!symbols.length) {
+            return
+        }
 
-        await updateOpenOrders(openOrders, gateway)
-        await updateOrdersNotIn(openOrders, gateway, project)
+        await Promise.each(symbols, async (symbol) => {
+            console.log('finding open orders of project', project, 'with symbol', symbol)
+            const openOrders = await gateway.action('openOrders', { symbol })
+            console.log('found', openOrders.length, 'open orders of project', project, 'with symbol', symbol)
+            if (!openOrders.length) {
+                return
+            }
+
+            await updateOpenOrders(openOrders, gateway)
+            await updateOrdersNotIn(openOrders, gateway, project)
+        })
     } catch (e) {
         console.log(e)
     }

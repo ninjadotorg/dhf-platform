@@ -1,0 +1,49 @@
+{
+  "name": "release-stages",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {
+    "releaseDate": {
+      "type": "date",
+      "required": true
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    },
+    "stageValue": {
+      "type": "number",
+      "required": true
+    },
+    "state": {
+      "type": "string",
+      "enum": ["NEW", "CURRENT", "DONE"],
+      "required": true,
+      "default": "PENDING"
+    },
+    "transactionId": {
+      "type":  "string"
+    },
+    "nextStage": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "project": {
+      "type": "belongsTo",
+      "model": "project",
+      "foreignKey": "",
+      "required": true
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}
