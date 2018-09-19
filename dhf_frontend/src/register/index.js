@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
@@ -24,7 +24,7 @@ const styles = theme => ({
       marginLeft: 'auto',
       marginRight: 'auto',
     },
-},
+  },
   paper: {
     marginTop: theme.spacing.unit * 8,
     display: 'flex',
@@ -120,7 +120,7 @@ class Register extends React.Component {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <CssBaseline/>
+        <CssBaseline />
         <main className={classes.layout}>
           <Paper className={classes.paper}>
             <Typography variant="headline">Register as a trader</Typography>
@@ -182,6 +182,10 @@ class Register extends React.Component {
               <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                 Register
               </Button>
+
+              <Typography color="primary" style={{ marginTop: 30, textAlign: 'center' }}>
+                <Link to="/login">Already registered, Click here to Login</Link>
+              </Typography>
             </ValidatorForm>
           </Paper>
         </main>

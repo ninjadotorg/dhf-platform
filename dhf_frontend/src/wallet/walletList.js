@@ -134,6 +134,7 @@ class WalletList extends React.Component {
                   >
                     <DialogContent>
                       <DialogContentText>Please enter your password to use this wallet.</DialogContentText>
+                      {/* https://lollyrock.com/articles/nodejs-encryption/ user enters password use this algo to decrpyt the walletId and then use it in future api calls of wallet -_- */}
                       <TextField
                         autoFocus
                         margin="dense"
