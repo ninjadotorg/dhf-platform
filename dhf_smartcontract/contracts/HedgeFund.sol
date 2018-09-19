@@ -21,7 +21,7 @@ pragma solidity ^0.4.2;
 
 contract HedgeFund {
     //Parameters
-    enum S { INITFUND, APPROVED, READY, RELEASED, STOP, VERIFY_WITHDRAW, WITHDRAW }
+    enum S { INITFUND, APPROVED, READY, RELEASED, STOP, WITHDRAW }
     
     struct ScaleFund { // userWithdrawFund = (userFund * scale)/denominator
         uint scale;
@@ -121,7 +121,7 @@ contract HedgeFund {
         Project storage p = projects[pid];
         emit __stop(msg.sender, pid);
         if (p.state == S.INITFUND || p.state == S.APPROVED || p.state == S.READY || p.state == S.WITHDRAW){
-            emit __changeState(pid, "_", "STOP");
+            emit __changeState(pid, "_", "WITHDRAW");
             p.state = S.WITHDRAW;
         }else {
             emit __changeState(pid, "RELEASE|STOP", "STOP");
@@ -245,8 +245,8 @@ contract HedgeFund {
     function retract(bytes32 pid, uint scale, uint denominator) public onlyContractOwner() { //0.017 => scale=17 
         Project storage p = projects[pid];
 
-        require(p.state == S.RELEASED || p.state == S.STOP || p.state == S.VERIFY_WITHDRAW, "100");
-        p.state = S.VERIFY_WITHDRAW;
+        require(p.state == S.STOP, "100");
+        p.state = S.WITHDRAW;
 
         ScaleFund memory scaleF;
         scaleF.scale = scale;
@@ -254,20 +254,11 @@ contract HedgeFund {
         p.scale = scaleF;
         p.updatedAmount = (p.fundingAmount*p.scale.scale)/p.scale.denominator;
 
-        emit __changeState(pid, "RELEASE|STOP|VERIFY_WITHDRAW", "VERIFY_WITHDRAW");
+        emit __changeState(pid, "STOP", "WITHDRAW");
         emit __retract(pid, scale, denominator, p.updatedAmount);
     }
 
-    function verifyWithdraw(bytes32 pid) public { //verify that this project is profit
-        Project storage p = projects[pid];
-        if (p.startTime + 30 days > block.timestamp && contractOwner != msg.sender){
-            revert("Not authorized to verify");
-        }
-        require(p.state == S.VERIFY_WITHDRAW, "100");
-        p.state = S.WITHDRAW;
-        emit __changeState(pid, "VERIFY_WITHDRAW", "WITHDRAW");
-        emit __verifyWithdraw(pid);
-    }
+    
 
     function voteStop(bytes32 pid, uint8 stop) public { //vote stop and check if larger than half of the fund
         Project storage p = projects[pid];

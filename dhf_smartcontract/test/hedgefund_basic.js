@@ -50,7 +50,7 @@ contract("HedgeFund", (accounts) => {
     }
     before(async ()=>{
         hf = await HedgeFund.deployed()
-        // console.log(Utils.b2s("0x5749544844524157000000000000000000000000000000000000000000000000"))
+        // console.log(Utils.b2s("0x70726f6a6563745f313533373236373037343938350000000000000000000000,"))
     })
 
     describe("Basic scenario 1", () => {
@@ -92,7 +92,6 @@ contract("HedgeFund", (accounts) => {
         })  
 
         it("should NOT allow investor to withdraw fund if project is in APPROVED state", async () => {
-            assert.equal("APPROVED", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
             await Utils.assertRevert(hf.withdrawFund(PID1, {from: investor1}))
         }) 
 
@@ -141,24 +140,19 @@ contract("HedgeFund", (accounts) => {
             assert.equal(preBalance.toString() , postBalance.toString())
         }) 
 
-        //retract money
-        it("should allow to retract ", async () => {
-            let tx1 = await hf.retract(PID1, 15, 100, {from: root});
-            assert.equal("VERIFY_WITHDRAW", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
+        //stop & retract money
+        it("should NOT allow to retract", async () => {
+            await Utils.assertRevert(hf.retract(PID1, 1, 1, {from: investor1}))
         }) 
 
-        it("should NOT allow to withdraw if in VERIY WITDHRAW state", async () => {
-            await Utils.assertRevert(hf.withdrawFund(PID1, {from: investor1}))
+        it("should allow to stop ", async () => {
+            let tx1 = await hf.stopProject(PID1, {from: trader});
+            assert.equal("STOP", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
         }) 
 
-        it("should allow to retract amount & verify", async () => {
+        it("should allow to retract amount ", async () => {
             let tx1 = await hf.retract(PID1, 35, 100, {from: root});
-            assert.equal("VERIFY_WITHDRAW", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
-
-            tx1 = await hf.verifyWithdraw(PID1, {from: root});
             assert.equal("WITHDRAW", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
-
-            await getFunder(PID1)
         }) 
 
         it("should allow to withdraw after retract", async () => {
