@@ -11,6 +11,7 @@ import request from '@/utils/api';
 import { Link } from 'react-router-dom';
 import history from '@/utils/history';
 import { withRouter } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 
 const styles = {
   root: {
@@ -41,7 +42,7 @@ class ProjectList extends React.Component {
   };
 
   handleRowClick = n => {
-    return history.push(`/projects/${n.id}`);
+    return history.push(`/trade/${n.id}`);
   };
 
   render() {
@@ -57,24 +58,15 @@ class ProjectList extends React.Component {
               <TableCell>Exchange</TableCell>
               <TableCell numeric>Target</TableCell>
               <TableCell numeric>Max</TableCell>
-              <TableCell numeric>Start Time</TableCell>
-              <TableCell numeric>Deadline</TableCell>
-              <TableCell numeric>Life Time</TableCell>
               <TableCell>State</TableCell>
+              <TableCell>Select Project</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
             {this.state.projects.map(n => {
               return (
-                <TableRow
-                  key={n.id}
-                  button
-                  onClick={() => {
-                    this.handleRowClick(n);
-                  }}
-                  style={{ cursor: 'pointer', height: 60 }}
-                >
+                <TableRow key={n.id} button style={{ height: 60 }}>
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
@@ -82,10 +74,19 @@ class ProjectList extends React.Component {
                   <TableCell>{n.exchange}</TableCell>
                   <TableCell numeric>{n.target}</TableCell>
                   <TableCell numeric>{n.max}</TableCell>
-                  <TableCell numeric>{n.startTime}</TableCell>
-                  <TableCell numeric>{n.deadline}</TableCell>
-                  <TableCell numeric>{n.lifeTime}</TableCell>
                   <TableCell>{n.state}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      type="button"
+                      onClick={() => {
+                        this.handleRowClick(n);
+                      }}
+                    >
+                      Trade
+                    </Button>
+                  </TableCell>
                 </TableRow>
               );
             })}

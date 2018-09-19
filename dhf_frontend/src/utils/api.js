@@ -1,19 +1,17 @@
 import axios from 'axios';
 import history from '@/utils/history';
+import _ from 'lodash';
 /**
  * Create an Axios Client with defaults
  */
 const client = axios.create({
   baseURL: 'http://35.240.197.175:9000/api/',
 });
-
+axios.defaults.headers.common.Authorization = localStorage.getItem('token');
 /**
  * Request Wrapper with default success/error actions
  */
 const request = options => {
-  options.params = {
-    access_token: localStorage.getItem('token'),
-  };
   const onSuccess = response => {
     console.log('Request Successful!', response);
     return response.data;

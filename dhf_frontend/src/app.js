@@ -15,6 +15,8 @@ import Login from '@/login';
 import './style/index.scss';
 import history from '@/utils/history';
 import projectPage from '@/projectPage';
+import trade from '@/trade';
+import tradePage from '@/trade/tradePage';
 
 const styles = theme => ({
   content: {
@@ -54,6 +56,8 @@ class App extends React.Component {
                       <Route path="/create-project" component={createProject} />
                       <Route path="/projects/:id" exact component={projectPage} />
                       <Route path="/wallet" exact component={wallet} />
+                      <Route path="/trade" exact component={trade} />
+                      <Route path="/trade/:id" exact component={tradePage} />
                       <Route path="/" exact component={HomePage} />
                 </main>
               </div>
