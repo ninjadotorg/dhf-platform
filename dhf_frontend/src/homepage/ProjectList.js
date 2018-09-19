@@ -100,4 +100,4 @@ ProjectList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ProjectList);
+export default withRouter(withStyles(styles)(ProjectList));

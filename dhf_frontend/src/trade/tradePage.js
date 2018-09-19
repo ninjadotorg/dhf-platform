@@ -23,6 +23,7 @@ import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import _ from 'lodash';
+import { compose } from 'recompose';
 import Tab from '@material-ui/core/Tab';
 import TradingViewWidget from 'react-tradingview-widget';
 import BuySellBlock from './buy-sell-block';
@@ -588,4 +589,7 @@ tradePage.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(tradePage);
+export default compose(
+  withRouter,
+  withStyles(styles),
+)(tradePage);
