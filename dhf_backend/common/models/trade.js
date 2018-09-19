@@ -17,7 +17,7 @@ module.exports = function(Trade) {
             error.message = 'Project was not existed!';
             return callback(error);
           }
-          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+          if (!project.userId || project.userId.toString() !== Trade.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
