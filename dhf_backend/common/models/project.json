@@ -19,7 +19,8 @@
     },
     "exchange": {
       "type": "string",
-      "required": true
+      "required": true,
+      "default": "binance"
     },
     "max": {
       "type": "string"
@@ -52,7 +53,8 @@
     },
     "currency": {
       "type": "string",
-      "required": true
+      "required": true,
+      "default": "ETH"
     },
     "isTransfer": {
       "type": "boolean"

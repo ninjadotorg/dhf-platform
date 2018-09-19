@@ -18,4 +18,4 @@ RUN npm set progress=false && \
 COPY . /app
 
 EXPOSE 3000 3000
-CMD ["/app/node_modules/.bin/node scripts/build.js --mode=development"]
+CMD ["/app/node_modules/.bin/node /app/scripts/build.js --mode=development"]

@@ -41,8 +41,8 @@ services:
       expose:
         - "3000"
       command:
-        - node
-        - scripts/build.js --mode=development"
+        - npm 
+        - start
   blackend-api:
       build: 
         context: dhf_backend
