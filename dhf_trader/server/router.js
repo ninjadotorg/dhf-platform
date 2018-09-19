@@ -46,6 +46,9 @@ async function getOrSetAccount(req, res){
         var address = await ExchangeUtil.getDepositAddress(exchange.name, exchange.account, req.query.depositAsset)
         if (address.address) {
             exchange.depositAddress = address.address
+        } else {
+            res.status(500)
+            return res.json({status: 'fail', message: 'Deposit address does\'t exist'})
         }
     }
 
