@@ -22,7 +22,12 @@
   "crons": {
     "firstReleased": {
       "enable": true,
-      "jobClass": "lib/firstReleased-job",
+      "jobClass": "lib/firstRelease-job",
+      "interval": "0    *     * * * *"
+    },
+    "nextReleased": {
+      "enable": true,
+      "jobClass": "lib/nextRelease-job",
       "interval": "0    *     * * * *"
     }
   }

@@ -47,7 +47,7 @@ module.exports = function(Project) {
     Project.find(fiter, callback);
   };
 
-  Project.versionInfo = function(version, callback) {
+  Project.cancel = function(projectId, callback) {
     Project.app.models.smartContract.smartContactVersionInfo(version,
       function(err, data) {
         if (err) {
@@ -70,13 +70,13 @@ module.exports = function(Project) {
     http: {path: '/list/all', verb: 'get'},
   });
 
-  Project.remoteMethod('versionInfo', {
-    description: 'Get version information',
+  Project.remoteMethod('cancel', {
+    description: 'Cancel project',
     accepts: [
-      {arg: 'version', type: 'string'},
+      {arg: 'projectId', type: 'string', required: true},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
-    http: {path: '/version-info', verb: 'get'},
+    http: {path: '/cancel', verb: 'post'},
   });
 
   Project.remoteMethod('myProjects', {

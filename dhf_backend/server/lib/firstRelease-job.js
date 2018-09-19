@@ -3,7 +3,7 @@ let async = require('async');
 let {PROJECT_STATE} = require('../../common/lib/constants');
 let {BigNumber}  = require('bignumber.js');
 
-let FirstReleasedJob = module.exports = function(app, jobConfig) {
+let FirstReleaseJob = module.exports = function(app, jobConfig) {
   this.Project = app.models.project;
   this.Trade = app.models.trade;
   this.ProjectStages = app.models.releaseStages;
@@ -11,8 +11,8 @@ let FirstReleasedJob = module.exports = function(app, jobConfig) {
   this.config = jobConfig;
   this.processing = false;
 };
-FirstReleasedJob.prototype.run = function() {
-  console.log('In released run...');
+FirstReleaseJob.prototype.run = function() {
+  console.log('[First Release]In released run...');
   if (this.processing) {
     console.log('....but processing, so skip');
     return;
@@ -23,7 +23,7 @@ FirstReleasedJob.prototype.run = function() {
 
   this.released();
 };
-FirstReleasedJob.prototype.released = function() {
+FirstReleaseJob.prototype.released = function() {
   let self = this;
   this.Project.find({where: {
     state: PROJECT_STATE.READY,
@@ -36,6 +36,8 @@ FirstReleasedJob.prototype.released = function() {
     async.eachSeries(projects, function(project, callback) {
       console.log('begin update deposit Address and transfer money for ' + project.name);
       let isUpdate = false;
+      let currentStage;
+      let transactionId;
       async.series([
         function pickUpExchangeAccount(callback) {
           if (!project.depositAddress || project.depositAddress === '') {
@@ -94,6 +96,7 @@ FirstReleasedJob.prototype.released = function() {
                     callback();
                   });
                 } else {
+                  currentStage = data;
                   preStage = data;
                   i++;
                   callback();
@@ -112,10 +115,29 @@ FirstReleasedJob.prototype.released = function() {
         function transferMoneyToExchange(callback) {
           console.log('call transfer money to: ', project.id);
           if (project.depositAddress || project.depositAddress !== '') {
+            transactionId = '';
             project.isTransfer = true;
             isUpdate = true;
           }
           callback();
+        },
+        function updateStage(callback) {
+          console.log('call update stage for project: ', project.id);
+          if (currentStage && project.isTransfer) {
+            currentStage.state = 'CURRENT';
+            currentStage.transactionId = transactionId;
+            currentStage.save(currentStage, function(err) {
+              if (err) {
+                console.log(err);
+                return callback(err);
+              }
+              project.currentStage = currentStage.id;
+              isUpdate = true;
+              callback();
+            });
+          } else {
+            callback();
+          }
         },
         function updateProject(callback) {
           if (isUpdate) {

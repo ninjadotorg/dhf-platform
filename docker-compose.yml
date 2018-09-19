@@ -11,17 +11,53 @@ services:
 #         - ./nginx.tmpl:/app/nginx.tmpl
 #      ports:
 #         - "80:80"
-
+  web-app:
+      build: 
+        context: dhf_frontend
+        dockerfile: Dockerfile
+      container_name: web-app
+      restart: always
+      depends_on:
+#         - proxy
+         - trader-api
+      links:
+         - trader-api
+         - smart-contract-api
+      volumes:
+         # files
+         - ./dhf_frontend/configs:/app/configs
+         - ./dhf_frontend/dist:/app/dist
+         - ./dhf_frontend/public:/app/public
+         - ./dhf_frontend/scripts:/app/scripts
+         - ./dhf_frontend/src:/app/src
+         - ./dhf_frontend/package.json:/app/package.json
+      environment:
+         APP_ENV: development
+         NODE_ENV: development
+         VIRTUAL_PORT: 3000
+         VIRTUAL_HOST: webapp.nyc
+      ports:
+        - "3000:3000"
+      expose:
+        - "3000"
+      command:
+        - node
+        - scripts/build.js --mode=development"
   blackend-api:
       build: 
         context: dhf_backend
         dockerfile: Dockerfile
       container_name: blackend-api
+      restart: always
       depends_on:
 #         - proxy
          - mongo
+         - trader-api
+         - smart-contract-api
       links:
          - mongo
+         - trader-api
+         - smart-contract-api
       volumes:
          # files
          - ./dhf_backend/server:/app/server
@@ -46,6 +82,7 @@ services:
         context: dhf_trader
         dockerfile: Dockerfile
       container_name: trader-api
+      restart: always
       depends_on:
 #         - proxy
          - mongo
@@ -77,6 +114,7 @@ services:
       context: dhf_smartcontract/backend
       dockerfile: Dockerfile
     container_name: smartcontract-api
+    restart: always
     depends_on:
 #         - proxy
        - mongo

@@ -70,6 +70,9 @@
     "depositAddress": {
       "type": "string"
     },
+    "currentStage": {
+      "type": "string"
+    },
     "smartContractVersion": {
       "type": "string"
     },
@@ -117,11 +120,11 @@
       "property": "listProjects"
     },
     {
-      "accessType": "READ",
+      "accessType": "WRITE",
       "principalType": "ROLE",
-      "principalId": "$authenticated",
+      "principalId": "$owner",
       "permission": "ALLOW",
-      "property": "versionInfo"
+      "property": "cancel"
     },
     {
       "accessType": "WRITE",
@@ -159,7 +162,7 @@
         "replaceById",
         "listProjects",
         "myProjects",
-        "versionInfo"
+        "cancel"
       ]
     }
   }
