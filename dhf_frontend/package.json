@@ -8,7 +8,7 @@
   "scripts": {
     "eslint": "eslint src",
     "vendor": "webpack --config configs/webpack.vendor.js",
-    "start": "node scripts/build.js --mode=development  --public 127.0.0.1:9000 --host 0.0.0.0 --port 9000",
+    "start": "node scripts/build.js --mode=development  --public 127.0.0.1:3000 --host 0.0.0.0 --port 3000",
     "build": "node scripts/build.js --mode=production",
     "serve": "serve dist",
     "test": "jest --config ./configs/jest.json --no-cache"
