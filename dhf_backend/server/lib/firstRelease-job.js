@@ -21,9 +21,9 @@ FirstReleaseJob.prototype.run = function() {
 
   this.processing = true;
 
-  this.released();
+  this.checkState();
 };
-FirstReleaseJob.prototype.released = function() {
+FirstReleaseJob.prototype.checkState = function() {
   let self = this;
   this.Project.find({where: {
     state: PROJECT_STATE.READY,

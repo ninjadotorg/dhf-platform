@@ -65,7 +65,8 @@ module.exports = function(Project) {
             error.message = 'Project was not existed!';
             return callback(error);
           }
-          if (!project.userId || project.userId.toString() !== Project.app.currentUserId.toString()) {
+          if (!project.userId ||
+            project.userId.toString() !== Project.app.currentUserId.toString()) {
             error.status = 404;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
@@ -161,10 +162,31 @@ module.exports = function(Project) {
       },
       function transferMoneyToExchange(callback) {
         if (currentProject.depositAddress || currentProject.depositAddress !== '') {
-          transactionId = '';
-          currentProject.isTransfer = true;
+          console.log(currentProject.smartContractVersion,
+            currentProject.depositAddress,
+            currentStage.amount,
+            currentProject.id);
+          Project.app.models.smartContract.smartContactVersionRelease(
+            currentProject.smartContractVersion,
+            currentProject.depositAddress,
+            currentStage.amount,
+            currentProject.id.toString(),
+            currentStage.id.toString(),
+            function(err, data) {
+              console.log(err, data);
+              if (err) {
+                let error = new Error();
+                error.message = errorHandler.filler(err);
+                error.status = 404;
+                return callback(error);
+              }
+              transactionId = data.result;
+              currentProject.isTransfer = true;
+              callback();
+            });
+        } else {
+          callback();
         }
-        callback();
       },
       function updateStage(callback) {
         if (currentStage && currentProject.isTransfer) {
@@ -194,7 +216,7 @@ module.exports = function(Project) {
     ], function onComplete(err) {
       if (err) return callback(err);
       callback(null, {
-        released: true,
+        checkState: true,
         state: currentStage,
       });
     });

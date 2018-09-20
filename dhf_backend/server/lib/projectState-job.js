@@ -17,9 +17,9 @@ ProjectState.prototype.run = function() {
 
   this.processing = true;
 
-  this.released();
+  this.checkState();
 };
-ProjectState.prototype.released = function() {
+ProjectState.prototype.checkState = function() {
   let self = this;
 
   this.Project.find({

@@ -135,12 +135,13 @@
           "body": {
             "depositAddress": "{depositAddress}",
             "amount": "{amount}",
-            "projectId": "{projectId}"
+            "project": "{projectId}",
+            "stage": "{stageId}"
           },
           "responsePath": ""
         },
         "functions": {
-          "smartContactVersionRelease": ["version", "depositAddress", "amount", "projectId"]
+          "smartContactVersionRelease": ["version", "depositAddress", "amount", "projectId", "stageId"]
         }
       }
   ]

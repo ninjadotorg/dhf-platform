@@ -8,7 +8,7 @@ let ProjectState = module.exports = function(app, jobConfig) {
   this.processing = false;
 };
 ProjectState.prototype.run = function() {
-  console.log('[Init Fund State]In released run...');
+  console.log('[Ready State]In released run...');
   if (this.processing) {
     console.log('....but processing, so skip');
     return;
@@ -17,14 +17,14 @@ ProjectState.prototype.run = function() {
 
   this.processing = true;
 
-  this.released();
+  this.checkState();
 };
-ProjectState.prototype.released = function() {
+ProjectState.prototype.checkState = function() {
   let self = this;
 
   this.Project.find({
     where: {
-      state: PROJECT_STATE.INITFUND,
+      state: PROJECT_STATE.READY,
     },
   }, function(err, projects) {
     if (err) {
@@ -32,10 +32,7 @@ ProjectState.prototype.released = function() {
       return console.log(err);
     }
     async.eachSeries(projects, function(project, callback) {
-      let today = new Date();
-      if (project.deadline >= today) {
-        // @todo call smart check stage
-      }
+      // @todo call smart check stage
       callback();
     }, function done(err) {
       if (err) console.log(err);
