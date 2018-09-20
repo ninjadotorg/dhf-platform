@@ -68,24 +68,28 @@ module.exports = class Binance {
     }
 
     async getOrder(params) {
-        const req = {
+        let query = {
             symbol: params.symbol
         }
         if (params.orderId) {
-            req.orderId = params.orderId
+            query.orderId = params.orderId
         }
         if (params.clientOrderId) {
-            req.origClientOrderId = params.clientOrderId
+            query.origClientOrderId = params.clientOrderId
         }
 
-        return await this.client.getOrder(req)
+        return await this.client.getOrder(query)
     }
 
     async cancelOrder(params) {
-        let result = await this.client.cancelOrder({
-            symbol: params.symbol,
-            origClientOrderId: params.clientOrderId,
-        })
+        let query = {
+            symbol: params.symbol
+        }
+
+        if (params.orderId) query.orderId = params.orderId
+        if (params.clientOrderId) query.origClientOrderId = params.clientOrderId
+
+        let result = await this.client.cancelOrder(query)
         return result
     }
 

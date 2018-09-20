@@ -90,12 +90,13 @@
             "symbol": "{symbol}",
             "quantity": "{quantity}",
             "price": "{price}",
-            "currencies": "{currencies}"
+            "currencies": "{currencies}",
+            "orderId": "{orderId}"
           },
           "responsePath": ""
         },
         "functions": {
-          "action": ["projectId", "action", "symbol", "quantity", "price", "currencies"]
+          "action": ["projectId", "action", "symbol", "quantity", "price", "currencies", "orderId"]
         }
       },
       {
