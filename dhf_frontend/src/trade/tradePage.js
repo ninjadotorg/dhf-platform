@@ -23,9 +23,12 @@ import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import _ from 'lodash';
+import { compose } from 'recompose';
 import Tab from '@material-ui/core/Tab';
 import TradingViewWidget from 'react-tradingview-widget';
+import ReactNotification from 'react-notifications-component';
 import BuySellBlock from './buy-sell-block';
+import 'react-notifications-component/dist/theme.css';
 
 const styles = theme => ({
   button: {
@@ -101,7 +104,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
-    height: '100vh',
+    height: 'auto',
     overflow: 'auto',
   },
   tableContainer: {
@@ -157,18 +160,23 @@ const styles = theme => ({
 });
 
 class tradePage extends React.Component {
-  state = {
-    open: true,
-    history: [],
-    exchangeInfo: {},
-    activeList: [],
-    quoteAsset: 'BTC',
-    activeSymbol: {},
-    orderType: 0, // 0 limit , 1 market
-    priceList: {},
-    activePrice: 0,
-    balancePair: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: true,
+      history: [],
+      exchangeInfo: {},
+      activeList: [],
+      quoteAsset: 'BTC',
+      activeSymbol: {},
+      orderType: 0, // 0 limit , 1 market
+      priceList: {},
+      activePrice: 0,
+      balancePair: [],
+      openOrders: [],
+    };
+    this.notificationDOMRef = React.createRef();
+  }
 
   handleDrawerOpen = () => {
     this.setState({ open: true });
@@ -256,6 +264,7 @@ class tradePage extends React.Component {
 
   pollingFunctions = () => {
     this.loadPrices();
+    this.fetchOpenOrders();
     this.fetchPairBalance();
   }
 
@@ -283,7 +292,7 @@ class tradePage extends React.Component {
       .then(response => {
         this.setState({
           balancePair: response, activeList: filteredArray, activeSymbol: filteredArray[0], activePrice: price,
-        });
+        }, this.fetchOpenOrders);
       })
       .catch(error => {});
   };
@@ -315,10 +324,27 @@ class tradePage extends React.Component {
       .catch(error => {});
   }
 
+  fetchOpenOrders = () => {
+    request({
+      method: 'get',
+      url: '/trades/orders-open',
+      params: {
+        projectId: this.props.history.location.pathname.split('/')[2],
+        symbol: this.state.activeSymbol.symbol,
+      },
+    })
+      .then(response => {
+        this.setState({
+          openOrders: response,
+        });
+      })
+      .catch(error => {});
+  }
+
   handlePairChange = (event, n, price) => {
     this.setState({
       activeSymbol: n, activePrice: price,
-    });
+    }, this.fetchOpenOrders);
     const pair = `${n.baseAsset},${n.quoteAsset}`;
     request({
       method: 'get',
@@ -339,6 +365,45 @@ class tradePage extends React.Component {
   handleChange = (event, value) => {
     this.setState({ orderType: value });
   };
+
+  showCancelNotification=() => {
+    this.notificationDOMRef.current.addNotification({
+      title: '',
+      message: 'Order Cancelled',
+      type: 'danger',
+      insert: 'top',
+      container: 'bottom-left',
+      animationIn: ['animated', 'fadeIn'],
+      animationOut: ['animated', 'ZoomOut'],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true },
+      slidingEnter: {
+        duration: 100,
+      },
+      slidingExit: {
+        duration: 100,
+      },
+    });
+  }
+
+  cancelOrder = (orderData) => {
+    console.log(orderData);
+    request({
+      method: 'post',
+      url: '/trades/cancel',
+      data: {
+        projectId: this.props.history.location.pathname.split('/')[2],
+        symbol: orderData.symbol,
+        orderId: `${orderData.orderId}`,
+      },
+    })
+      .then(response => {
+        if (response.orderId) {
+          this.showCancelNotification();
+        }
+      })
+      .catch(error => {});
+  }
 
   render() {
     const { classes } = this.props;
@@ -489,36 +554,41 @@ class tradePage extends React.Component {
                 <Table className={classes.table}>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Owner</TableCell>
-                      <TableCell>Exchange</TableCell>
-                      <TableCell numeric>Target</TableCell>
-                      <TableCell numeric>Max</TableCell>
-                      <TableCell>State</TableCell>
+                      <TableCell>Symbol</TableCell>
+                      <TableCell numeric>Price</TableCell>
+                      <TableCell numeric>Quantity</TableCell>
+                      <TableCell numeric>Executed Quantity</TableCell>
+                      <TableCell numeric>CummulativeQuote Quantity</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
-                    {this.state.history.map(n => {
+                    {this.state.openOrders.map(n => {
                       return (
                         <TableRow
                           key={n.id}
                           button
-                          onClick={() => {
-                            this.handleRowClick(n);
-                          }}
                           style={{
-                            cursor: 'pointer',
+                            height: 60,
                           }}
                         >
                           <TableCell component="th" scope="row">
-                            {n.name}
+                            {n.symbol}
                           </TableCell>
-                          <TableCell>{n.owner}</TableCell>
-                          <TableCell>{n.exchange}</TableCell>
-                          <TableCell numeric>{n.target}</TableCell>
-                          <TableCell numeric>{n.max}</TableCell>
-                          <TableCell>{n.state}</TableCell>
+                          <TableCell numeric>{n.price}</TableCell>
+                          <TableCell numeric>{n.origQty}</TableCell>
+                          <TableCell numeric>{n.executedQty}</TableCell>
+                          <TableCell numeric>{n.cummulativeQuoteQty}</TableCell>
+                          <TableCell>{n.side}</TableCell>
+                          <TableCell>
+<Button variant="outlined" color="secondary" onClick={()=>{this.cancelOrder(n)}}>
+                            Cancel
+                          </Button>
+{' '}
+ 
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -577,6 +647,7 @@ class tradePage extends React.Component {
                 </Table>
               </Paper>
             </div>
+            <ReactNotification ref={this.notificationDOMRef} />
           </Paper>
         </div>
       </div>
@@ -588,4 +659,7 @@ tradePage.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(tradePage);
+export default compose(
+  withRouter,
+  withStyles(styles),
+)(tradePage);
