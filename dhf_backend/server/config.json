@@ -21,7 +21,7 @@
   },
   "crons": {
     "firstReleased": {
-      "enable": true,
+      "enable": false,
       "jobClass": "lib/firstRelease-job",
       "interval": "0    *     * * * *"
     },
