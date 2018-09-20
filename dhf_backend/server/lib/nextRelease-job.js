@@ -43,7 +43,7 @@ ProjectState.prototype.released = function() {
               console.log(err);
               return callback(err);
             }
-            if (project.state !== PROJECT_STATE.RELEASED) {
+            if (project.state !== PROJECT_STATE.RELEASE) {
               return callback('skip processing because state of project was changed');
             }
             currentProject = project;

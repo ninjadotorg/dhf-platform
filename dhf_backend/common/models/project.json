@@ -14,8 +14,9 @@
       "required": true
     },
     "target": {
-      "type": "number",
-      "required": true
+      "type": "string",
+      "required": true,
+      "default": "0"
     },
     "exchange": {
       "type": "string",
@@ -23,22 +24,28 @@
       "default": "binance"
     },
     "max": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "fundingAmount": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "updatedAmount": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "releasedAmount": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "pendingAmount": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "refundAmount": {
-      "type": "string"
+      "type": "string",
+      "default": "0"
     },
     "startTime": {
       "type": "date",
@@ -86,7 +93,7 @@
         "INITFUND",
         "APPROVED",
         "READY",
-        "RELEASEED",
+        "RELEASE",
         "STOP",
         "WITHDRAW"
       ]
@@ -122,11 +129,11 @@
       "property": "listProjects"
     },
     {
-      "accessType": "WRITE",
+      "accessType": "*",
       "principalType": "ROLE",
-      "principalId": "$owner",
+      "principalId": "trader",
       "permission": "ALLOW",
-      "property": "cancel"
+      "property": "release"
     },
     {
       "accessType": "WRITE",
@@ -164,7 +171,7 @@
         "replaceById",
         "listProjects",
         "myProjects",
-        "cancel"
+        "release"
       ]
     }
   }
