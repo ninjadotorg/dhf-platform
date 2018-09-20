@@ -20,7 +20,7 @@
       "permission": "ALLOW"
     },
     {
-      "accessType": "WRITE",
+      "accessType": "*",
       "principalType": "ROLE",
       "principalId": "trader",
       "permission": "ALLOW"
