@@ -29,6 +29,7 @@ import TradingViewWidget from 'react-tradingview-widget';
 import ReactNotification from 'react-notifications-component';
 import BuySellBlock from './buy-sell-block';
 import 'react-notifications-component/dist/theme.css';
+import moment from 'moment'
 
 const styles = theme => ({
   button: {
@@ -174,6 +175,7 @@ class tradePage extends React.Component {
       activePrice: 0,
       balancePair: [],
       openOrders: [],
+      orderHistory: [],
     };
     this.notificationDOMRef = React.createRef();
   }
@@ -292,7 +294,7 @@ class tradePage extends React.Component {
       .then(response => {
         this.setState({
           balancePair: response, activeList: filteredArray, activeSymbol: filteredArray[0], activePrice: price,
-        }, this.fetchOpenOrders);
+        }, this.fetchOrderInfo);
       })
       .catch(error => {});
   };
@@ -341,10 +343,31 @@ class tradePage extends React.Component {
       .catch(error => {});
   }
 
+  fetchOrderHistory = () => {
+    request({
+      method: 'get',
+      url: '/trades/orders',
+      params: {
+        projectId: this.props.history.location.pathname.split('/')[2],
+        symbol: this.state.activeSymbol.symbol,
+      },
+    })
+      .then(response => {
+        this.setState({
+          orderHistory: response,
+        });
+      })
+      .catch(error => {});
+  }
+
+  fetchOrderInfo=()=>{
+    this.fetchOpenOrders();
+    this.fetchOrderHistory();
+  }
   handlePairChange = (event, n, price) => {
     this.setState({
       activeSymbol: n, activePrice: price,
-    }, this.fetchOpenOrders);
+    }, this.fetchOrderInfo);
     const pair = `${n.baseAsset},${n.quoteAsset}`;
     request({
       method: 'get',
@@ -583,11 +606,10 @@ class tradePage extends React.Component {
                           <TableCell numeric>{n.cummulativeQuoteQty}</TableCell>
                           <TableCell>{n.side}</TableCell>
                           <TableCell>
-<Button variant="outlined" color="secondary" onClick={()=>{this.cancelOrder(n)}}>
-                            Cancel
-                          </Button>
-{' '}
- 
+                            <Button variant="outlined" color="secondary" onClick={()=>{this.cancelOrder(n)}}>
+                                                        Cancel
+                                                      </Button>
+                            {' '}
                           </TableCell>
                         </TableRow>
                       );
@@ -610,36 +632,31 @@ class tradePage extends React.Component {
                 <Table className={classes.table}>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Owner</TableCell>
-                      <TableCell>Exchange</TableCell>
-                      <TableCell numeric>Target</TableCell>
-                      <TableCell numeric>Max</TableCell>
-                      <TableCell>State</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Pair</TableCell>
+                      <TableCell>OrderID</TableCell>
+                      <TableCell>Quantity</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Status</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
-                    {this.state.history.map(n => {
+                    {this.state.orderHistory.map(n => {
                       return (
                         <TableRow
                           key={n.id}
-                          button
-                          onClick={() => {
-                            this.handleRowClick(n);
-                          }}
-                          style={{
-                            cursor: 'pointer',
-                          }}
                         >
                           <TableCell component="th" scope="row">
-                            {n.name}
+                          {moment(Date(n.time*1000)).format('DD-MMMM-YYYY')}
                           </TableCell>
-                          <TableCell>{n.owner}</TableCell>
-                          <TableCell>{n.exchange}</TableCell>
-                          <TableCell numeric>{n.target}</TableCell>
-                          <TableCell numeric>{n.max}</TableCell>
-                          <TableCell>{n.state}</TableCell>
+                      <TableCell>{n.symbol}</TableCell>
+                      <TableCell>{n.orderId}</TableCell>
+                      <TableCell>{n.executedQty}</TableCell>
+                      <TableCell>{n.price}</TableCell>
+                      <TableCell style={n.side  === 'BUY' ? {color:'green'} : {color : 'red'}}>{n.side}</TableCell>
+                      <TableCell>{n.status}</TableCell>
                         </TableRow>
                       );
                     })}
