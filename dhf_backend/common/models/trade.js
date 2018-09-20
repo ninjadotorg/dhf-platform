@@ -283,7 +283,6 @@ module.exports = function(Trade) {
   };
 
   Trade.allOrders = function(projectId, symbol = '', callback) {
-    console.log(123, symbol);
     Trade.action(projectId, 'allOrders', symbol,
       function(err, resp) {
         if (err) {
