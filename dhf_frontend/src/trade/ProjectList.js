@@ -45,6 +45,45 @@ class ProjectList extends React.Component {
     return history.push(`/trade/${n.id}`);
   };
 
+  initFund = n => {
+    console.log(n);
+  };
+
+  getButtonType = n => {
+    switch (n.data.state) {
+      case 'RELEASE':
+        return (
+          <Button
+            variant="outlined"
+            color="primary"
+            type="button"
+            onClick={() => {
+              this.handleRowClick(n.data);
+            }}
+          >
+            Trade
+          </Button>
+        );
+
+      case 'NEW':
+        return (
+          <Button
+            variant="outlined"
+            color="primary"
+            type="button"
+            onClick={() => {
+              this.initFund(n.data);
+            }}
+          >
+            Initialize Fund
+          </Button>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -76,16 +115,7 @@ class ProjectList extends React.Component {
                   <TableCell numeric>{n.max}</TableCell>
                   <TableCell>{n.state}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      type="button"
-                      onClick={() => {
-                        this.handleRowClick(n);
-                      }}
-                    >
-                      Trade
-                    </Button>
+                    <this.getButtonType data={n} />
                   </TableCell>
                 </TableRow>
               );
