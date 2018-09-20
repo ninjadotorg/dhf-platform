@@ -16,6 +16,14 @@ exports = module.exports = {
         } catch(err){
             console.log(err)
         }
+    },
+    eth_call: async function(signedTx){
+        try {
+            let result = await web3.eth.call('0x' + signedTx)
+            return result
+        } catch(err){
+            console.log(err)
+        }
     }
 }
 

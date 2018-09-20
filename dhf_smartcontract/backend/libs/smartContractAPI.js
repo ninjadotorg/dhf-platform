@@ -58,7 +58,30 @@ class SmartContract {
         return sendTx
     }
 
-    //add more function here
+    async retract(pid,scale, denominator){
+        let hexStr = await this.getRawTx("retract", [pid, scale, denominator], fromAccount)
+        let sendTx = await rpcMethod.eth_sendRawTransaction(hexStr)
+        return sendTx
+    }
+
+    async stop(pid){
+        let hexStr = await this.getRawTx("stopProject", [pid], fromAccount)
+        let sendTx = await rpcMethod.eth_sendRawTransaction(hexStr)
+        return sendTx
+    }
+
+    async validateState(pid){
+        let hexStr = await this.getRawTx("validateState", [pid], fromAccount)
+        let sendTx = await rpcMethod.eth_sendRawTransaction(hexStr)
+        return sendTx
+    }
+
+    async shouldValidateState(pid){
+        let hexStr = await this.getRawTx("shouldValidateState", [pid], fromAccount)
+        let sendTx = await rpcMethod.eth_call(hexStr)
+        return sendTx
+    }
+
 }
 
 !async function(){

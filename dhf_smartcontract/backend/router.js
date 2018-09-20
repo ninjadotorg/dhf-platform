@@ -18,6 +18,8 @@ exports = module.exports = function (app, router) {
     router.get("/smartcontract/:version/info", getVersionInfo); //not require param
 
     router.post("/smartcontract/:version/release", releaseHandler);
+    router.post("/smartcontract/:version/retract", retractHandler);
+    router.post("/smartcontract/:version/stop", stopHandler);
 
     // POST "/smartcontract/v1/release" {depositAddress: string, amount: string, project: string}
 
@@ -49,11 +51,39 @@ async function releaseHandler(req, res){
         console.log("Cannot find version " + version)
         return null
     }
-    if (typeof depositAddress == "undefined" || typeof amount == "undefined" || typeof project == "undefined"){
-        console.log("Param not valid")
+    let result = smartContractAPI[version].release(depositAddress, amount, project)
+    if (!result) {
+        res.json({status: "fail", message: "Cannot call smartcontract"})
+    } else {
+        res.json({tx: result})
+    }
+}
+
+async function retractHandler(req, res){
+    let version = req.params.version
+    let project = req.params.project
+    let scale = req.params.scale
+    let denominator = req.params.denominator
+    if (!smartContractAPI[version]) {
+        console.log("Cannot find version " + version)
         return null
     }
-    let result = smartContractAPI[version].release(depositAddress, amount, project)
+    let result = smartContractAPI[version].retract(project, scale, denominator)
+    if (!result) {
+        res.json({status: "fail", message: "Cannot call smartcontract"})
+    } else {
+        res.json({tx: result})
+    }
+}
+
+async function stopHandler(req, res){
+    let version = req.params.version
+    let project = req.params.project
+    if (!smartContractAPI[version]) {
+        console.log("Cannot find version " + version)
+        return null
+    }
+    let result = smartContractAPI[version].stop(project)
     if (!result) {
         res.json({status: "fail", message: "Cannot call smartcontract"})
     } else {

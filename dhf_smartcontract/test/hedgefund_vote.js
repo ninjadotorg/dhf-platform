@@ -60,7 +60,7 @@ contract("HedgeFund", (accounts) => {
             let deadline = Math.floor(new Date().getTime()/1000) + 60*60;
             let lifeTime = 3;
             let owner = trader;
-            let tx1 = await hf.initProject(target, max, deadline, lifeTime, owner, PID1, {from: owner});
+            let tx1 = await hf.initProject(target, max, deadline, lifeTime, PID1, {from: owner});
             assert.equal(PID1, Utils.b2s(Utils.oc(tx1, "__init", "pid")))
             assert.equal("INITFUND", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
         })
@@ -73,14 +73,14 @@ contract("HedgeFund", (accounts) => {
         })  
 
         //invest reach target
-        it("should change to APPROVED state if fund reach target", async () => {
+        it("should change to READY state if fund reach target", async () => {
             let tx1 = await hf.fundProject(PID1, {from: investor1, value: web3.toWei(0.5)});
-            assert.equal("APPROVED", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
+            assert.equal("READY", Utils.b2s(Utils.oc(tx1, "__changeState", "to")))
             let tx2 = await hf.fundProject(PID1, {from: investor2, value: web3.toWei(0.02)});
             assert.equal(web3.toWei(0.02), Utils.oc(tx2, "__funding", "amount"))
         })  
 
-        it("should allow to vote in APPROVED state", async () => {
+        it("should allow to vote in READY state", async () => {
             let tx1 = await hf.voteStop(PID1, 1, {from: investor1})
             assert.equal(Utils.b2s(Utils.oc(tx1, "__changeState", "to")), "WITHDRAW")
             await getFunder(PID1) 
