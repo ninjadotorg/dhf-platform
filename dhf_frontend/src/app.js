@@ -17,7 +17,7 @@ import history from '@/utils/history';
 import projectPage from '@/projectPage';
 import trade from '@/trade';
 import tradePage from '@/trade/tradePage';
-
+import Test from '@/test'
 const styles = theme => ({
   content: {
     flexGrow: 1,
@@ -83,6 +83,7 @@ class App extends React.Component {
           <Switch>
             <Route path="/register" component={Register} />
             <Route path="/login" component={Login} />
+            <Route path="/test" component={Test} />
             <this.PrivateRoute path="/" />
             <Route component={() => <div>404 Not found</div>} />
           </Switch>
