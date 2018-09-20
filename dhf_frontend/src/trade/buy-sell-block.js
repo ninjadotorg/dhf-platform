@@ -109,7 +109,7 @@ class BuySellBlock extends React.Component {
     });
   };
 
-  addNotification=()=> {
+  addNotification=() => {
     this.notificationDOMRef.current.addNotification({
       title: 'Success',
       message: 'Order Placed',
@@ -233,7 +233,7 @@ class BuySellBlock extends React.Component {
                   />
                 </FormControl>
               ) : (
-                <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none'}}>
                   <TextField
                     label="Price"
                     className={classNames(classes.margin, classes.textField)}
@@ -336,7 +336,7 @@ class BuySellBlock extends React.Component {
                   />
                 </FormControl>
               ) : (
-                <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
                     className={classNames(classes.margin, classes.textField)}

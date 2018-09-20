@@ -18,6 +18,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { compose } from 'recompose';
 
 const styles = {
   root: {
@@ -167,4 +168,7 @@ WalletList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(WalletList);
+export default compose(
+  withRouter,
+  withStyles(styles),
+)(WalletList);

@@ -9,12 +9,16 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import request from '@/utils/api';
 import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Button from '@material-ui/core/Button';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route, Link, withRouter } from 'react-router-dom';
+import history from '@/utils/history';
+import { compose } from 'recompose';
+import axios from 'axios';
 import { mainListItems, secondaryListItems } from './listItems';
 
 const drawerWidth = 240;
@@ -91,7 +95,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing.unit * 3,
-    height: '100vh',
+    height: 'auto',
     overflow: 'auto',
   },
   chartContainer: {
@@ -115,6 +119,19 @@ class Sidebar extends React.Component {
     this.setState({ open: false });
   };
 
+  handleLogout = () => {
+    request({
+      method: 'post',
+      url: 'users/logout',
+    })
+      .then(response => {
+        localStorage.clear();
+        axios.defaults.headers.common.Authorization = '';
+        return history.push('/login');
+      })
+      .catch(error => {});
+  };
+
   render() {
     const { classes } = this.props;
 
@@ -133,11 +150,14 @@ class Sidebar extends React.Component {
             <Typography variant="title" color="inherit" noWrap className={classes.title}>
               Dashboard
             </Typography>
-            <IconButton color="inherit">
+            {/* <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
+            <Button variant="outline" color="inherit" onClick={this.handleLogout}>
+              LOGOUT
+            </Button>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -166,4 +186,7 @@ Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Sidebar);
+export default compose(
+  withRouter,
+  withStyles(styles),
+)(Sidebar);

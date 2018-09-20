@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import { Redirect } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
+import history from '@/utils/history';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { compose } from 'recompose';
 
 const styles = theme => ({
   layout: {
@@ -63,7 +65,8 @@ class Login extends React.Component {
       email,
       password: '',
       error: '',
-      success: '',
+      success: false,
+      successMsg: '',
     };
   }
 
@@ -87,7 +90,8 @@ class Login extends React.Component {
     };
     this.setState({
       error: '',
-      success: '',
+      success: false,
+      successMsg: '',
     });
     request({
       method: 'post',
@@ -96,11 +100,10 @@ class Login extends React.Component {
     })
       .then(response => {
         localStorage.setItem('token', response.id);
+        axios.defaults.headers.common.Authorization = response.id;
         this.setState({
-          success: 'Login Successful. Redirecting to dashboard..',
-        });
-        return this.props.history.push({
-          pathname: '/',
+          successMsg: 'Login Successful. Redirecting to dashboard..',
+          success: true,
         });
       })
       .catch(error => {
@@ -150,8 +153,9 @@ class Login extends React.Component {
                 Submit
               </Button>
               <Typography color="primary" style={{ marginTop: 20 }}>
-                {this.state.success}
+                {this.state.successMsg}
               </Typography>
+              {this.state.success && <Redirect to="/" />}
             </ValidatorForm>
           </Paper>
         </main>
@@ -164,4 +168,4 @@ Login.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Login);
+export default compose(withStyles(styles))(Login);
