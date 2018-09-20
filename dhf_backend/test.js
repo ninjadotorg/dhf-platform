@@ -1,10 +1,18 @@
 let {BigNumber}  = require('bignumber.js');
-let a = BigNumber(90);
+let a = BigNumber('');
 
-let b = BigNumber(0);
+let b = BigNumber('0');
 
-b= b.plus(20)
+let c = BigNumber('0.0');
 
-let c = a.minus(b);
+console.log(a, b, a === b);
+console.log(a, c, a === c);
+console.log(b, c, b === c);
+console.log(a, a === 0);
+let  d = BigNumber('0.001');
 
-console.log(c.toString());
+console.log(a, a.gt(0));
+console.log(b, b.gt(0));
+console.log(c, c.gt(0));
+console.log(d, d.gt(0));
+

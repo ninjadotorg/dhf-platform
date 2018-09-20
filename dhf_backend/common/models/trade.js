@@ -22,7 +22,7 @@ module.exports = function(Trade) {
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
-          if (project.state !== PROJECT_STATE.RELEASED) {
+          if (project.state !== PROJECT_STATE.RELEASE) {
             error.status = 404;
             error.message = 'Project not ready or finished';
             return callback(error);
@@ -89,7 +89,7 @@ module.exports = function(Trade) {
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
-          if (project.state !== PROJECT_STATE.RELEASED) {
+          if (project.state !== PROJECT_STATE.RELEASE) {
             error.status = 404;
             error.message = 'Project not ready or finished';
             return callback(error);
@@ -135,7 +135,7 @@ module.exports = function(Trade) {
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
-          if (project.state !== PROJECT_STATE.RELEASED) {
+          if (project.state !== PROJECT_STATE.RELEASE) {
             error.status = 404;
             error.message = 'Project not ready or finished';
             return callback(error);
@@ -181,7 +181,7 @@ module.exports = function(Trade) {
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
-          if (project.state !== PROJECT_STATE.RELEASED) {
+          if (project.state !== PROJECT_STATE.RELEASE) {
             error.status = 404;
             error.message = 'Project not ready or finished';
             return callback(error);
@@ -228,7 +228,7 @@ module.exports = function(Trade) {
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
-          if (project.state !== PROJECT_STATE.RELEASED) {
+          if (project.state !== PROJECT_STATE.RELEASE) {
             error.status = 404;
             error.message = 'Project not ready or finished';
             return callback(error);
