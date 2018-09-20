@@ -41,6 +41,7 @@ module.exports = class Gateway {
                 this.exchange = new Binance(exchangeAccount);
                 break;
             default:
+                throw new Error('exchange ' + exchangeAccount.name + ' is not supported')
                 break;
         }
     }

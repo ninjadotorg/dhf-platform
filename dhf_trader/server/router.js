@@ -91,7 +91,10 @@ async function action(req, res){
             await GatewayList[req.params.project].init()
         }
         var gateway = GatewayList[req.params.project]
-        if (!gateway.exchange) throw new Error("Exchange name incorrect")
+        if (!gateway.exchange) {
+            delete GatewayList[req.params.project]
+            throw new Error("Exchange name incorrect")
+        }
         res.json(await gateway.action((req.params.action || params.action), params))
 
     } catch(err){
