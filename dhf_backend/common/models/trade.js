@@ -212,7 +212,6 @@ module.exports = function(Trade) {
   Trade.cancel = function(projectId, symbol, orderId, callback) {
     let orderResult;
     let currentProject = null;
-    let currentOrder = null;
     let error = new Error();
     async.series([
       function validateProject(callback) {
@@ -238,7 +237,7 @@ module.exports = function(Trade) {
         });
       },
       function callTrade(callback) {
-        Trade.action(currentProject.id, 'cancelOrder', symbol,
+        Trade.action(currentProject.id, 'cancelOrder', symbol, null, null, null, orderId,
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
