@@ -12,6 +12,9 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Header from 'components/Header/Header.jsx';
+import HeaderLinks from 'components/Header/HeaderLinks.jsx';
+import image from 'assets/img/bg7.jpg';
 
 const styles = theme => ({
   layout: {
@@ -24,9 +27,13 @@ const styles = theme => ({
       marginLeft: 'auto',
       marginRight: 'auto',
     },
+    zIndex: '2',
+    position: 'relative',
+    paddingTop: '20vh',
+    color: '#FFFFFF',
   },
   paper: {
-    marginTop: theme.spacing.unit * 8,
+    marginTop: theme.spacing.unit * 1,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -42,6 +49,30 @@ const styles = theme => ({
   },
   submit: {
     marginTop: theme.spacing.unit * 3,
+  },
+  pageHeader: {
+    minHeight: '100vh',
+    maxHeight: '1200px',
+    height: 'auto',
+    display: 'inherit',
+    position: 'relative',
+    margin: '0',
+    padding: '0',
+    border: '0',
+    alignItems: 'center',
+    '&:before': {
+      background: 'rgba(0, 0, 0, 0.5)',
+    },
+    '&:before,&:after': {
+      position: 'absolute',
+      zIndex: '1',
+      width: '100%',
+      height: '100%',
+      display: 'block',
+      left: '0',
+      top: '0',
+      content: '""',
+    },
   },
 });
 // {
@@ -121,74 +152,84 @@ class Register extends React.Component {
     return (
       <React.Fragment>
         <CssBaseline />
-        <main className={classes.layout}>
-          <Paper className={classes.paper}>
-            <Typography variant="headline">Register as a trader</Typography>
-            <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="firstname">First Name</InputLabel>
-                <Input
-                  id="firstname"
-                  name="firstName"
-                  autoComplete="firstname"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  autoComplete="lastName"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Email *"
-                  onChange={this.handleChangeEmail}
-                  name="email"
-                  value={this.state.email}
-                  validators={['required', 'isEmail']}
-                  errorMessages={['this field is required', 'email is not valid']}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Create new password *"
-                  onChange={this.handleChange}
-                  name="password"
-                  type="password"
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  value={this.state.password}
-                />
-              </FormControl>
-              <FormHelperText id="name-helper-text" error>
-                {this.state.error}
-              </FormHelperText>
-              <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
-                Register
-              </Button>
+        <Header absolute color="transparent" brand="Ninja Fund" rightLinks={<HeaderLinks />} />
+        <div
+          className={classes.pageHeader}
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'top center',
+          }}
+        >
+          <main className={classes.layout}>
+            <Paper className={classes.paper}>
+              <Typography variant="headline">Register</Typography>
+              <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="firstname">First Name</InputLabel>
+                  <Input
+                    id="firstname"
+                    name="firstName"
+                    autoComplete="firstname"
+                    autoFocus
+                    onChange={this.handleTextChange}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="lastName">Last Name</InputLabel>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    autoComplete="lastName"
+                    autoFocus
+                    onChange={this.handleTextChange}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="username">Username</InputLabel>
+                  <Input
+                    id="username"
+                    name="username"
+                    autoComplete="username"
+                    autoFocus
+                    onChange={this.handleTextChange}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <TextValidator
+                    label="Email *"
+                    onChange={this.handleChangeEmail}
+                    name="email"
+                    value={this.state.email}
+                    validators={['required', 'isEmail']}
+                    errorMessages={['this field is required', 'email is not valid']}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <TextValidator
+                    label="Create new password *"
+                    onChange={this.handleChange}
+                    name="password"
+                    type="password"
+                    validators={['required']}
+                    errorMessages={['this field is required']}
+                    value={this.state.password}
+                  />
+                </FormControl>
+                <FormHelperText id="name-helper-text" error>
+                  {this.state.error}
+                </FormHelperText>
+                <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
+                  Register
+                </Button>
 
-              <Typography color="primary" style={{ marginTop: 30, textAlign: 'center' }}>
-                <Link to="/login">Already registered, Click here to Login</Link>
-              </Typography>
-            </ValidatorForm>
-          </Paper>
-        </main>
+                <Typography color="primary" style={{ marginTop: 30, textAlign: 'center' }}>
+                  <Link to="/login">Already registered, Click here to Login</Link>
+                </Typography>
+              </ValidatorForm>
+            </Paper>
+          </main>
+        </div>
       </React.Fragment>
     );
   }
