@@ -67,10 +67,6 @@
     "dataSource": "db",
     "public": true
   },
-  "trader": {
-    "dataSource": "db",
-    "public": true
-  },
   "exchange": {
     "dataSource": "db",
     "public": true
@@ -78,5 +74,22 @@
   "currency": {
     "dataSource": "db",
     "public": true
+  },
+  "test": {
+    "dataSource": "rest",
+    "public": true
+  },
+  "trade": {
+    "dataSource": "rest",
+    "public": true
+  },
+  "smart-contract": {
+    "dataSource": "rest",
+    "public": false
+  },
+  "release-stages": {
+    "dataSource": "mongodb",
+    "public": true,
+    "options": {}
   }
 }

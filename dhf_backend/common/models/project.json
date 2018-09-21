@@ -14,37 +14,45 @@
       "required": true
     },
     "target": {
-      "type": "number",
-      "required": true
+      "type": "string",
+      "required": true,
+      "default": "0"
     },
     "exchange": {
       "type": "string",
-      "required": true
+      "required": true,
+      "default": "binance"
     },
     "max": {
-      "type": "number"
+      "type": "string",
+      "default": "0"
     },
     "fundingAmount": {
-      "type": "number"
+      "type": "string",
+      "default": "0"
     },
-    "updatedAmmount": {
-      "type": "number"
+    "updatedAmount": {
+      "type": "string",
+      "default": "0"
     },
     "releasedAmount": {
-      "type": "number"
+      "type": "string",
+      "default": "0"
     },
     "pendingAmount": {
-      "type": "number"
+      "type": "string",
+      "default": "0"
     },
     "refundAmount": {
-      "type": "number"
+      "type": "string",
+      "default": "0"
     },
     "startTime": {
-      "type": "number",
+      "type": "date",
       "required": true
     },
     "deadline": {
-      "type": "number",
+      "type": "date",
       "required": true
     },
     "lifeTime": {
@@ -52,10 +60,30 @@
     },
     "currency": {
       "type": "string",
-      "required": true
+      "required": true,
+      "default": "ETH"
     },
     "isTransfer": {
       "type": "boolean"
+    },
+    "stages": {
+      "type": "object",
+      "default": [10, 25, 30, 35]
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "updatedDate": {
+      "type": "date"
+    },
+    "depositAddress": {
+      "type": "string"
+    },
+    "currentStage": {
+      "type": "string"
+    },
+    "smartContractVersion": {
+      "type": "string"
     },
     "state": {
       "type": "string",
@@ -65,8 +93,8 @@
         "INITFUND",
         "APPROVED",
         "READY",
-        "RELEASEED",
-        "TOP",
+        "RELEASE",
+        "STOP",
         "WITHDRAW"
       ]
     }
@@ -76,6 +104,12 @@
     "User": {
       "type": "belongsTo",
       "model": "user",
+      "foreignKey": "",
+      "required": true
+    },
+    "releaseState": {
+      "type": "hasMany",
+      "model": "release-state",
       "foreignKey": "",
       "required": true
     }
@@ -93,6 +127,13 @@
       "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "listProjects"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "trader",
+      "permission": "ALLOW",
+      "property": "release"
     },
     {
       "accessType": "WRITE",
@@ -129,7 +170,8 @@
         "deleteById",
         "replaceById",
         "listProjects",
-        "myProjects"
+        "myProjects",
+        "release"
       ]
     }
   }

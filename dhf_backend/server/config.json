@@ -4,6 +4,7 @@
   "port": 9000,
   "remoting": {
     "context": false,
+    "cors": false,
     "rest": {
       "handleErrors": false,
       "normalizeHttpPath": false,
@@ -16,7 +17,18 @@
     "urlencoded": {
       "extended": true,
       "limit": "100kb"
+    }
+  },
+  "crons": {
+    "firstReleased": {
+      "enable": false,
+      "jobClass": "lib/firstRelease-job",
+      "interval": "0    *     * * * *"
     },
-    "cors": false
+    "nextReleased": {
+      "enable": true,
+      "jobClass": "lib/nextRelease-job",
+      "interval": "0    *     * * * *"
+    }
   }
 }

@@ -11,5 +11,139 @@
   },
   "db": {
     "connector": "memory"
-  }
+  },
+  "rest": {
+    "connector": "rest",
+    "debug": true,
+    "options": {
+      "headers": {
+        "accept": "application/json",
+        "content-type": "application/json"
+    },
+    "strictSSL": false
+    },
+    "operations": [
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://trader-api:9001/trade/exchange/{exchange}/listLockAccount",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "listLockAccount": ["exchange"]
+        }
+      },
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://trader-api:9001/trade/exchange/{exchange}/listAvailableAccount",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "listAvailableAccount": ["exchange"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://trader-api:9001/trade/project/{projectId}/getOrSetAccount",
+          "options": {
+            "strictSSL": false
+          },
+          "query": {
+            "exchange": "{exchange}",
+            "depositAsset": "{currency}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "getOrSetAccount": ["projectId", "exchange", "currency"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://trader-api:9001/trade/project/{projectId}/unLockAccount",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "unLockAccount": ["projectId"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://trader-api:9001/trade/project/{projectId}/{action}",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "symbol": "{symbol}",
+            "quantity": "{quantity}",
+            "price": "{price}",
+            "currencies": "{currencies}",
+            "orderId": "{orderId}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "action": ["projectId", "action", "symbol", "quantity", "price", "currencies", "orderId"]
+        }
+      },
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactGetVersion": ["version"]
+        }
+      },
+      {
+        "template": {
+          "method": "GET",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/info",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionInfo": ["version"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/release",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "depositAddress": "{depositAddress}",
+            "amount": "{amount}",
+            "project": "{projectId}",
+            "stage": "{stageId}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionRelease": ["version", "depositAddress", "amount", "projectId", "stageId"]
+        }
+      }
+  ]
+}
 }

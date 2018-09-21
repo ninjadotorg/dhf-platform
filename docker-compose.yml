@@ -11,16 +11,53 @@ services:
 #         - ./nginx.tmpl:/app/nginx.tmpl
 #      ports:
 #         - "80:80"
-
+  web-app:
+      build: 
+        context: dhf_frontend
+        dockerfile: Dockerfile
+      container_name: web-app
+      restart: always
+      depends_on:
+#         - proxy
+         - trader-api
+      links:
+         - trader-api
+         - smart-contract-api
+      volumes:
+         # files
+         - ./dhf_frontend/configs:/app/configs
+         - ./dhf_frontend/dist:/app/dist
+         - ./dhf_frontend/public:/app/public
+         - ./dhf_frontend/scripts:/app/scripts
+         - ./dhf_frontend/src:/app/src
+         - ./dhf_frontend/package.json:/app/package.json
+      environment:
+         APP_ENV: development
+         NODE_ENV: development
+         VIRTUAL_PORT: 3000
+         VIRTUAL_HOST: webapp.nyc
+      ports:
+        - "3000:3000"
+      expose:
+        - "3000"
+      command:
+        - npm 
+        - start
   blackend-api:
       build: 
         context: dhf_backend
         dockerfile: Dockerfile
+      container_name: blackend-api
+      restart: always
       depends_on:
 #         - proxy
          - mongo
+         - trader-api
+         - smart-contract-api
       links:
          - mongo
+         - trader-api
+         - smart-contract-api
       volumes:
          # files
          - ./dhf_backend/server:/app/server
@@ -44,6 +81,8 @@ services:
       build: 
         context: dhf_trader
         dockerfile: Dockerfile
+      container_name: trader-api
+      restart: always
       depends_on:
 #         - proxy
          - mongo
@@ -53,6 +92,8 @@ services:
          # files
          - ./dhf_trader/server:/app/server
          - ./dhf_trader/common:/app/common
+         - ./dhf_trader/configs:/app/configs
+         - ./dhf_trader/scripts:/app/scripts
          - ./dhf_trader/test:/app/test
          - ./dhf_trader/package.json:/app/package.json
       environment:
@@ -66,7 +107,41 @@ services:
         - "9001"
       command:
         - /app/node_modules/.bin/nodemon
-        - .
+        - server/server.js
+
+  smart-contract-api:
+    build: 
+      context: dhf_smartcontract/backend
+      dockerfile: Dockerfile
+    container_name: smartcontract-api
+    restart: always
+    depends_on:
+#         - proxy
+       - mongo
+    links:
+       - mongo
+    volumes:
+       # files
+       - ./dhf_smartcontract/backend/jobs:/app/jobs
+       - ./dhf_smartcontract/backend/libs:/app/libs
+       - ./dhf_smartcontract/backend/models:/app/models
+       - ./dhf_smartcontract/backend/scripts:/app/scripts
+       - ./dhf_smartcontract/backend/configuration.js:/app/configuration.js
+       - ./dhf_smartcontract/backend/router.js:/app/router.js
+       - ./dhf_smartcontract/backend/server.js:/app/server.js
+       - ./dhf_smartcontract/backend/package.json:/app/package.json
+    environment:
+       APP_ENV: development
+       NODE_ENV: development
+       VIRTUAL_PORT: 9003
+       VIRTUAL_HOST: api.smart-contract.nyc
+    ports:
+      - "9003:9003"
+    expose:
+      - "9003"
+    command:
+      - /app/node_modules/.bin/nodemon
+      - server.js
 
    # DATABASE ---------------------------------------------------
   mongo:

@@ -35,6 +35,12 @@
       "model": "user",
       "foreignKey": "",
       "required": true
+    },
+    "Project": {
+      "type": "belongsTo",
+      "model": "project",
+      "foreignKey": "",
+      "required": true
     }
   },
   "acls": [

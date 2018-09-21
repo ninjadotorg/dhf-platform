@@ -1,12 +1,10 @@
 require("../configs/configuration")
 let AssetDB = require("../common/models/assets")
+let ExchangeDB = require("../common/models/exchanges")
 let ExchangeUtil = require("../common/lib/exchange")
 
 !async function (){
-    // let sumAmount = await AssetDB.getTotalAmount("test", "USDT")
-    // console.log(sumAmount)
-
-    let result = await ExchangeUtil.getBalance("binance","test","BTC")
-    
+    let getLock = await ExchangeDB.getAvailableAccounts("binance")
+    console.log(getLock)
 }()
 

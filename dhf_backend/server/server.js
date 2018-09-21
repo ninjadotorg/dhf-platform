@@ -7,7 +7,6 @@ var app = module.exports = loopback();
 
 app.start = function() {
   app.use(function(err, req, res, next) {
-    console.log(123, err);
     if (err) {
       if ([401, 404].indexOf(err.statusCode) !== -1) {
         // log info only

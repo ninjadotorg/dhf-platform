@@ -1,18 +1,24 @@
 'use strict';
-
+let errorHandler = require('../lib/error-handler');
 module.exports = function(Info) {
-  Info.exchangeInfo = function(callback) {
-    const binance = require('../lib/binance')(Info.app).binance;
-    binance.exchangeInfo(function(err, resp) {
-      if (err)
-        return callback(err);
-      callback(null, resp);
-    });
+  Info.exchangeInfo = function(projectId, callback) {
+    Info.app.models.trade.action(projectId, 'exchangeInfo',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
   };
   Info.remoteMethod(
     'exchangeInfo',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
       http: {
         verb: 'GET',
         path: '/exchange-info',
@@ -21,18 +27,24 @@ module.exports = function(Info) {
     }
   );
 
-  Info.depositHistory = function(callback) {
-    const binance = require('../lib/binance')(Info.app).binance;
-    binance.depositHistory(function(err, resp) {
-      if (err)
-        return callback(err);
-      callback(null, resp);
-    });
+  Info.depositHistory = function(projectId, callback) {
+    Info.app.models.trade.action(projectId, 'depositHistory',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
   };
   Info.remoteMethod(
     'depositHistory',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
       http: {
         path: '/deposit-history',
         verb: 'GET',
@@ -41,18 +53,77 @@ module.exports = function(Info) {
     }
   );
 
-  Info.prices = function(callback) {
-    const binance = require('../lib/binance')(Info.app).binance;
-    binance.prices(function(err, resp) {
-      if (err)
-        return callback(err);
-      callback(null, resp);
-    });
+  Info.tradeHistory = function(projectId, symbol, callback) {
+    Info.app.models.trade.action(projectId, 'tradeHistory', symbol,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+  Info.remoteMethod(
+    'tradeHistory',
+    {
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'symbol', type: 'string', required: true},
+      ],
+      http: {
+        path: '/trade-history',
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Info.withdrawHistory = function(projectId, callback) {
+    Info.app.models.trade.action(projectId, 'withdrawHistory',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+  Info.remoteMethod(
+    'withdrawHistory',
+    {
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
+      http: {
+        path: '/withdraw-history',
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Info.prices = function(projectId, callback) {
+    Info.app.models.trade.action(projectId, 'getPrices',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
   };
   Info.remoteMethod(
     'prices',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
       http: {
         verb: 'GET',
       },
@@ -60,24 +131,57 @@ module.exports = function(Info) {
     }
   );
 
-  Info.balance = function(callback) {
-    const binance = require('../lib/binance')(Info.app).binance;
-    binance.balance((err, resp) => {
-      if (err)
-        return callback(err);
-      callback(null, resp);
-    });
+  Info.balance = function(projectId, currencies, callback) {
+    Info.app.models.trade.action(projectId, 'getBalance', null, null, null, currencies,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
   };
   Info.remoteMethod(
     'balance',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'currencies', type: 'string'},
+      ],
       http: {
         verb: 'GET',
       },
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
+
+  Info.accountInfo = function(projectId, callback) {
+    Info.app.models.trade.action(projectId, 'accountInfo', null, null, null, null,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+  Info.remoteMethod(
+    'accountInfo',
+    {
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
+      http: {
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
   Info.status = function(callback) {
     callback(null, {'I\'m': 'Okie!', 'Your ID is': Info.app.currentUserId});
   };

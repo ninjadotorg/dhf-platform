@@ -6,7 +6,6 @@ async function test() {
     var gateway = new Gateway("binance", "test");
     await gateway.init()
 
-    
     // var params = {
     //     symbol: "EDOETH",
     //     quantity: "10",
@@ -32,10 +31,8 @@ async function test() {
     // console.log(result)
 
 
-    // await gateway.action("myTrades", {})
-
-    
-
+    let result = await gateway.action("getDepositAddress", {asset: "BTC"})
+    console.log(result)
 }
 
 test()
