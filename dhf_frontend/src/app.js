@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Switch, Route, Router , BrowserRouter, Redirect } from 'react-router-dom';
+import { Switch, Route, Router, BrowserRouter, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Todo from '@/page/todo';
@@ -16,6 +16,8 @@ import './style/index.scss';
 import history from '@/utils/history';
 import projectPage from '@/projectPage';
 import trade from '@/trade';
+import LandingPage from '@/LandingPage/LandingPage';
+import LoginPage from '@/LoginPage/LoginPage';
 import tradePage from '@/trade/tradePage';
 
 const styles = theme => ({
@@ -53,12 +55,12 @@ class App extends React.Component {
                 <Sidebar />
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
-                      <Route path="/create-project" component={createProject} />
-                      <Route path="/projects/:id" exact component={projectPage} />
-                      <Route path="/wallet" exact component={wallet} />
-                      <Route path="/trade" exact component={trade} />
-                      <Route path="/trade/:id" exact component={tradePage} />
-                      <Route path="/" exact component={HomePage} />
+                  <Route path="/create-project" component={createProject} />
+                  <Route path="/projects/:id" exact component={projectPage} />
+                  <Route path="/wallet" exact component={wallet} />
+                  <Route path="/trade" exact component={trade} />
+                  <Route path="/trade/:id" exact component={tradePage} />
+                  <Route path="/dashboard" exact component={HomePage} />
                 </main>
               </div>
             </React.Fragment>
@@ -83,6 +85,7 @@ class App extends React.Component {
           <Switch>
             <Route path="/register" component={Register} />
             <Route path="/login" component={Login} />
+            <Route path="/" exact component={LandingPage} />
             <this.PrivateRoute path="/" />
             <Route component={() => <div>404 Not found</div>} />
           </Switch>
