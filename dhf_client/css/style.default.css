@@ -98,7 +98,13 @@ button {
   border-radius: 50%;
   font-size: 0.85rem;
 }
-
+.social-icons {
+  margin: 0 auto;
+  margin-top: 10px;
+}
+.social-icons img {
+  margin-right: 1em;
+}
 /* GENERAL MEDIAQUERY */
 @media (max-width: 600.98px) {
   .hero-image {
