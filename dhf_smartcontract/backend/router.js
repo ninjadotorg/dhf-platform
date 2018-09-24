@@ -47,11 +47,12 @@ async function releaseHandler(req, res){
     let depositAddress = req.body.depositAddress
     let amount = req.body.amount
     let project = req.body.project
+    let stage = req.body.stage
     if (!smartContractAPI[version]) {
         console.log("Cannot find version " + version)
-        return null
+        return res.json({status: "fail", message: "Cannot find version"})
     }
-    let result = smartContractAPI[version].release(depositAddress, amount, project)
+    let result = smartContractAPI[version].release(depositAddress, amount, project,stage)
     if (!result) {
         res.json({status: "fail", message: "Cannot call smartcontract"})
     } else {
@@ -66,7 +67,7 @@ async function retractHandler(req, res){
     let denominator = req.params.denominator
     if (!smartContractAPI[version]) {
         console.log("Cannot find version " + version)
-        return null
+        return res.json({status: "fail", message: "Cannot find version"})
     }
     let result = smartContractAPI[version].retract(project, scale, denominator)
     if (!result) {
@@ -81,7 +82,7 @@ async function stopHandler(req, res){
     let project = req.params.project
     if (!smartContractAPI[version]) {
         console.log("Cannot find version " + version)
-        return null
+        return res.json({status: "fail", message: "Cannot find version"})
     }
     let result = smartContractAPI[version].stop(project)
     if (!result) {

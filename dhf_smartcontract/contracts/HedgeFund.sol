@@ -19,14 +19,87 @@ pragma solidity ^0.4.2;
 //101: Unauthorization
 //102: release wrong amount
 
+library SafeMath {
+    function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (_a == 0) {
+            return 0;
+        }
+
+        uint256 c = _a * _b;
+        require(c / _a == _b);
+
+        return c;
+    }
+
+    function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+        require(_b > 0); // Solidity only automatically asserts when dividing by 0
+        uint256 c = _a / _b;
+        // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+
+        return c;
+    }
+
+    function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+        require(_b <= _a);
+        uint256 c = _a - _b;
+
+        return c;
+    }
+
+    function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
+        uint256 c = _a + _b;
+        require(c >= _a);
+
+        return c;
+    }
+
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b != 0);
+        return a % b;
+    }
+}
+
+
+
+library Percent {
+    // Solidity automatically throws when dividing by 0
+    struct percent {
+        uint num;
+        uint den;
+    }
+    function mul(percent storage p, uint a) internal view returns (uint) {
+        if (a == 0) {
+            return 0;
+        }
+        return a*p.num/p.den;
+    }
+
+    function div(percent storage p, uint a) internal view returns (uint) {
+        return a/p.num*p.den;
+    }
+
+    function sub(percent storage p, uint a) internal view returns (uint) {
+        uint b = mul(p, a);
+        if (b >= a) return 0;
+        return a - b;
+    }
+
+    function add(percent storage p, uint a) internal view returns (uint) {
+        return a + mul(p, a);
+    }
+}
+
+
 contract HedgeFund {
+    using Percent for Percent.percent;
+    using SafeMath for uint;
+
     //Parameters
     enum S { INITFUND, READY, RELEASED, STOP, WITHDRAW }
     
-    struct ScaleFund { // userWithdrawFund = (userFund * scale)/denominator
-        uint scale;
-        uint denominator;
-    }
 
     struct CancelData { // userWithdrawFund = (userFund * scale)/denominator
         uint id;
@@ -38,10 +111,12 @@ contract HedgeFund {
         uint target;
         uint max;
         uint fundingAmount;
-        uint updatedAmount;
+        uint availableAmount;
 
         uint releasedAmount;
-        mapping(uint => uint) releasePeriod;
+        uint retractAmount;
+
+        mapping(bytes32 => uint) releasePeriod;
         
         uint startTime;
 
@@ -54,7 +129,7 @@ contract HedgeFund {
         address[] cancelRequestArr;
 
         S state;
-        ScaleFund scale;
+        Percent.percent plScale;
     }
 
     address contractOwner;
@@ -62,12 +137,16 @@ contract HedgeFund {
     bytes32[] PIDs;
 
     //event
+
+    event __receive(address from,  uint amount);
+
     event __init(address owner,  bytes32 pid);
     event __funding(bytes32 pid, address funder,  uint amount);
+    
 
     event __withdraw(bytes32 pid, address requester, uint fundAmount, uint withdrawAmount);
-    event __release(bytes32 pid, address exchange, uint amount, uint period);
-    event __retract(bytes32 pid, uint from, uint to, uint updatedAmount);
+    event __release(bytes32 pid, address exchange, uint amount, bytes32 stage);
+    event __retract(bytes32 pid, uint from, uint to, uint availableAmount);
     event __voteStop(address sender, bytes32 pid, uint stop);
     event __stop(address sender, bytes32 pid);
     event __verifyWithdraw(bytes32 pid);
@@ -96,21 +175,19 @@ contract HedgeFund {
         p.owner = msg.sender;
         p.state = S.INITFUND;
         p.releasedAmount = 0;
+        p.retractAmount = 0;
 
-        ScaleFund memory scaleF;
-        scaleF.scale = 1;
-        scaleF.denominator = 1;
-        p.scale = scaleF;
+        
 
         p.deadline = deadline;
         p.lifeTime = lifeTime * 1 days;
-        
         p.max = max;
         p.target = target;
-        p.fundingAmount = 0;
-        p.updatedAmount = 0;
-        p.releasedAmount = 0;
 
+        p.fundingAmount = 0;
+        p.availableAmount = 0;
+        p.releasedAmount = 0;
+        p.plScale = Percent.percent(1, 1);
 
         projects[pid] = p;
         PIDs.push(pid);
@@ -154,7 +231,7 @@ contract HedgeFund {
         }
 
         if (p.state == S.INITFUND){
-            if (p.fundingAmount + msg.value >= p.target) {
+            if (p.fundingAmount.add(msg.value) >= p.target) {
                 p.state = S.READY;
                 emit __changeState(pid, "INITFUND", "READY");
             }
@@ -163,24 +240,24 @@ contract HedgeFund {
         //update fund
         if ( msg.value > 0 ) {
             if (p.funds[msg.sender] > 0)
-                p.funds[msg.sender] = p.funds[msg.sender] + msg.value;
+                p.funds[msg.sender] = p.funds[msg.sender].add(msg.value);
             else {
                 p.funds[msg.sender] = msg.value;
                 p.funder.push(msg.sender);
             }
 
-            p.fundingAmount = p.fundingAmount + msg.value;
+            p.fundingAmount = p.fundingAmount.add(msg.value);
 
             //recheck the balance if fund is larger max
             if ( isReachMax(p.max, p.fundingAmount) ){
-                if (p.fundingAmount - p.max > 0.1 ether) { 
-                    uint retractAmount = p.fundingAmount - p.max - 0.1 ether;
-                    msg.sender.transfer(retractAmount);
-                    p.funds[msg.sender] = p.funds[msg.sender] - retractAmount;
-                    p.fundingAmount = p.fundingAmount - retractAmount;
+                if (p.fundingAmount.sub(p.max) > 0.1 ether) { 
+                    uint returnAmount = p.fundingAmount.sub(p.max).sub(0.1 ether);
+                    msg.sender.transfer(returnAmount);
+                    p.funds[msg.sender] = p.funds[msg.sender].sub(returnAmount);
+                    p.fundingAmount = p.fundingAmount.sub(returnAmount);
                 }
             }
-            p.updatedAmount = p.fundingAmount;
+            p.availableAmount = p.fundingAmount;
             emit __funding(pid, msg.sender, msg.value);
         }
     }
@@ -189,17 +266,17 @@ contract HedgeFund {
         Project storage p = projects[pid];
         
         if (p.state == S.INITFUND && p.funds[msg.sender] > 0) {
-            p.fundingAmount = p.fundingAmount - p.funds[msg.sender];
-            p.updatedAmount = p.fundingAmount;
+            p.fundingAmount = p.fundingAmount.sub(p.funds[msg.sender]);
+            p.availableAmount = p.fundingAmount;
             msg.sender.transfer(p.funds[msg.sender]);
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], p.funds[msg.sender]);
             p.funds[msg.sender] = 0;
         }
         else if (p.state == S.WITHDRAW && p.funds[msg.sender] > 0) {
-            uint withdrawAmount = (p.funds[msg.sender]*p.scale.scale)/p.scale.denominator;
-            p.updatedAmount = p.updatedAmount - withdrawAmount;
-            msg.sender.transfer(withdrawAmount);
+            uint256 withdrawAmount = Percent.mul(p.plScale, p.funds[msg.sender]);
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], withdrawAmount);
+            p.availableAmount = p.availableAmount.sub(withdrawAmount);
+            msg.sender.transfer(withdrawAmount);
             p.funds[msg.sender] = 0;
         } else {
             if (p.funds[msg.sender] == 0) revert("No money to withdraw");
@@ -207,35 +284,34 @@ contract HedgeFund {
         }
     } 
 
-    function release(bytes32 pid, address exchange, uint amount, uint period) public {
+    function release(bytes32 pid, address exchange, uint amount, bytes32 stage) public {
         Project storage p = projects[pid];
         require(p.state == S.READY || p.state == S.RELEASED, "100"); //should be in ready or release state
         require(p.releasedAmount + amount <= p.fundingAmount, "102"); //should not release fund larger than funding amount
-        if (p.releasePeriod[period]!=0) revert("Already transfer for this period");
+        if (p.releasePeriod[stage]!=0) revert("Already transfer for this period");
         if (p.state == S.READY) p.startTime = block.timestamp; //release signal in ready state (means first release), update start time to now
         exchange.transfer(amount);
-        p.releasedAmount = p.releasedAmount + amount;
-        p.releasePeriod[period] = amount;
+        p.releasedAmount = p.releasedAmount.add(amount);
+        p.availableAmount = p.availableAmount.sub(amount);
+        p.releasePeriod[stage] = amount;
         p.state = S.RELEASED;
+
         emit __changeState(pid, "READY|RELEASE", "RELEASE");
-        emit __release(pid, exchange, amount, period);
+        emit __release(pid, exchange, amount, stage);
     }
 
-    function retract(bytes32 pid, uint scale, uint denominator) public onlyContractOwner() { //0.017 => scale=17 
+    function retract(bytes32 pid, uint retractAmount) public onlyContractOwner() { //0.017 => scale=17 
         Project storage p = projects[pid];
-
         require(p.state == S.STOP, "100");
         p.state = S.WITHDRAW;
-
-        ScaleFund memory scaleF;
-        scaleF.scale = scale;
-        scaleF.denominator = denominator;
-        p.scale = scaleF;
-        p.updatedAmount = (p.fundingAmount*p.scale.scale)/p.scale.denominator;
-
+        p.availableAmount = p.availableAmount.add(retractAmount);
+        p.plScale = Percent.percent(p.availableAmount, p.fundingAmount);
+        p.retractAmount = retractAmount;
         emit __changeState(pid, "STOP", "WITHDRAW");
-        emit __retract(pid, scale, denominator, p.updatedAmount);
+        emit __retract(pid, p.plScale.num, p.plScale.den, p.availableAmount);
     }
+
+
 
     
 
@@ -255,7 +331,7 @@ contract HedgeFund {
         for (uint i=0; i < p.cancelRequestArr.length; i++) {
             address addr = p.cancelRequestArr[i];
             if (p.cancelRequests[addr].vote == 1){
-                sum = sum + p.funds[addr];
+                sum = sum.add(p.funds[addr]);
             }
         }
         if (sum > (p.fundingAmount/2)) {
@@ -293,6 +369,10 @@ contract HedgeFund {
         } 
     }
     
+    function () public payable{
+        emit __receive(msg.sender, msg.value);
+    }
+
     //GET function
     function shouldValidateState(bytes32 pid) public view returns (bool r){
         Project storage p = projects[pid];
@@ -311,10 +391,10 @@ contract HedgeFund {
         return PIDs.length;
     }
 
-    function getProjectInfo(bytes32 pid) public view returns (address owner, uint target, uint max,uint fundingAmount, uint updatedAmount, uint releasedAmount,
+    function getProjectInfo(bytes32 pid) public view returns (address owner, uint target, uint max,uint fundingAmount, uint availableAmount, uint releasedAmount, uint retractAmount,
         uint startTime, uint deadline, uint lifeTime, S state) {
         Project storage p = projects[pid];
-        return (p.owner, p.target, p.max, p.fundingAmount, p.updatedAmount, p.releasedAmount, p.startTime, p.deadline, p.lifeTime,p.state);
+        return (p.owner, p.target, p.max, p.fundingAmount, p.availableAmount, p.releasedAmount, p.retractAmount, p.startTime, p.deadline, p.lifeTime,p.state);
     }
 
     function getFunders(bytes32 pid) public view returns (address[]){
@@ -329,7 +409,7 @@ contract HedgeFund {
 
     function getWithdrawAmount(bytes32 pid, address funder) public view returns (uint){
         Project storage p = projects[pid];
-        uint withdrawAmount = (p.funds[funder]*p.scale.scale)/p.scale.denominator;
+        uint withdrawAmount = Percent.mul(p.plScale, p.funds[funder]);
         return withdrawAmount;
     }
 

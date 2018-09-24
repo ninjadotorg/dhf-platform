@@ -4,11 +4,12 @@ const EthereumTx = require('ethereumjs-tx');
 const rpcMethod = require("./rpcMethod");
 const Web3 = require('web3');
 const web3 = new Web3();
+
 const request = require("request")
 
 var fromAccount = {
-    address: "0xc0187bad0ecf6576e11c789f57eff23ccc69d766",
-    privateKey: "c8d80705a3fd2c74a9bb865c8f3a98ff80d354dbf16fc7dfd8a19481636475f3"
+    address: "0x38da05d0ca5a2defb87003b6b7b09dcd2676a0e8",
+    privateKey: "2917a7d1a7223c94db8045654cf04a63529acf3e2ffeda4f5427bb1e66cbbc3e"
 }
 var smartcontract = {}
 
@@ -27,7 +28,7 @@ class SmartContract {
             console.log("Cannot get nonce", nonce)
             return
         }
-
+        console.log(funcName, ...params)
         const functionInstance = this.contract.methods[funcName](...params);
         const functionInstanceAbi = functionInstance.encodeABI();
         const txParams = {
@@ -36,7 +37,7 @@ class SmartContract {
             to: this.contract._address,
             data: functionInstanceAbi,
             from: account.address,
-            nonce: '0x' + nonce,
+            nonce:  nonce,
             // chainId: 4
         };
         // console.log(txParams)
@@ -52,8 +53,8 @@ class SmartContract {
         return hexStr
     }
 
-    async release(exchange, amount, pid){
-        let hexStr = await this.getRawTx("release", [pid, exchange, amount], fromAccount)
+    async release(exchange, amount, pid, stage){
+        let hexStr = await this.getRawTx("release", ['0x'+pid, exchange, web3.utils.toWei(amount+'', 'ether'), '0x'+stage], fromAccount)
         let sendTx = await rpcMethod.eth_sendRawTransaction(hexStr)
         return sendTx
     }
