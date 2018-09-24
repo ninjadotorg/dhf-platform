@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 
 export const mainListItems = (
   <div>
-    <ListItem component={Link} to="/" button>
+    <ListItem component={Link} to="/dashboard" button>
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
