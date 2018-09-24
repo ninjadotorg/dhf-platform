@@ -45,16 +45,25 @@ function HeaderLinks({ ...props }) {
         /> */}
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button component={Link} to="/register" color="transparent" className={classes.navLink}>
-          {' '}
-          Register
-        </Button>
+        {!localStorage.getItem('token') && (
+          <Button component={Link} to="/register" color="transparent" className={classes.navLink}>
+            {' '}
+            Register
+          </Button>
+        )}
       </ListItem>
       <ListItem className={classes.listItem}>
-        <Button color="transparent" component={Link} to="/login" className={classes.navLink}>
-          {' '}
-          Login
-        </Button>
+        {localStorage.getItem('token') ? (
+          <Button color="transparent" component={Link} to="/dashboard" className={classes.navLink}>
+            {' '}
+            Dashboard
+          </Button>
+        ) : (
+          <Button color="transparent" component={Link} to="/login" className={classes.navLink}>
+            {' '}
+            Login
+          </Button>
+        )}
       </ListItem>
     </List>
   );
