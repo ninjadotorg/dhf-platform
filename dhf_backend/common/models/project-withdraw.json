@@ -1,0 +1,52 @@
+{
+  "name": "project-withdraw",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "strict": true,
+  "properties": {
+    "projectId": {
+      "type": "string"
+    },
+    "callSaleAllCoins": {
+      "type": "boolean"
+    },
+    "canWithdraw": {
+      "type": "boolean"
+    },
+    "withdrawAmount": {
+      "type": "string"
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "isWithdraw": {
+      "type": "boolean"
+    },
+    "isCallWithdraw": {
+      "type": "boolean"
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "updatedDate": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "project": {
+      "type": "belongsTo",
+      "model": "project",
+      "foreignKey": ""
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}

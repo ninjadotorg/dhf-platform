@@ -1,6 +1,6 @@
 'use strict';
 let errorHandler = require('../lib/error-handler');
-let {PROJECT_STATE} = require('../lib/constants');
+let {PROJECT_STATE, PROJECT_STAGE_STATE} = require('../lib/constants');
 let async = require('async');
 let {BigNumber}  = require('bignumber.js');
 
@@ -134,7 +134,7 @@ module.exports = function(Project) {
                 'state': 'NEW',
                 'transactionId': null,
                 'nextStage': null,
-                'projectId': releaseDate.id,
+                'projectId': currentProject.id.toString(),
               }, function(err, data) {
               if (err) return cb(err);
               if (preStage) {
@@ -162,10 +162,6 @@ module.exports = function(Project) {
       },
       function transferMoneyToExchange(callback) {
         if (currentProject.depositAddress || currentProject.depositAddress !== '') {
-          console.log(currentProject.smartContractVersion,
-            currentProject.depositAddress,
-            currentStage.amount,
-            currentProject.id);
           Project.app.models.smartContract.smartContactVersionRelease(
             currentProject.smartContractVersion,
             currentProject.depositAddress,
@@ -173,7 +169,6 @@ module.exports = function(Project) {
             currentProject.id.toString(),
             currentStage.id.toString(),
             function(err, data) {
-              console.log(err, data);
               if (err) {
                 let error = new Error();
                 error.message = errorHandler.filler(err);
@@ -216,8 +211,96 @@ module.exports = function(Project) {
     ], function onComplete(err) {
       if (err) return callback(err);
       callback(null, {
-        checkState: true,
-        state: currentStage,
+        released: true,
+        currentState: currentStage,
+      });
+    });
+  };
+
+  Project.cancel = function(projectId, callback) {
+    let error = new Error();
+    let currentProject;
+    async.series([
+      function validateProject(callback) {
+        Project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 404;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (!project.userId ||
+            project.userId.toString() !== Project.app.currentUserId.toString()) {
+            error.status = 404;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state === PROJECT_STATE.STOP ||
+            project.state === PROJECT_STATE.WITHDRAW) {
+            error.status = 401;
+            error.message = 'You can not cancel this, Project was stopped!';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
+      },
+      function isReleased(callback) {
+        if (currentProject.state === PROJECT_STATE.RELEASE) {
+          Project.app.models.smartContract.stop(
+            currentProject.smartContractVersion,
+            currentProject.id.toString(),
+            function(err) {
+              if (err) {
+                let error = new Error();
+                error.message = errorHandler.filler(err);
+                error.status = 404;
+                return callback(error);
+              }
+              currentProject.state = PROJECT_STATE.STOP;
+              callback();
+            });
+        } else {
+          currentProject.state = PROJECT_STATE.WITHDRAW;
+          callback();
+        }
+      },
+      function updateStage(callback) {
+        if (currentProject.state === PROJECT_STATE.RELEASE) {
+          Project.app.models.releaseStages.find({where: {
+            projectId: currentProject.id.toString(),
+          }}, function(err, stages) {
+            if (err) return callback(err);
+            async.eachSeries(stages, function(stage, callback) {
+              if (stage.state === PROJECT_STAGE_STATE.NEW) {
+                stage.updateAttribute('state', PROJECT_STAGE_STATE.SUSPEND, callback);
+              } else if (stage.state === PROJECT_STAGE_STATE.CURRENT) {
+                stage.updateAttribute('state', PROJECT_STAGE_STATE.CANCEL, callback);
+              } else {
+                callback();
+              }
+            }, function done(err) {
+              if (err) callback(err);
+              callback();
+            });
+          });
+        } else {
+          callback();
+        }
+      },
+      function updateProject(callback) {
+        currentProject.save(function(err, data) {
+          if (err) {
+            console.log(err);
+            callback(err);
+          }
+          callback();
+        });
+      },
+    ], function onComplete(err) {
+      if (err) return callback(err);
+      callback(null, {
+        canceled: true,
       });
     });
   };

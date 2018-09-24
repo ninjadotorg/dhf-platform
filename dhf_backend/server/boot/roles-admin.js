@@ -1,5 +1,5 @@
 'use strict';
-const rolesSupported = ['admin', 'trader', 'user', 'backend'];
+const rolesSupported = ['admin', 'user', 'backend'];
 module.exports = function(app) {
   let self = this;
   let Role = app.models.Role;

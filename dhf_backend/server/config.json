@@ -29,6 +29,16 @@
       "enable": true,
       "jobClass": "lib/nextRelease-job",
       "interval": "0    *     * * * *"
+    },
+    "projectState": {
+      "enable": false,
+      "jobClass": "lib/projectState-job",
+      "interval": "0    *     * * * *"
+    },
+    "projectWithdraw": {
+      "enable": false,
+      "jobClass": "lib/projectWithdraw-job",
+      "interval": "0    *     * * * *"
     }
   }
 }

@@ -10,11 +10,14 @@
     "lastName": {
       "type": "string"
     },
+    "isTrader": {
+      "type": "boolean"
+    },
     "userType": {
       "type": "string",
       "enum": [
         "user",
-        "trader",
+        "backend",
         "admin"
       ]
     }

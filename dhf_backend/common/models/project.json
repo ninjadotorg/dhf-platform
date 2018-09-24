@@ -112,6 +112,12 @@
       "model": "release-state",
       "foreignKey": "",
       "required": true
+    },
+    "projectWithdraw": {
+      "type": "hasOne",
+      "model": "project-withdraw",
+      "foreignKey": "projectId",
+      "required": true
     }
   },
   "acls": [
@@ -131,14 +137,14 @@
     {
       "accessType": "*",
       "principalType": "ROLE",
-      "principalId": "trader",
+      "principalId": "user",
       "permission": "ALLOW",
       "property": "release"
     },
     {
       "accessType": "WRITE",
       "principalType": "ROLE",
-      "principalId": "trader",
+      "principalId": "user",
       "permission": "ALLOW"
     },
     {
@@ -150,7 +156,7 @@
     {
       "accessType": "READ",
       "principalType": "ROLE",
-      "principalId": "trader",
+      "principalId": "user",
       "permission": "ALLOW",
       "property": "myProjects"
     },

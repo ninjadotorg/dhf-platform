@@ -24,7 +24,7 @@ ProjectState.prototype.checkState = function() {
 
   this.Project.find({
     where: {
-      state: PROJECT_STATE.INITFUND,
+      state: {inq: [PROJECT_STATE.INITFUND, PROJECT_STATE.READY, PROJECT_STATE.RELEASE]},
     },
   }, function(err, projects) {
     if (err) {
@@ -32,10 +32,7 @@ ProjectState.prototype.checkState = function() {
       return console.log(err);
     }
     async.eachSeries(projects, function(project, callback) {
-      let today = new Date();
-      if (project.deadline >= today) {
-        // @todo call smart check stage
-      }
+      // @todo call should validate if return true call validate
       callback();
     }, function done(err) {
       if (err) console.log(err);

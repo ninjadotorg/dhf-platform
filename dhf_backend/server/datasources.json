@@ -101,6 +101,24 @@
       },
       {
         "template": {
+          "method": "POST",
+          "url": "http://trader-api:9001/trade/project/{projectId}/withdraw",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "asset": "{asset}",
+            "address": "{address}",
+            "amount": "{amount}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "withdraw": ["projectId", "asset", "address", "amount"]
+        }
+      },
+      {
+        "template": {
           "method": "GET",
           "url": "http://smartcontract-api:9003/smartcontract/{version}",
           "options": {
@@ -143,7 +161,43 @@
         "functions": {
           "smartContactVersionRelease": ["version", "depositAddress", "amount", "projectId", "stageId"]
         }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/stop",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "version": "{version}",
+            "project": "{projectId}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionRelease": ["version", "projectId"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://smartcontract-api:9003/smartcontract/{version}/retract",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "version": "{version}",
+            "project": "{projectId}",
+            "scale": "{scale}",
+            "denominator": "{denominator}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "smartContactVersionReTract": ["version", "projectId", "scale", "denominator"]
+        }
       }
-  ]
-}
+    ]
+  }
 }

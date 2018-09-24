@@ -5,13 +5,15 @@ const  PROJECT_STATE = {
   APPROVED: 'APPROVED',
   READY: 'READY',
   RELEASE: 'RELEASE',
-  TOP: 'STOP',
+  STOP: 'STOP',
   WITHDRAW: 'WITHDRAW',
 };
 const PROJECT_STAGE_STATE = {
   NEW: 'NEW',
   CURRENT: 'CURRENT',
-  DONE: 'DONE'
+  DONE: 'DONE',
+  CANCEL: 'CANCEL',
+  SUSPEND: 'SUSPEND',
 };
 
 const TRANSACTION_STATE = {
@@ -22,7 +24,6 @@ const TRANSACTION_STATE = {
 };
 const USER_TYPE = {
   ADMIN: 'admin',
-  TRADER: 'trader',
   USER: 'user',
   BACKEND: 'backend',
 };

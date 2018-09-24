@@ -22,7 +22,7 @@
     {
       "accessType": "*",
       "principalType": "ROLE",
-      "principalId": "trader",
+      "principalId": "user",
       "permission": "ALLOW"
     },
     {

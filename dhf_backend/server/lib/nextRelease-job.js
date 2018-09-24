@@ -73,7 +73,7 @@ ProjectState.prototype.checkState = function() {
           console.log('call update stage for project: ', currentProject.id);
           console.log('update stage : ', stage.id);
           if (currentProject) {
-            stage.state = 'CURRENT';
+            stage.state = PROJECT_STAGE_STATE.CURRENT;
             stage.transactionId = transactionId;
             stage.save(stage, function(err) {
               if (err) {

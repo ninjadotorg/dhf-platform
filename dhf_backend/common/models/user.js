@@ -3,12 +3,13 @@ const {USER_TYPE} = require('../lib/constants');
 
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
-    in: ['admin', 'trader', 'user', 'backend'],
+    in: ['admin', 'user', 'backend'],
     message: 'must be trader or user',
   });
   User.listTrader = function(next) {
     User.find({where: {
-      userType: USER_TYPE.TRADER,
+      userType: USER_TYPE.USER,
+      isTrader: true,
     }}, next);
   };
   User.remoteMethod('listTrader',
