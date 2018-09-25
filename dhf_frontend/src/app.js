@@ -31,7 +31,7 @@ const styles = theme => ({
     marginLeft: -22,
   },
   tableContainer: {
-    height: 320,
+    height: 'auto',
   },
   root: {
     display: 'flex',
@@ -56,10 +56,11 @@ class App extends React.Component {
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
                   <Route path="/create-project" component={createProject} />
-                  <Route path="/projects/:id" exact component={projectPage} />
+                  <Route path="/projects/:id" exact component={trade} />
                   <Route path="/wallet" exact component={wallet} />
-                  <Route path="/trade" exact component={trade} />
+                  <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
+                  {/* <Route path="/dashboard" exact component={trade} /> */}
                   <Route path="/dashboard" exact component={HomePage} />
                 </main>
               </div>

@@ -12,6 +12,14 @@ import { Link } from 'react-router-dom';
 import history from '@/utils/history';
 import { withRouter } from 'react-router-dom';
 import { Button } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import BarChart from '@material-ui/icons/BarChart';
+import EditIcon from '@material-ui/icons/Edit';
+import AccountBalanceWallet from '@material-ui/icons/AccountBalanceWallet';
+import Publish from '@material-ui/icons/Publish';
+import IconButton from '@material-ui/core/IconButton';
+import 'react-notifications-component/dist/theme.css';
+import ReactNotification from 'react-notifications-component';
 
 const styles = {
   root: {
@@ -21,14 +29,35 @@ const styles = {
   table: {
     minWidth: 700,
   },
+  IconButton: {
+    marginLeft: 10,
+  },
 };
-
+const red = '#FF3D00';
+const green = '#388E3C';
+const editIcon = '#333';
 class ProjectList extends React.Component {
-  state = {
-    projects: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      projects: [],
+    };
+    this.notificationDOMRef = React.createRef();
+  }
 
   componentWillMount = () => {
+    this.fetchProjects();
+  };
+
+  handleRowClick = n => {
+    return history.push(`/trade/${n.id}`);
+  };
+
+  initFund = n => {
+    console.log(n);
+  };
+
+  fetchProjects = () => {
     request({
       method: 'get',
       url: '/projects/list',
@@ -41,46 +70,162 @@ class ProjectList extends React.Component {
       .catch(error => {});
   };
 
-  handleRowClick = n => {
-    return history.push(`/trade/${n.id}`);
+  deleteProject = n => {
+    request({
+      method: 'delete',
+      url: `/projects/${n.data.data.id}`,
+    })
+      .then(response => {
+        this.notificationDOMRef.current.addNotification({
+          title: '',
+          message: 'Deleted Successfully',
+          type: 'success',
+          insert: 'top',
+          container: 'bottom-left',
+          animationIn: ['animated', 'fadeIn'],
+          animationOut: ['animated', 'ZoomOut'],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true },
+          slidingEnter: {
+            duration: 100,
+          },
+          slidingExit: {
+            duration: 100,
+          },
+        });
+        this.fetchProjects();
+      })
+      .catch(error => {});
   };
 
-  initFund = n => {
-    console.log(n);
+  deleteButton = n => {
+    return (
+      <IconButton
+        className={styles.IconButton}
+        aria-label="Delete"
+        color="primary"
+        onClick={() => {
+          this.deleteProject(n);
+        }}
+      >
+        <CancelIcon style={{ color: red }} />
+      </IconButton>
+    );
   };
 
   getButtonType = n => {
     switch (n.data.state) {
       case 'RELEASE':
         return (
-          <Button
-            variant="outlined"
-            color="primary"
-            type="button"
-            onClick={() => {
-              this.handleRowClick(n.data);
-            }}
-          >
-            Trade
-          </Button>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              style={{ width: 130, marginRight: 10 }}
+              onClick={() => {
+                this.handleRowClick(n.data);
+              }}
+            >
+              <BarChart style={{ marginRight: 10 }} />
+              Trade
+            </Button>
+            <this.deleteButton data={n} />
+          </div>
         );
 
       case 'NEW':
         return (
-          <Button
-            variant="outlined"
-            color="primary"
-            type="button"
-            onClick={() => {
-              this.initFund(n.data);
-            }}
-          >
-            Initialize Fund
-          </Button>
+          <div>
+            {' '}
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              style={{ width: 130, marginRight: 10, backgroundColor: green }}
+              onClick={() => {
+                this.initFund(n.data);
+              }}
+            >
+              <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
+              Init
+            </Button>
+            <this.deleteButton data={n} />
+            <IconButton className={styles.IconButton} aria-label="Delete">
+              <EditIcon style={{ color: editIcon }} />
+            </IconButton>
+          </div>
         );
 
+      case 'APPROVED':
+        return (
+          <div>
+            {' '}
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              style={{ width: 130, marginRight: 10 }}
+              onClick={() => {
+                this.initFund(n.data);
+              }}
+            >
+              <Publish style={{ fontSize: 15, marginRight: 10 }} />
+              Start
+            </Button>
+            <this.deleteButton data={n} />
+          </div>
+        );
+
+      case 'INITFUND':
+        return (
+          <div>
+            {' '}
+            <Button
+              variant="contained"
+              color="primary"
+              type="button"
+              disabled
+              style={{ width: 130, marginRight: 10, color: '#fff', backgroundColor: '#fff' }}
+              onClick={() => {
+                this.handleRowClick(n.data);
+              }}
+            >
+              <BarChart style={{ marginRight: 10 }} />
+              Trade
+            </Button>
+            <this.deleteButton data={n} />
+          </div>
+        );
       default:
         return null;
+    }
+  };
+
+  changeStateText = n => {
+    switch (n.state) {
+      case 'NEW':
+        return 'JUST CREATED';
+        break;
+
+      case 'INITFUND':
+        return 'FUNDING';
+        break;
+
+      case 'STOP':
+        return 'SUSPENDING';
+        break;
+
+      case 'WITHDRAW':
+        return 'CLOSED';
+        break;
+
+      case 'RELEASE':
+        return 'RUNNING';
+        break;
+
+      default:
+        return '';
     }
   };
 
@@ -93,12 +238,11 @@ class ProjectList extends React.Component {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Owner</TableCell>
+              <TableCell>Time</TableCell>
               <TableCell>Exchange</TableCell>
-              <TableCell numeric>Target</TableCell>
-              <TableCell numeric>Max</TableCell>
+              <TableCell>Funding Amount</TableCell>
               <TableCell>State</TableCell>
-              <TableCell>Select Project</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,11 +253,14 @@ class ProjectList extends React.Component {
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
-                  <TableCell>{n.owner}</TableCell>
+                  <TableCell>{new Date(n.createdDate).toDateString()}</TableCell>
                   <TableCell>{n.exchange}</TableCell>
-                  <TableCell numeric>{n.target}</TableCell>
-                  <TableCell numeric>{n.max}</TableCell>
-                  <TableCell>{n.state}</TableCell>
+                  <TableCell>
+                    {`${n.fundingAmount} ${n.currency}`}
+                    <br />
+                    Funders : 20
+                  </TableCell>
+                  <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
                     <this.getButtonType data={n} />
                   </TableCell>
@@ -122,6 +269,7 @@ class ProjectList extends React.Component {
             })}
           </TableBody>
         </Table>
+        <ReactNotification ref={this.notificationDOMRef} />
       </Paper>
     );
   }

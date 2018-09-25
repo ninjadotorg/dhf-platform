@@ -9,6 +9,7 @@ import { Redirect } from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Typography from '@material-ui/core/Typography';
 import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -82,13 +83,12 @@ class createProject extends React.Component {
     super(props);
     this.state = {
       name: '',
-      owner: '',
       exchange: '',
       currency: '',
       target: 0,
       max: 0,
+      commission: 0,
       currencyList: [],
-      startTime: 0,
       deadline: 0,
       lifeTime: 0,
       state: 'NEW',
@@ -121,9 +121,7 @@ class createProject extends React.Component {
       .catch(error => {});
     const time = moment(this.currentDateTime);
     this.setState({
-      startTime: time.unix(),
       deadline: time.unix(),
-      lifeTime: time.unix(),
     });
   }
 
@@ -148,6 +146,7 @@ class createProject extends React.Component {
     const data = Object.assign({}, this.state);
     delete data.exchangeList;
     delete data.currencyList;
+    delete data.error;
     this.setState({
       error: '',
     });
@@ -157,7 +156,7 @@ class createProject extends React.Component {
       data,
     })
       .then(response => {
-        return history.push(`/projects/${response.id}`);
+        return history.push(`/dashboard`);
       })
       .catch(error => {
         error.data
@@ -190,14 +189,6 @@ class createProject extends React.Component {
                   </Grid>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="owner">Owner</InputLabel>
-                      <Input id="owner" name="owner" autoComplete="owner" autoFocus onChange={this.handleTextChange} />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                <Grid container spacing={24}>
-                  <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
                       <InputLabel htmlFor="target">Target</InputLabel>
                       <Input
                         id="target"
@@ -209,6 +200,8 @@ class createProject extends React.Component {
                       />
                     </FormControl>
                   </Grid>
+                </Grid>
+                <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <Select
@@ -249,7 +242,7 @@ class createProject extends React.Component {
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="max">max</InputLabel>
+                      <InputLabel htmlFor="max">Max</InputLabel>
                       <Input
                         id="max"
                         name="max"
@@ -262,16 +255,14 @@ class createProject extends React.Component {
                   </Grid>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="startTime"
-                        label="startTime"
-                        type="date"
-                        defaultValue={this.currentDateTime}
-                        className={classes.textField}
-                        onChange={this.handleTimeChange}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
+                      <InputLabel htmlFor="commission">Commission</InputLabel>
+                      <Input
+                        id="commission"
+                        name="commission"
+                        autoComplete="commission"
+                        autoFocus
+                        onChange={this.handleTextChange}
+                        type="number"
                       />
                     </FormControl>
                   </Grid>
@@ -293,17 +284,14 @@ class createProject extends React.Component {
                     </FormControl>
                   </Grid>
                   <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
+                    <FormControl fullWidth margin="normal" className={classes.margin}>
+                      <InputLabel htmlFor="lifeTime">Life Time</InputLabel>
+                      <Input
                         id="lifeTime"
-                        label="lifeTime"
-                        type="date"
-                        onChange={this.handleTimeChange}
-                        defaultValue={this.currentDateTime}
-                        className={classes.textField}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
+                        name="lifeTime"
+                        type="number"
+                        onChange={this.handleTextChange}
+                        endAdornment={<InputAdornment position="end">Number of Days</InputAdornment>}
                       />
                     </FormControl>
                   </Grid>

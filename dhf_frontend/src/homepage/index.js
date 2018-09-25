@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
-import ProjectList from './ProjectList';
+import ProjectList from '@/trade/ProjectList';
 
 const styles = theme => ({
   button: {
@@ -30,9 +30,7 @@ const styles = theme => ({
     height: 'auto',
     overflow: 'auto',
   },
-  tableContainer: {
-    height: 320,
-  },
+  tableContainer: { height: 'auto' },
 });
 
 class HomePage extends React.Component {
