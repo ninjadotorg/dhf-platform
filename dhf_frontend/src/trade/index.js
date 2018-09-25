@@ -31,7 +31,7 @@ const styles = theme => ({
     overflow: 'auto',
   },
   tableContainer: {
-    height: 320,
+    height: 'auto',
     marginTop: 20,
   },
 });

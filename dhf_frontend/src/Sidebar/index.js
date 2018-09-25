@@ -169,6 +169,7 @@ class Sidebar extends React.Component {
           open={this.state.open}
         >
           <div className={classes.toolbarIcon}>
+            <img src={require('assets/img/logo.svg')} width={70} style={{ marginRight: 30 }} alt="logo" />
             <IconButton onClick={this.handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
