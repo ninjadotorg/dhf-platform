@@ -25,6 +25,7 @@
     "axios": "^0.18.0",
     "axios-rest-client": "^0.1.8",
     "babel-polyfill": "^6.26.0",
+    "binance-api-node": "^0.8.5",
     "classnames": "^2.2.6",
     "history": "^4.7.2",
     "lodash": "^4.17.10",
