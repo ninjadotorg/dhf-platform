@@ -19,6 +19,7 @@ import trade from '@/trade';
 import LandingPage from '@/LandingPage/LandingPage';
 import LoginPage from '@/LoginPage/LoginPage';
 import tradePage from '@/trade/tradePage';
+import profile from '@/profile';
 import Test from '@/test'
 const styles = theme => ({
   content: {
@@ -62,6 +63,7 @@ class App extends React.Component {
                   <Route path="/trade/:id" exact component={tradePage} />
                   {/* <Route path="/dashboard" exact component={trade} /> */}
                   <Route path="/dashboard" exact component={HomePage} />
+                  <Route path="/profile" exact component={profile} />
                 </main>
               </div>
             </React.Fragment>

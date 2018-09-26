@@ -96,5 +96,10 @@
     "dataSource": "mongodb",
     "public": true,
     "options": {}
+  },
+  "file-storage": {
+    "dataSource": "storage",
+    "public": true,
+    "options": {}
   }
 }

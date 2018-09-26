@@ -9,6 +9,9 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 import request from '@/utils/api';
 import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -110,6 +113,7 @@ const styles = theme => ({
 class Sidebar extends React.Component {
   state = {
     open: true,
+    anchorEl: null,
   };
 
   handleDrawerOpen = () => {
@@ -133,8 +137,31 @@ class Sidebar extends React.Component {
       .catch(error => {});
   };
 
+  handleProfileMenuOpen = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+  
   render() {
     const { classes } = this.props;
+    const { anchorEl } = this.state;
+    const isMenuOpen = Boolean(anchorEl);
+
+    const renderMenu = (
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMenuOpen}
+        onClose={this.handleMenuClose}
+      >
+        <MenuItem component={Link} to="/profile" onClick={this.handleClose}>Profile</MenuItem>
+        <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
+      </Menu>
+    );
 
     return (
       <div className={classes.root}>
@@ -151,16 +178,18 @@ class Sidebar extends React.Component {
             <Typography variant="title" color="inherit" noWrap className={classes.title}>
               Dashboard
             </Typography>
-            {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton> */}
-            <Button variant="outline" color="inherit" onClick={this.handleLogout}>
-              LOGOUT
-            </Button>
+            
+            <IconButton
+                aria-owns={isMenuOpen ? 'material-appbar' : null}
+                aria-haspopup="true"
+                onClick={this.handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
           </Toolbar>
         </AppBar>
+        {renderMenu}
         <Drawer
           variant="permanent"
           classes={{
