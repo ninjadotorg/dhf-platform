@@ -173,6 +173,10 @@ module.exports = class Binance {
         return await this.client.prices()
     }
 
+    async getListenKey () {
+        return await this.client.getDataStream()
+    }
+
     transformToOrder(result) {
         return {
             orderKey: result.clientOrderId,

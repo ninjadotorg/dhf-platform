@@ -1,3 +1,4 @@
+var BinanceAPI = require('binance-api-node').default
 // balance
 // ticker price -> pair pair
 // open order
@@ -6,10 +7,10 @@
 
 class Binance {
   constructor (
-    key,
-    secret,
+    key = 'MXCeKzgZScAKo6DglG0aZz5PECnVAjXoh3ilqOh0xBnhxC199rg09aBR7Kaj6baQ',
+    secret = 'Vp0AyrlOXc4GDLRm9TbpABeKE5JDGFj3cpfz7qqBQjE9Tjb7rYj5ako72yEVrs1m',
     project = '5b9221bb129e900086c9d406',
-    baseUrl = 'http://35.240.197.175:9000/api',
+    baseUrl = 'http://35.198.235.226:9000/api',
     token = '6qWEVFxhkKWEk5hbvnkpTQ6uRbWgJTZktq1lGlcU59bAAjG5V8PoFJ8CFYFcVHlp'
   ) {
     this.key = key
@@ -17,9 +18,17 @@ class Binance {
     this.baseUrl = baseUrl
     this.project = project
     this.token = token
+    this.client = BinanceAPI({
+      apiKey: key,
+      apiSecret: secret
+    })
+
     // public data
     this.exchangeInfo = {}
+    this.balance = {}
     this.tickerPrice = {}
+    this.openOrders = {}
+
     this.orderBook = { ask: [], bid: [] }
 
     this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB']
@@ -33,13 +42,21 @@ class Binance {
   }
 
   async init () {
-    this.exchangeInfo = await this.getData(
-      '/infos/exchange-info?projectId=' +
-        this.project +
-        '&access_token=' +
-        this.token
-    )
+    const result = await Promise.all([
+      this.getData(
+        `/infos/exchange-info?projectId=${this.project}&access_token=${
+          this.token
+        }`
+      ),
+      this.getData(
+        `/infos/balance?projectId=${this.project}&access_token=${this.token}`
+      )
+    ])
+    this.exchangeInfo = result[0]
+    this.balance = result[1]
+
     this.updateTicker()
+    this.getOpenOrders()
   }
 
   getSymbolInfo (symbols, symbol) {
@@ -99,9 +116,18 @@ class Binance {
         }
       })
 
-      console.log(result)
       this.tickerPrice = result
     }
+  }
+
+  async getOpenOrders () {
+    const listenKey = await this.client.getDataStream()
+    const fn = this.client.ws.userWithListenKey(
+      'NxV4M3IZCosQ5sVqTu14pLFp7z8Heag6XU66T3NkPWP7HWPftQua7hZEYeUo'
+    )
+    const clean = await fn(msg => {
+      console.log(msg)
+    })
   }
 }
 
