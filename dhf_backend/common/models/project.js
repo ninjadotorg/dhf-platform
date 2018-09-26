@@ -36,14 +36,14 @@ module.exports = function(Project) {
   });
   // listProjects
   Project.listProjects = function(userId, isFunding, callback) {
-    let fiter = {where: {}};
+    let fiter = {where: {}, include: 'User'}
     if (userId) fiter.where.userId = userId;
     if (isFunding) {
       fiter.where.or = [];
       fiter.where.or.push({state: PROJECT_STATE.READY});
       fiter.where.or.push({state: PROJECT_STATE.INITFUND});
     }
-    console.log(fiter);
+
     Project.find(fiter, callback);
   };
 

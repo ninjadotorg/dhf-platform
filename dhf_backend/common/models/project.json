@@ -110,7 +110,7 @@
     "User": {
       "type": "belongsTo",
       "model": "user",
-      "foreignKey": "",
+      "foreignKey": "userId",
       "required": true
     },
     "releaseState": {
