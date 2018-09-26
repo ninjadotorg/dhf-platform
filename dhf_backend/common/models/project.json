@@ -31,6 +31,10 @@
       "type": "number",
       "default": 0
     },
+    "withdrawFee": {
+      "type": "number",
+      "default": 0
+    },
     "fundingAmount": {
       "type": "string",
       "default": "0"

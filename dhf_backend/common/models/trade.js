@@ -294,6 +294,19 @@ module.exports = function(Trade) {
       });
   };
 
+  Trade.listenKey = function(projectId, callback) {
+    Trade.action(projectId, 'getListenKey',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
   Trade.remoteMethod(
     'buyLimit',
     {
@@ -401,6 +414,18 @@ module.exports = function(Trade) {
         {arg: 'symbol', type: 'string', required: true},
       ],
       http: {verb: 'GET', path: '/orders'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+   Trade.remoteMethod(
+    'listenKey',
+    {
+      description: 'Get listen key.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/listen-key'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
