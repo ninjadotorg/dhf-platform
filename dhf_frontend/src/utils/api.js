@@ -5,7 +5,7 @@ import _ from 'lodash';
  * Create an Axios Client with defaults
  */
 const client = axios.create({
-  baseURL: 'http://35.240.197.175:9000/api/',
+  baseURL: 'http://35.198.235.226:9000/api/',
 });
 axios.defaults.headers.common.Authorization = localStorage.getItem('token');
 /**

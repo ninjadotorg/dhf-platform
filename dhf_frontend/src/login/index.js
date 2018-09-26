@@ -10,7 +10,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
-import history from '@/utils/history';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { compose } from 'recompose';
 import Header from 'components/Header/Header.jsx';
@@ -116,7 +115,7 @@ class Login extends React.Component {
     const data = {
       email: this.state.email,
       password: this.state.password,
-      userType: 'trader',
+      userType: 'user',
       emailVerified: false,
     };
     this.setState({
@@ -131,6 +130,7 @@ class Login extends React.Component {
     })
       .then(response => {
         localStorage.setItem('token', response.id);
+        localStorage.setItem('userId', response.userId);
         axios.defaults.headers.common.Authorization = response.id;
         this.setState({
           successMsg: 'Login Successful. Redirecting to dashboard..',
