@@ -122,9 +122,7 @@ class Binance {
 
   async getOpenOrders () {
     const listenKey = await this.client.getDataStream()
-    const fn = this.client.ws.userWithListenKey(
-      'NxV4M3IZCosQ5sVqTu14pLFp7z8Heag6XU66T3NkPWP7HWPftQua7hZEYeUo'
-    )
+    const fn = this.client.ws.userWithListenKey(listenKey.listenKey)
     const clean = await fn(msg => {
       console.log(msg)
     })
