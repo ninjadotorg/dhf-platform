@@ -27,7 +27,7 @@ class Binance {
     this.exchangeInfo = {}
     this.balance = {}
     this.tickerPrice = {}
-    this.openOrders = {}
+    this.openOrders = []
 
     this.orderBook = { ask: [], bid: [] }
 
@@ -121,10 +121,39 @@ class Binance {
   }
 
   async getOpenOrders () {
-    const listenKey = await this.client.getDataStream()
-    const fn = this.client.ws.userWithListenKey(listenKey.listenKey)
+    // const resp = await this.getData('/listenKey')
+    const fn = this.client.ws.userWithListenKey(
+      'fkqoQTSR6V565vDmV8p9qJBWqkuIrWmvJG1YcKbXBl9OyElfUfuTyiCc760X'
+    )
     const clean = await fn(msg => {
-      console.log(msg)
+      if (msg.eventType !== 'executionReport') {
+        return
+      }
+
+      if (msg.orderStatus === 'CANCELED') {
+        // remove from open orders
+        this.openOrders.splice(
+          this.openOrders.findIndex(o => o.orderId === msg.orderId),
+          1
+        )
+      } else {
+        this.openOrders.push({
+          symbol: msg.symbol,
+          orderId: msg.orderId,
+          clientOrderId: msg.newClientOrderId,
+          price: msg.price,
+          origQty: msg.quantity,
+          executedQty: 0,
+          status: msg.orderStatus,
+          timeInForce: msg.timeInForce,
+          type: msg.orderType,
+          side: msg.side,
+          stopPrice: msg.stopPrice,
+          icebergQty: icebergQuantity,
+          time: msg.orderTime
+        })
+      }
+      console.log(this.openOrders)
     })
   }
 }
