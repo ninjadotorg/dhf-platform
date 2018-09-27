@@ -28,6 +28,7 @@ class Binance {
     this.balance = {}
     this.tickerPrice = {}
     this.openOrders = []
+    this.allOrders = []
 
     this.orderBook = { ask: [], bid: [] }
 
@@ -50,10 +51,20 @@ class Binance {
       ),
       this.getData(
         `/infos/balance?projectId=${this.project}&access_token=${this.token}`
+      ),
+      this.getData(
+        `/trades/orders-open?projectId=${this.project}&access_token=${
+          this.token
+        }`
+      ),
+      this.getData(
+        `/trades/orders?projectId=${this.project}&access_token=${this.token}`
       )
     ])
     this.exchangeInfo = result[0]
     this.balance = result[1]
+    this.openOrders = result[2]
+    this.allOrders = result[3].filter(o => o.status !== 'NEW')
 
     this.updateTicker()
     this.getOpenOrders()
@@ -120,40 +131,63 @@ class Binance {
     }
   }
 
+  findOrderIndex (orderId) {
+    return this.openOrders.findIndex(o => o.orderId === orderId)
+  }
+
   async getOpenOrders () {
-    // const resp = await this.getData('/listenKey')
+    const resp = await this.getData(
+      `/trades/listen-key?projectId=${this.project}&access_token=${this.token}`
+    )
+
+    const keepStreamUrl = `${this.baseUrl}/trades/keep-data-stream?projectId=${
+      this.project
+    }&listenKey=${resp.listenKey}&access_token=${this.token}`
+
+    const closeStreamUrl = `${
+      this.baseUrl
+    }/trades/close-data-stream?projectId={this.project}&listenKey=${
+      resp.listenKey
+    }&access_token=${this.token}`
+
     const fn = this.client.ws.userWithListenKey(
-      'fkqoQTSR6V565vDmV8p9qJBWqkuIrWmvJG1YcKbXBl9OyElfUfuTyiCc760X'
+      resp.listenKey,
+      keepStreamUrl,
+      closeStreamUrl
     )
     const clean = await fn(msg => {
       if (msg.eventType !== 'executionReport') {
         return
       }
 
-      if (msg.orderStatus === 'CANCELED') {
-        // remove from open orders
-        this.openOrders.splice(
-          this.openOrders.findIndex(o => o.orderId === msg.orderId),
-          1
-        )
-      } else {
-        this.openOrders.push({
-          symbol: msg.symbol,
-          orderId: msg.orderId,
-          clientOrderId: msg.newClientOrderId,
-          price: msg.price,
-          origQty: msg.quantity,
-          executedQty: 0,
-          status: msg.orderStatus,
-          timeInForce: msg.timeInForce,
-          type: msg.orderType,
-          side: msg.side,
-          stopPrice: msg.stopPrice,
-          icebergQty: icebergQuantity,
-          time: msg.orderTime
-        })
+      const order = {
+        symbol: msg.symbol,
+        orderId: msg.orderId,
+        clientOrderId: msg.newClientOrderId,
+        price: msg.price,
+        origQty: msg.quantity,
+        executedQty: 0,
+        status: msg.orderStatus,
+        timeInForce: msg.timeInForce,
+        type: msg.orderType,
+        side: msg.side,
+        stopPrice: msg.stopPrice,
+        icebergQty: msg.icebergQuantity,
+        time: msg.orderTime
       }
-      console.log(this.openOrders)
+
+      if (['CANCELED', 'FILLED'].indexOf(msg.orderStatus) > -1) {
+        // remove from open orders
+        this.openOrders.splice(this.findOrderIndex(msg.orderId), 1)
+        this.allOrders.push(order)
+      } else {
+        const idx = this.findOrderIndex(msg.orderId)
+        if (idx > -1) {
+          this.openOrders[idx] = order
+        } else {
+          this.openOrders.push(order)
+        }
+      }
     })
   }
 }

@@ -1,5 +1,7 @@
 "use strict";
+const moment = require('moment')
 var BinanceAPI = require('binance-api-node').default;
+const OrderDB = require('../../common/models/orders')
 
 module.exports = class Binance {
     constructor(cred) {
@@ -93,16 +95,23 @@ module.exports = class Binance {
         return result
     }
 
-    async openOrders({ symbol, limit = 10 }) {
+    async openOrders({ symbol }) {
         if (symbol) {
-            return await this.client.openOrders({ symbol, limit })
+            return await this.client.openOrders({ symbol })
         }
-        return await this.client.openOrders({ limit })
+        return await this.client.openOrders()
     }
 
-    async allOrders({ symbol, limit = 10 }) {
+    async allOrders({ projectId, symbol, limit = 10 }) {
         if (symbol) {
-            return await this.client.allOrders({ symbol, limit })
+            return await OrderDB
+                .find({
+                    project: projectId,
+                    symbol,
+                    status: { $in: ['CANCELED', 'FILLED'] },
+                    time: { $lte: moment().subtract(24, 'hours').toDate() }
+                })
+                .limit(limit)
         }
         return await this.client.allOrders({ limit })
     }
