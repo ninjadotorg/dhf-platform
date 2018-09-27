@@ -295,7 +295,33 @@ module.exports = function(Trade) {
   };
 
   Trade.listenKey = function(projectId, callback) {
-    Trade.action(projectId, 'getListenKey',
+    Trade.getListenKey(projectId, 'getListenKey',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.keepDataStream = function(projectId, listenKey, callback) {
+    Trade.dataStream(projectId, 'keepDataStream', listenKey,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.closeDataStream = function(projectId, listenKey, callback) {
+    Trade.dataStream(projectId, 'closeDataStream', listenKey,
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -426,6 +452,32 @@ module.exports = function(Trade) {
         {arg: 'projectId', type: 'string', required: true},
       ],
       http: {verb: 'GET', path: '/listen-key'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'keepDataStream',
+    {
+      description: 'keep data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/keep-data-stream'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'closeDataStream',
+    {
+      description: 'Close data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/close-data-stream'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
