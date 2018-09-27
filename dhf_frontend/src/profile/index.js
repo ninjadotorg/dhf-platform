@@ -139,7 +139,7 @@ class profile extends React.Component {
         });
         if (response.avatar && response.avatar !== '') {
           this.setState({
-            avatarURL: `${API_ROOT}/file-storages/avatar/dowload/${response.avatar}`,
+            avatarURL: `${API_ROOT}/file-storages/avatar/download/${response.avatar}`,
           });
         } else {
           this.setState({
