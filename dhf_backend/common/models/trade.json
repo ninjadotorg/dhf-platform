@@ -44,7 +44,9 @@
         "allOrders",
         "cancel",
         "openOrders",
-        "listenKey"
+        "listenKey",
+        "keepDataStream",
+        "closeDataStream"
       ]
     }
   }

@@ -307,6 +307,32 @@ module.exports = function(Trade) {
       });
   };
 
+  Trade.keepDataStream = function(projectId, callback) {
+    Trade.action(projectId, 'dataStream', 'keepDataStream',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.closeDataStream = function(projectId, callback) {
+    Trade.action(projectId, 'dataStream', 'closeDataStream',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 404;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
   Trade.remoteMethod(
     'buyLimit',
     {
@@ -426,6 +452,32 @@ module.exports = function(Trade) {
         {arg: 'projectId', type: 'string', required: true},
       ],
       http: {verb: 'GET', path: '/listen-key'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'keepDataStream',
+    {
+      description: 'keep data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/keep-data-stream'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'closeDataStream',
+    {
+      description: 'Close data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/close-data-stream'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
