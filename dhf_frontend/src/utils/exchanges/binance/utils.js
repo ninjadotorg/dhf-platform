@@ -1,4 +1,4 @@
-var BinanceAPI = require('binance-api-node').default
+const BinanceAPI = require('binance-api-node').default;
 // balance
 // ticker price -> pair pair
 // open order
@@ -6,136 +6,136 @@ var BinanceAPI = require('binance-api-node').default
 // orderbook
 
 class Binance {
-  constructor (
+  constructor(
     key = 'MXCeKzgZScAKo6DglG0aZz5PECnVAjXoh3ilqOh0xBnhxC199rg09aBR7Kaj6baQ',
     secret = 'Vp0AyrlOXc4GDLRm9TbpABeKE5JDGFj3cpfz7qqBQjE9Tjb7rYj5ako72yEVrs1m',
     project = '5b9221bb129e900086c9d406',
     baseUrl = 'http://35.198.235.226:9000/api',
-    token = '6qWEVFxhkKWEk5hbvnkpTQ6uRbWgJTZktq1lGlcU59bAAjG5V8PoFJ8CFYFcVHlp'
+    token = '6qWEVFxhkKWEk5hbvnkpTQ6uRbWgJTZktq1lGlcU59bAAjG5V8PoFJ8CFYFcVHlp',
   ) {
-    this.key = key
-    this.secret = secret
-    this.baseUrl = baseUrl
-    this.project = project
-    this.token = token
+    this.key = key;
+    this.secret = secret;
+    this.baseUrl = baseUrl;
+    this.project = project;
+    this.token = token;
     this.client = BinanceAPI({
       apiKey: key,
-      apiSecret: secret
-    })
+      apiSecret: secret,
+    });
 
     // public data
-    this.exchangeInfo = {}
-    this.balance = {}
-    this.tickerPrice = {}
-    this.openOrders = []
+    this.exchangeInfo = {};
+    this.balance = {};
+    this.tickerPrice = {};
+    this.openOrders = [];
 
-    this.orderBook = { ask: [], bid: [] }
+    this.orderBook = { ask: [], bid: [] };
 
-    this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB']
+    this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB'];
 
-    this.init()
+    this.init();
   }
 
-  async getData (url) {
-    const resp = await fetch(this.baseUrl + url)
-    return resp.json()
+  async getData(url) {
+    const resp = await fetch(this.baseUrl + url);
+    return resp.json();
   }
 
-  async init () {
+  async init() {
     const result = await Promise.all([
       this.getData(
         `/infos/exchange-info?projectId=${this.project}&access_token=${
           this.token
-        }`
+        }`,
       ),
       this.getData(
-        `/infos/balance?projectId=${this.project}&access_token=${this.token}`
-      )
-    ])
-    this.exchangeInfo = result[0]
-    this.balance = result[1]
+        `/infos/balance?projectId=${this.project}&access_token=${this.token}`,
+      ),
+    ]);
+    this.exchangeInfo = result[0];
+    this.balance = result[1];
 
-    this.updateTicker()
-    this.getOpenOrders()
+    this.updateTicker();
+    this.getOpenOrders();
   }
 
-  getSymbolInfo (symbols, symbol) {
+  getSymbolInfo(symbols, symbol) {
     for (let i = 0; i < symbols.length; i++) {
       if (symbols[i].symbol === symbol) {
-        return symbols[i]
+        return symbols[i];
       }
     }
-    return null
+    return null;
   }
 
-  async updateTicker () {
-    let allTickerPrice = await this.getData(
-      '/infos/prices?projectId=' + this.project + '&access_token=' + this.token
-    )
+  async updateTicker() {
+    const allTickerPrice = await this.getData(
+      `/infos/prices?projectId=${this.project}&access_token=${this.token}`,
+    );
 
-    const result = {}
-    this.supportedSymbols.forEach(s => (result[s] = []))
+    const result = {};
+    this.supportedSymbols.forEach(s => (result[s] = []));
 
-    for (var symbol in allTickerPrice) {
-      const info = this.getSymbolInfo(this.exchangeInfo.symbols, symbol)
+    for (const symbol in allTickerPrice) {
+      const info = this.getSymbolInfo(this.exchangeInfo.symbols, symbol);
       if (!info) {
-        continue
+        continue;
       }
-      info.price = allTickerPrice[symbol]
+      info.price = allTickerPrice[symbol];
 
       for (let i = 0; i < this.supportedSymbols.length; i++) {
         if (symbol.endsWith(this.supportedSymbols[i])) {
-          result[this.supportedSymbols[i]].push(info)
-          break
+          result[this.supportedSymbols[i]].push(info);
+          break;
         }
       }
     }
 
-    const self = this
+    const self = this;
     const miniTickerSocket = new WebSocket(
-      'wss://stream.binance.com:9443/ws/!miniTicker@arr'
-    )
+      'wss://stream.binance.com:9443/ws/!miniTicker@arr',
+    );
 
     miniTickerSocket.onmessage = function (event) {
-      const tickers = JSON.parse(event.data)
+      const tickers = JSON.parse(event.data);
 
       const findSymbol = function (symbols, symbol) {
-        for (let s in symbols) {
+        for (const s in symbols) {
           if (symbol.endsWith(s)) {
-            return self.getSymbolInfo(symbols[s], symbol)
+            return self.getSymbolInfo(symbols[s], symbol);
           }
         }
-        return null
-      }
+        return null;
+      };
 
       tickers.forEach(t => {
-        const symbol = t.s
-        const info = findSymbol(result, symbol)
+        const symbol = t.s;
+        const info = findSymbol(result, symbol);
         if (info) {
-          info.price = t.c
+          info.price = t.c;
         }
-      })
+      });
 
-      this.tickerPrice = result
-    }
+      this.tickerPrice = result;
+    };
   }
 
-  async getOpenOrders () {
+  async getOpenOrders() {
     // const resp = await this.getData('/listenKey')
     const fn = this.client.ws.userWithListenKey(
-      'fkqoQTSR6V565vDmV8p9qJBWqkuIrWmvJG1YcKbXBl9OyElfUfuTyiCc760X'
-    )
+      'fkqoQTSR6V565vDmV8p9qJBWqkuIrWmvJG1YcKbXBl9OyElfUfuTyiCc760X',
+    );
     const clean = await fn(msg => {
       if (msg.eventType !== 'executionReport') {
-        return
+        return;
       }
 
       if (msg.orderStatus === 'CANCELED') {
         // remove from open orders
         this.openOrders.splice(
           this.openOrders.findIndex(o => o.orderId === msg.orderId),
-          1
-        )
+          1,
+        );
       } else {
         this.openOrders.push({
           symbol: msg.symbol,
@@ -150,12 +150,12 @@ class Binance {
           side: msg.side,
           stopPrice: msg.stopPrice,
           icebergQty: icebergQuantity,
-          time: msg.orderTime
-        })
+          time: msg.orderTime,
+        });
       }
-      console.log(this.openOrders)
-    })
+      console.log(this.openOrders);
+    });
   }
 }
 
-export default Binance
+export default Binance;

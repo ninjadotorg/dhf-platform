@@ -437,7 +437,7 @@ module.exports = function(Trade) {
       description: 'Get all  orders of current user.',
       accepts: [
         {arg: 'projectId', type: 'string', required: true},
-        {arg: 'symbol', type: 'string', required: true},
+        {arg: 'symbol', type: 'string'},
       ],
       http: {verb: 'GET', path: '/orders'},
       returns: {arg: 'data', root: true, type: 'Object'},
