@@ -307,8 +307,8 @@ module.exports = function(Trade) {
       });
   };
 
-  Trade.keepDataStream = function(projectId, callback) {
-    Trade.action(projectId, 'dataStream', 'keepDataStream',
+  Trade.keepDataStream = function(projectId, listenKey, callback) {
+    Trade.action(projectId, 'dataStream', 'keepDataStream', listenKey,
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -320,8 +320,8 @@ module.exports = function(Trade) {
       });
   };
 
-  Trade.closeDataStream = function(projectId, callback) {
-    Trade.action(projectId, 'dataStream', 'closeDataStream',
+  Trade.closeDataStream = function(projectId, listenKey, callback) {
+    Trade.action(projectId, 'dataStream', 'closeDataStream', listenKey,
       function(err, resp) {
         if (err) {
           let error = new Error();
