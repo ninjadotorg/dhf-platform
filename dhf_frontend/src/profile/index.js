@@ -17,6 +17,7 @@ import Avatar from '@material-ui/core/Avatar';
 import classNames from 'classnames';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import CardMedia from '@material-ui/core/CardMedia';
+import API_ROOT from '@/utils/cons';
 
 const styles = theme => ({
   layout: {
@@ -138,7 +139,7 @@ class profile extends React.Component {
         });
         if (response.avatar && response.avatar !== '') {
           this.setState({
-            avatarURL: `http://localhost:9000/api/file-storages/avatar/dowload/${response.avatar}`,
+            avatarURL: `${API_ROOT}/file-storages/avatar/dowload/${response.avatar}`,
           });
         } else {
           this.setState({
