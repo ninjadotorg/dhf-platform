@@ -67,15 +67,17 @@ const styles = theme => ({
     width: '100%', // Fix IE11 issue.
     marginTop: theme.spacing.unit,
   },
+  buttonWapper: {
+    flexWrap: 'wrap',
+    display: 'flex',
+    flexDirection: 'row',
+  },
   submit: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     marginLeft: 'auto',
     marginRight: 'auto',
-    flexWrap: 'wrap',
-    display: 'flex',
     width: 200,
-    flexDirection: 'row',
   },
   button: {
     margin: theme.spacing.unit,
@@ -331,9 +333,14 @@ class profile extends React.Component {
                 <FormHelperText id="name-helper-text" error>
                   {this.state.error}
                 </FormHelperText>
-                <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
-                  Update
-                </Button>
+                <div className={classes.buttonWapper}>
+                  <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
+                    Update
+                  </Button>
+                  <Button type="submit" center variant="raised" color="success" className={classes.submit}>
+                    Change password
+                  </Button>
+                </div>
               </ValidatorForm>
             </Paper>
           </main>

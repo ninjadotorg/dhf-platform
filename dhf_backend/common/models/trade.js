@@ -255,7 +255,7 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.myTrades = function(projectId, symbol, callback) {
+  Trade.myTrades = function(projectId, symbol ='', callback) {
     Trade.action(projectId, 'myTrades', symbol,
       function(err, resp) {
         if (err) {
@@ -268,7 +268,7 @@ module.exports = function(Trade) {
       });
   };
 
-  Trade.openOrders = function(projectId, symbol, callback) {
+  Trade.openOrders = function(projectId, symbol = '', callback) {
     Trade.action(projectId, 'openOrders', symbol,
       function(err, resp) {
         if (err) {
