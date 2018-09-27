@@ -177,11 +177,11 @@ module.exports = class Binance {
         return await this.client.getDataStream()
     }
 
-    async keepDataStream(listenKey) {
+    async keepDataStream({ listenKey }) {
         return await this.client.keepDataStream({ listenKey })
     }
 
-    async closeDataStream(listenKey) {
+    async closeDataStream({ listenKey }) {
         return await this.client.closeDataStream({ listenKey })
     }
 
