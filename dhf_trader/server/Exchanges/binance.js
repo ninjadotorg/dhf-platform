@@ -94,10 +94,10 @@ module.exports = class Binance {
     }
 
     async openOrders({ symbol }) {
-        if (!symbol) {
-            throw new Error('symbol is required')
+        if (symbol) {
+            return await this.client.openOrders({ symbol })
         }
-        return await this.client.openOrders({ symbol })
+        return await this.client.openOrders()
     }
 
     async allOrders({ symbol }) {
