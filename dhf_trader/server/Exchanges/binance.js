@@ -93,18 +93,18 @@ module.exports = class Binance {
         return result
     }
 
-    async openOrders({ symbol }) {
+    async openOrders({ symbol, limit = 10 }) {
         if (symbol) {
-            return await this.client.openOrders({ symbol })
+            return await this.client.openOrders({ symbol, limit })
         }
-        return await this.client.openOrders()
+        return await this.client.openOrders({ limit })
     }
 
-    async allOrders({ symbol }) {
-        if (!symbol) {
-            throw new Error('symbol is required')
+    async allOrders({ symbol, limit = 10 }) {
+        if (symbol) {
+            return await this.client.allOrders({ symbol, limit })
         }
-        return await this.client.allOrders({ symbol })
+        return await this.client.allOrders({ limit })
     }
 
     async accountInfo(params) {
