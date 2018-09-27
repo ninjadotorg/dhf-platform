@@ -1,4 +1,4 @@
-var BinanceAPI = require('binance-api-node').default
+const BinanceAPI = require('binance-api-node').default
 // balance
 // ticker price -> pair pair
 // open order
@@ -80,14 +80,14 @@ class Binance {
   }
 
   async updateTicker () {
-    let allTickerPrice = await this.getData(
-      '/infos/prices?projectId=' + this.project + '&access_token=' + this.token
+    const allTickerPrice = await this.getData(
+      `/infos/prices?projectId=${this.project}&access_token=${this.token}`
     )
 
     const result = {}
     this.supportedSymbols.forEach(s => (result[s] = []))
 
-    for (var symbol in allTickerPrice) {
+    for (const symbol in allTickerPrice) {
       const info = this.getSymbolInfo(this.exchangeInfo.symbols, symbol)
       if (!info) {
         continue
@@ -111,7 +111,7 @@ class Binance {
       const tickers = JSON.parse(event.data)
 
       const findSymbol = function (symbols, symbol) {
-        for (let s in symbols) {
+        for (const s in symbols) {
           if (symbol.endsWith(s)) {
             return self.getSymbolInfo(symbols[s], symbol)
           }

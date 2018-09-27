@@ -17,6 +17,7 @@ import Avatar from '@material-ui/core/Avatar';
 import classNames from 'classnames';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import CardMedia from '@material-ui/core/CardMedia';
+import API_ROOT from '@/utils/cons';
 
 const styles = theme => ({
   layout: {
@@ -37,23 +38,46 @@ const styles = theme => ({
   avatar: {
     height: 200,
     width: 200,
+    fontSize: 40,
+    fontWeight: 900,
+    '&:hover + label': {
+      display: 'block',
+    },
   },
   avatarbutton: {
-    marginTop: 10,
+    color: '#f44336',
+    position: 'absolute',
+    left: 90,
+    top: 90,
+    display: 'none',
+    cursor: 'pointer',
+    background: '#fafafa',
+    borderRadius: 5,
+    padding: '2px 5px',
+    '&:hover': {
+      display: 'block',
+    },
+  },
+  avatarWapper: {
+    padding: 5,
+    textAlign: 'center',
+    position: 'relative',
   },
   form: {
     width: '100%', // Fix IE11 issue.
     marginTop: theme.spacing.unit,
+  },
+  buttonWapper: {
+    flexWrap: 'wrap',
+    display: 'flex',
+    flexDirection: 'row',
   },
   submit: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     marginLeft: 'auto',
     marginRight: 'auto',
-    flexWrap: 'wrap',
-    display: 'flex',
     width: 200,
-    flexDirection: 'row',
   },
   button: {
     margin: theme.spacing.unit,
@@ -95,6 +119,8 @@ class profile extends React.Component {
       avatar: '',
       readOnly: true,
       avatarURL: '',
+      avatarChars: '',
+      avatarFile: null,
     };
     this.moment = moment;
     this.currentUserId = localStorage.getItem('userId');
@@ -113,6 +139,15 @@ class profile extends React.Component {
           email: response.email,
           avatar: response.avatar,
         });
+        if (response.avatar && response.avatar !== '') {
+          this.setState({
+            avatarURL: `${API_ROOT}/file-storages/avatar/download/${response.avatar}`,
+          });
+        } else {
+          this.setState({
+            avatarChars: response.firstName.substring(0, 1).toUpperCase() + response.lastName.substring(0, 1).toUpperCase(),
+          });
+        }
       })
       .catch(error => {});
   };
@@ -126,30 +161,74 @@ class profile extends React.Component {
   handleFileChange = event => {
     this.setState({
       avatarURL: URL.createObjectURL(event.target.files[0]),
+      avatarFile: event.target.files[0],
     });
   };
+
   handleSubmit = () => {
-    const data = Object.assign({}, this.state);
-    delete data.exchangeList;
-    delete data.currencyList;
-    delete data.readOnly;
-    this.setState({
-      error: '',
-    });
-    request({
-      method: 'put',
-      url: `/projects/${this.props.match.params.id}`,
-      data,
-    })
-      .then(response => {
-        console.log('submitForm', response);
-      })
-      .catch(error => {
+    if (this.state.avatarFile) {
+      this.setState({
+        error: '',
+      });
+      const fileData = this.state.avatarFile;
+      const data = new FormData();
+      data.append('file', fileData);
+      data.append('key', 'value');
+
+      request({
+        method: 'post',
+        url: '/file-storages/avatar/upload',
+        data,
+      }).then(response => {
+        const data = Object.assign({}, this.state);
+        delete data.avatarURL;
+        delete data.avatarChars;
+        delete data.readOnly;
+        delete data.avatarFile;
+        delete data.error;
+        data.avatar = response.result.files.file[0].name;
+        request({
+          method: 'put',
+          url: '/users/update-profile',
+          data,
+        })
+          .then(response => {
+            console.log('submitForm', response);
+          })
+          .catch(error => {
+            error.data
+            && error.data.error
+            && error.data.error.message
+            && this.setState({ error: error.data.error.message });
+          });
+      }).catch(error => {
         error.data
         && error.data.error
         && error.data.error.message
         && this.setState({ error: error.data.error.message });
       });
+    } else {
+      const data = Object.assign({}, this.state);
+      delete data.avatarURL;
+      delete data.avatarChars;
+      delete data.readOnly;
+      delete data.avatarFile;
+      delete data.error;
+      request({
+        method: 'put',
+        url: '/users/update-profile',
+        data,
+      })
+        .then(response => {
+          console.log('submitForm', response);
+        })
+        .catch(error => {
+          error.data
+          && error.data.error
+          && error.data.error.message
+          && this.setState({ error: error.data.error.message });
+        });
+    }
   };
 
   render() {
@@ -167,16 +246,19 @@ class profile extends React.Component {
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
                 <Grid container spacing={24}>
-                  <CardMedia >
+                  <CardMedia className={classes.avatarWapper}>
                     <Avatar
                       alt=""
-                      style={{border: 0, objectFit: 'cover'}}
+                      style={{ border: 0, objectFit: 'cover' }}
                       backgroundColor="rgba(0,0,0,0)"
                       className={classNames(classes.avatar)}
                       src={this.state.avatarURL}
                     >
-                      <PageviewIcon size={35} />
+                      {this.state.avatarChars}
                     </Avatar>
+                    <label htmlFor="avatar-button-file" className={classes.avatarbutton}>
+                      <PageviewIcon />
+                    </label>
                     <input
                       accept="image/*"
                       className={classes.input}
@@ -185,11 +267,7 @@ class profile extends React.Component {
                       onChange={this.handleFileChange}
                       type="file"
                     />
-                    <label htmlFor="avatar-button-file">
-                      <Button variant="raised" component="span" className={classes.avatarbutton}>
-                        Select photo
-                      </Button>
-                    </label>
+
                   </CardMedia>
                   <Grid item xs>
                     <Grid container spacing={24}>
@@ -208,14 +286,14 @@ class profile extends React.Component {
                       </Grid>
                       <Grid item xs>
                         <FormControl margin="normal" required fullWidth>
-                          <InputLabel htmlFor="firstName">First Name</InputLabel>
+                          <InputLabel htmlFor="lastName">Last Name</InputLabel>
                           <Input
-                            id="firstName"
-                            name="firstName"
-                            autoComplete="firstName"
+                            id="lastName"
+                            name="lastName"
+                            autoComplete="lastName"
                             autoFocus
                             onChange={this.handleTextChange}
-                            value={this.state.firstName}
+                            value={this.state.lastName}
                           />
                         </FormControl>
                       </Grid>
@@ -255,9 +333,14 @@ class profile extends React.Component {
                 <FormHelperText id="name-helper-text" error>
                   {this.state.error}
                 </FormHelperText>
-                <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
-                  Update
-                </Button>
+                <div className={classes.buttonWapper}>
+                  <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
+                    Update
+                  </Button>
+                  <Button type="submit" center variant="raised" color="success" className={classes.submit}>
+                    Change password
+                  </Button>
+                </div>
               </ValidatorForm>
             </Paper>
           </main>

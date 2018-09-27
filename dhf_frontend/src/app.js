@@ -4,10 +4,8 @@ import { connect } from 'react-redux';
 import { Switch, Route, Router, BrowserRouter, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Todo from '@/page/todo';
 import Sidebar from '@/Sidebar';
 import HomePage from '@/homepage';
-import Typography from '@material-ui/core/Typography';
 import Register from '@/register';
 import createProject from '@/createProject';
 import wallet from '@/wallet';
@@ -17,7 +15,6 @@ import history from '@/utils/history';
 import projectPage from '@/projectPage';
 import trade from '@/trade';
 import LandingPage from '@/LandingPage/LandingPage';
-import LoginPage from '@/LoginPage/LoginPage';
 import tradePage from '@/trade/tradePage';
 import profile from '@/profile';
 import Test from '@/test'

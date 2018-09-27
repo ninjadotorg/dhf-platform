@@ -64,7 +64,7 @@ services:
          - ./dhf_backend/common:/app/common
          - ./dhf_backend/test:/app/test
          - ./dhf_backend/package.json:/app/package.json
-         - ./dhf_backend/files:/app/files
+         - ./dhf_backend/files/avatar:/app/files/avatar
       environment:
          APP_ENV: development
          NODE_ENV: development

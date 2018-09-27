@@ -1,11 +1,11 @@
 import axios from 'axios';
 import history from '@/utils/history';
-import _ from 'lodash';
+import API_ROOT from '@/utils/cons';
 /**
  * Create an Axios Client with defaults
  */
 const client = axios.create({
-  baseURL: 'http://35.198.235.226:9000/api/',
+  baseURL: API_ROOT,
 });
 axios.defaults.headers.common.Authorization = localStorage.getItem('token');
 /**
