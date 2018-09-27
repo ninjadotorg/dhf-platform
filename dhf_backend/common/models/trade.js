@@ -295,7 +295,7 @@ module.exports = function(Trade) {
   };
 
   Trade.listenKey = function(projectId, callback) {
-    Trade.action(projectId, 'getListenKey',
+    Trade.getListenKey(projectId, 'getListenKey',
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -308,7 +308,7 @@ module.exports = function(Trade) {
   };
 
   Trade.keepDataStream = function(projectId, listenKey, callback) {
-    Trade.action(projectId, 'dataStream', 'keepDataStream', listenKey,
+    Trade.dataStream(projectId, 'keepDataStream', listenKey,
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -321,7 +321,7 @@ module.exports = function(Trade) {
   };
 
   Trade.closeDataStream = function(projectId, listenKey, callback) {
-    Trade.action(projectId, 'dataStream', 'closeDataStream', listenKey,
+    Trade.dataStream(projectId, 'closeDataStream', listenKey,
       function(err, resp) {
         if (err) {
           let error = new Error();
