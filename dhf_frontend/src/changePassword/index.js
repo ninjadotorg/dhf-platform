@@ -179,6 +179,7 @@ class changePassword extends React.Component {
                       <InputLabel htmlFor="oldPassword">Current password</InputLabel>
                       <Input
                         id="oldPassword"
+                        type="password"
                         name="oldPassword"
                         autoComplete="oldPassword"
                         autoFocus
@@ -195,6 +196,7 @@ class changePassword extends React.Component {
                       <Input
                         id="newPassword"
                         name="newPassword"
+                        type="password"
                         autoComplete="newPassword"
                         onChange={this.handleTextChange}
                         value={this.state.newPassword}
@@ -209,6 +211,7 @@ class changePassword extends React.Component {
                       <Input
                         id="confirmPassword"
                         name="confirmPassword"
+                        type="password"
                         autoComplete="confirmPassword"
                         onChange={this.handleTextChange}
                         value={this.state.confirmPassword}
