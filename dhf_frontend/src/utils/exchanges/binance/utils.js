@@ -11,7 +11,7 @@ class Binance {
     secret = 'Vp0AyrlOXc4GDLRm9TbpABeKE5JDGFj3cpfz7qqBQjE9Tjb7rYj5ako72yEVrs1m',
     project = '5b9221bb129e900086c9d406',
     baseUrl = 'http://35.198.235.226:9000/api',
-    token = '6qWEVFxhkKWEk5hbvnkpTQ6uRbWgJTZktq1lGlcU59bAAjG5V8PoFJ8CFYFcVHlp'
+    token = 'MBgi4myJEw11tpxB2wDG91zAtfWj0W9Gp6cjyt6yTIwQbf03M1KA47JCCfZWEdpC'
   ) {
     this.key = key
     this.secret = secret
@@ -158,38 +158,45 @@ class Binance {
       closeStreamUrl
     )
     const clean = await fn(msg => {
-      if (msg.eventType !== 'executionReport') {
-        return
-      }
+      if (msg.eventType === 'account') {
+        Object.keys(msg.balances).forEach(b => {
+          if (parseFloat(msg.balances[b].available) > 0) {
+            this.balance[b] = msg.balances[b]
+          }
+        })
+      } else if (msg.eventType === 'executionReport') {
+        const order = {
+          symbol: msg.symbol,
+          orderId: msg.orderId,
+          clientOrderId: msg.newClientOrderId,
+          price: msg.price,
+          origQty: msg.quantity,
+          executedQty: 0,
+          status: msg.orderStatus,
+          timeInForce: msg.timeInForce,
+          type: msg.orderType,
+          side: msg.side,
+          stopPrice: msg.stopPrice,
+          icebergQty: msg.icebergQuantity,
+          time: msg.orderTime
+        }
 
-      const order = {
-        symbol: msg.symbol,
-        orderId: msg.orderId,
-        clientOrderId: msg.newClientOrderId,
-        price: msg.price,
-        origQty: msg.quantity,
-        executedQty: 0,
-        status: msg.orderStatus,
-        timeInForce: msg.timeInForce,
-        type: msg.orderType,
-        side: msg.side,
-        stopPrice: msg.stopPrice,
-        icebergQty: msg.icebergQuantity,
-        time: msg.orderTime
-      }
-
-      if (['CANCELED', 'FILLED'].indexOf(msg.orderStatus) > -1) {
-        // remove from open orders
-        this.openOrders.splice(this.findOrderIndex(msg.orderId), 1)
-        this.allOrders.push(order)
-      } else {
-        const idx = this.findOrderIndex(msg.orderId)
-        if (idx > -1) {
-          this.openOrders[idx] = order
+        if (['CANCELED', 'FILLED'].indexOf(msg.orderStatus) > -1) {
+          // remove from open orders
+          this.openOrders.splice(this.findOrderIndex(msg.orderId), 1)
+          this.allOrders.push(order)
         } else {
-          this.openOrders.push(order)
+          const idx = this.findOrderIndex(msg.orderId)
+          if (idx > -1) {
+            this.openOrders[idx] = order
+          } else {
+            this.openOrders.push(order)
+          }
         }
       }
+
+      console.log(this.openOrders)
+      console.log(this.allOrders)
     })
   }
 }
