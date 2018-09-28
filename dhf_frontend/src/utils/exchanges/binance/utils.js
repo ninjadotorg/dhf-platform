@@ -64,7 +64,9 @@ class Binance {
     this.exchangeInfo = result[0]
     this.balance = result[1]
     this.openOrders = result[2]
-    this.allOrders = result[3].filter(o => o.status !== 'NEW')
+    this.allOrders = result[3].filter(
+      o => o.status !== 'NEW' && o.status !== 'ACTIVE'
+    )
 
     this.updateTicker()
     this.getOpenOrders()

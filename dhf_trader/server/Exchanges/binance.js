@@ -37,7 +37,9 @@ module.exports = class Binance {
     for (var i in result.balances) {
       let asset = result.balances[i]
       if (Number(asset.free) != 0 || Number(asset.locked) != 0) {
-        if (!params.currencies || params.currencies.indexOf(asset.asset) > -1) { returnList[asset.asset] = { free: asset.free, locked: asset.locked } }
+        if (!params.currencies || params.currencies.indexOf(asset.asset) > -1) {
+          returnList[asset.asset] = { free: asset.free, locked: asset.locked }
+        }
       }
     }
 
@@ -104,20 +106,20 @@ module.exports = class Binance {
     return await this.client.openOrders()
   }
 
-  async allOrders ({ project, symbol, limit = 10 }) {
+  async allOrders ({ project = '', symbol = '', limit = 10 }) {
     if (symbol) {
-      return await OrderDB.find({
-        project,
-        symbol,
-        status: { $in: ['CANCELED', 'FILLED'] },
-        time: {
-          $lte: moment()
-            .subtract(24, 'hours')
-            .toDate()
-        }
-      }).limit(limit)
+      return await this.client.allOrders({ symbol, limit })
     }
-    return await this.client.allOrders({ limit })
+
+    return await OrderDB.find({
+      project,
+      status: { $in: ['CANCELED', 'FILLED'] },
+      time: {
+        $lte: moment()
+          .subtract(24, 'hours')
+          .toDate()
+      }
+    }).limit(limit)
   }
 
   async accountInfo (params) {
