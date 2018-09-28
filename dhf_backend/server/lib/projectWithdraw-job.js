@@ -96,7 +96,7 @@ ProjectState.prototype.checkState = function() {
                 if (err) {
                   let error = new Error();
                   error.message = errorHandler.filler(err);
-                  error.status = 404;
+                  error.status = 405;
                   return callback(error);
                 }
                 if (resp.canWithdraw) {
@@ -125,7 +125,7 @@ ProjectState.prototype.checkState = function() {
                   if (err) {
                     let error = new Error();
                     error.message = errorHandler.filler(err);
-                    error.status = 404;
+                    error.status = 405;
                     return callback(error);
                   }
 
@@ -153,7 +153,7 @@ ProjectState.prototype.checkState = function() {
                   if (err) {
                     let error = new Error();
                     error.message = errorHandler.filler(err);
-                    error.status = 404;
+                    error.status = 405;
                     return callback(error);
                   }
                 });

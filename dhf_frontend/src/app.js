@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Switch, Route, Router, BrowserRouter, Redirect } from 'react-router-dom';
+import { Switch, Route, Router, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Sidebar from '@/Sidebar';
@@ -12,12 +12,15 @@ import wallet from '@/wallet';
 import Login from '@/login';
 import './style/index.scss';
 import history from '@/utils/history';
-import projectPage from '@/projectPage';
 import trade from '@/trade';
 import LandingPage from '@/LandingPage/LandingPage';
 import tradePage from '@/trade/tradePage';
 import profile from '@/profile';
-import Test from '@/test'
+import changePassword from '@/changePassword';
+import Test from '@/test';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const styles = theme => ({
   content: {
     flexGrow: 1,
@@ -49,6 +52,17 @@ class App extends React.Component {
           <div>
             <React.Fragment>
               <CssBaseline />
+              <ToastContainer
+                position="top-center"
+                autoClose={2500}
+                hideProgressBar
+                newestOnTop
+                closeOnClick={false}
+                rtl={false}
+                pauseOnVisibilityChange={false}
+                draggable
+                pauseOnHover={false}
+              />
               <div className={classes.root}>
                 <Sidebar />
                 <main className={classes.content}>
@@ -61,6 +75,7 @@ class App extends React.Component {
                   {/* <Route path="/dashboard" exact component={trade} /> */}
                   <Route path="/dashboard" exact component={HomePage} />
                   <Route path="/profile" exact component={profile} />
+                  <Route path="/change-password" exact component={changePassword} />
                 </main>
               </div>
             </React.Fragment>

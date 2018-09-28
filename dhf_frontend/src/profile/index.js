@@ -18,6 +18,8 @@ import classNames from 'classnames';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import CardMedia from '@material-ui/core/CardMedia';
 import API_ROOT from '@/utils/cons';
+import { toast } from 'react-toastify';
+import history from '@/utils/history';
 
 const styles = theme => ({
   layout: {
@@ -76,8 +78,12 @@ const styles = theme => ({
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     marginLeft: 'auto',
-    marginRight: 'auto',
+    marginRight: '0',
     width: 200,
+    '& + button': {
+      marginLeft: '10px',
+      marginRight: 'auto',
+    },
   },
   button: {
     margin: theme.spacing.unit,
@@ -194,6 +200,7 @@ class profile extends React.Component {
         })
           .then(response => {
             console.log('submitForm', response);
+            toast.success('Your profile has been updated successfully!');
           })
           .catch(error => {
             error.data
@@ -220,7 +227,7 @@ class profile extends React.Component {
         data,
       })
         .then(response => {
-          console.log('submitForm', response);
+          toast.success('Your profile has been updated successfully!');
         })
         .catch(error => {
           error.data
@@ -337,7 +344,12 @@ class profile extends React.Component {
                   <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
                     Update
                   </Button>
-                  <Button type="submit" center variant="raised" color="success" className={classes.submit}>
+                  <Button type="button"
+                    center
+                    variant="raised"
+                    color="success"
+                    className={classes.submit}
+                    onClick={() => history.push('/change-password')}>
                     Change password
                   </Button>
                 </div>

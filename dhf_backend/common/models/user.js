@@ -14,7 +14,7 @@ module.exports = function(User) {
         }  else if (!user) {
         let mess = "No match between provided current logged user and email or username";
         let newErr = new Error(mess);
-        newErr.statusCode = 401;
+        newErr.statusCode = 405;
         newErr.code = 'LOGIN_FAILED_EMAIL';
         callback(newErr);
       } else {
@@ -64,7 +64,7 @@ module.exports = function(User) {
           } else {
             newErrMsg = 'User specified wrong current password !';
             newErr = new Error(newErrMsg);
-            newErr.statusCode = 401;
+            newErr.statusCode = 405;
             newErr.code = 'LOGIN_FAILED_PWD';
             return callback(newErr);
           }
@@ -110,7 +110,7 @@ User.remoteMethod(
         ctx.instance.userType === USER_TYPE.BACKEND) &&
         ctx.instance.realm !== 'backend') {
         let err = new Error();
-        err.status = 401;
+        err.status = 405;
         err.message = 'Admin type can\'t create from rest api';
         return next(err);
       }

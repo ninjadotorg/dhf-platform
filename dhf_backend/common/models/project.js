@@ -20,7 +20,7 @@ module.exports = function(Project) {
           if (err) {
             let error = new Error();
             error.message = errorHandler.filler(err);
-            error.status = 404;
+            error.status = 405;
             return next(error);
           }
           ctx.instance.smartContractVersion = data.version;
@@ -66,29 +66,29 @@ module.exports = function(Project) {
         Project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (!project.userId ||
             project.userId.toString() !== Project.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.READY) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready!';
             return callback(error);
           }
           let fundingAmount = BigNumber(project.fundingAmount);
           if (fundingAmount.lte(0)) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project can not release, funding amount must be greater than 0!';
             return callback(error);
           }
           if (!project.stages) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project don\'t have any stage';
             return callback(error);
           }
@@ -177,7 +177,7 @@ module.exports = function(Project) {
               if (err) {
                 let error = new Error();
                 error.message = errorHandler.filler(err);
-                error.status = 404;
+                error.status = 405;
                 return callback(error);
               }
               transactionId = data.result;
@@ -230,13 +230,13 @@ module.exports = function(Project) {
         Project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (!project.userId ||
             project.userId.toString() !== Project.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
@@ -259,7 +259,7 @@ module.exports = function(Project) {
               if (err) {
                 let error = new Error();
                 error.message = errorHandler.filler(err);
-                error.status = 404;
+                error.status = 405;
                 return callback(error);
               }
               currentProject.state = PROJECT_STATE.STOP;

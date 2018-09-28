@@ -13,17 +13,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (!project.userId || project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -37,7 +37,7 @@ module.exports = function(Trade) {
       //   let availableAmount = currentProject.releasedAmount -
       //     (currentProject.pendingAmount - currentProject.refundAmount);
       //   if (totalAmount > availableAmount) {
-      //     error.status = 404;
+      //     error.status = 405;
       //     error.message = 'Your balance of this project was not enough.';
       //     return callback(error);
       //   }
@@ -49,7 +49,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -80,17 +80,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -103,7 +103,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -126,17 +126,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -149,7 +149,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -172,17 +172,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -195,7 +195,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -218,17 +218,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -241,7 +241,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -261,7 +261,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -274,7 +274,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -287,7 +287,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -300,7 +300,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -313,7 +313,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -326,7 +326,7 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);

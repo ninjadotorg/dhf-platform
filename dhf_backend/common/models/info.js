@@ -7,7 +7,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -33,7 +33,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -59,7 +59,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -86,7 +86,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -112,7 +112,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -137,7 +137,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -163,7 +163,7 @@ module.exports = function(Info) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
