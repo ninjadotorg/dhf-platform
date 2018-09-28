@@ -111,7 +111,7 @@ module.exports = class Binance {
       return await this.client.allOrders({ symbol, limit })
     }
 
-    return await OrderDB.find({
+    const orders = await OrderDB.find({
       project,
       status: { $in: ['CANCELED', 'FILLED'] },
       time: {
@@ -120,6 +120,8 @@ module.exports = class Binance {
           .toDate()
       }
     }).limit(limit)
+
+    return orders.map(o => this.transformFromOrder(o))
   }
 
   async accountInfo (params) {
@@ -213,6 +215,24 @@ module.exports = class Binance {
       requestQty: result.origQty,
       fillQty: 0,
       fillQuoteQty: 0
+    }
+  }
+
+  transformFromOrder (order) {
+    return {
+      symbol: order.symbol,
+      orderId: order.exchangeOrderID,
+      clientOrderId: order.orderKey,
+      price: order.price,
+      origQty: order.requestQty,
+      executedQty: order.fillQty,
+      status: order.status,
+      timeInForce: order.time,
+      type: order.type,
+      side: order.side,
+      stopPrice: 0,
+      icebergQty: 0,
+      time: order.time
     }
   }
 }
