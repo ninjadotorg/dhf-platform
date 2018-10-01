@@ -3,6 +3,9 @@ const moment = require('moment')
 var BinanceAPI = require('binance-api-node').default
 const OrderDB = require('../../common/models/orders')
 
+const INVALID_SYMBOL = -1121
+const LOT_SIZE = -1013
+
 module.exports = class Binance {
   constructor (cred) {
     this.client = BinanceAPI({
@@ -140,7 +143,7 @@ module.exports = class Binance {
   }
 
   async sellMarket (params) {
-    let result = await this.client.order({
+    let result = await this.client.orderTest({
       symbol: params.symbol,
       side: 'SELL',
       type: 'MARKET',
@@ -200,6 +203,70 @@ module.exports = class Binance {
 
   async closeDataStream ({ listenKey }) {
     return await this.client.closeDataStream({ listenKey })
+  }
+
+  async sellAll ({ project }) {
+    const { balances } = await this.client.accountInfo()
+    const invalidAssets = {}
+
+    for (let i = 0; i < balances.length; i++) {
+      const balance = balances[i]
+      const asset = balance.asset
+      if (asset === 'ETH') {
+        continue
+      }
+      const quantity = Number(balance.free)
+      if (quantity === 0) {
+        continue
+      }
+
+      const symbol = `${asset}ETH` // sell asset to get eth
+      try {
+        await this.sellMarket({ symbol, quantity })
+      } catch (e) {
+        // ETH doesn't have this symbol
+        if (e.code === INVALID_SYMBOL) {
+          invalidAssets[asset] = quantity
+          continue
+        }
+
+        if (e.code == LOT_SIZE) {
+          continue
+        }
+
+        console.log('error while selling symbol', symbol, e)
+      }
+    }
+
+    for (let asset in invalidAssets) {
+      if (asset === 'BTC') {
+        continue
+      }
+      try {
+        // sell asset to get btc
+        await this.sellMarket({
+          symbol: `${asset}BTC`,
+          quantity: invalidAssets[asset]
+        })
+      } catch (e) {
+        console.log('error while selling asset', asset, 'to BTC', e)
+      }
+    }
+
+    const balancesAfterSell = await this.client.accountInfo()
+    for (let i = 0; i < balancesAfterSell.length; i++) {
+      if (balancesAfterSell[i].asset !== 'BTC') {
+        continue
+      }
+
+      // sell all btc to get eth
+      await this.sellMarket({
+        symbol: 'ETHBTC',
+        quantity: balancesAfterSell[i].free
+      })
+
+      break
+    }
   }
 
   transformToOrder (result) {
