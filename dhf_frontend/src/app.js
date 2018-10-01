@@ -21,6 +21,7 @@ import changePassword from '@/changePassword';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-day-picker/lib/style.css';
 
 const styles = theme => ({
   content: {

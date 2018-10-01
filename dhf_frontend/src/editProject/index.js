@@ -14,11 +14,16 @@ import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
 import { toast } from 'react-toastify';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+
+import {
+  formatDate,
+  parseDate,
+} from 'react-day-picker/moment';
 
 const styles = theme => ({
   layout: {
@@ -135,11 +140,9 @@ class editProject extends React.Component {
       .catch(error => {});
   }
 
-  handleTimeChange = event => {
-    console.log(event.target.value);
-    const time = moment(event.target.value).format('mm/dd/yyyy');
+  handleDayChange = value => {
     this.setState({
-      [event.target.id]: time,
+      deadline: value,
     });
   };
 
@@ -292,19 +295,17 @@ class editProject extends React.Component {
                 </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
+                    <FormControl margin="normal" required fullWidth  className={classes.margin}>
+                      <InputLabel htmlFor="deadline">Deadline</InputLabel>
+                      <DayPickerInput
+                        onDayChange={this.handleDayChange}
                         id="deadline"
                         label="deadline"
-                        type="date"
-                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
-                        value={this.state.deadline}
-                        onChange={this.handleTimeChange}
-                        defaultValue={this.currentDateTime}
+                        value={`${formatDate(this.state.deadline)}`}
                         className={classes.textField}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
+                        formatDate={formatDate}
+                        parseDate={parseDate}
+                        placeholder=""
                       />
                     </FormControl>
                   </Grid>
