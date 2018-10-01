@@ -114,6 +114,13 @@ class ProjectList extends React.Component {
     );
   };
 
+  handleEditClick = n => {
+    history.push({
+      pathname: `/projects/${n.id}`,
+      state: n,
+    });
+  };
+
   getButtonType = n => {
     switch (n.data.state) {
       case 'RELEASE':
