@@ -20,6 +20,7 @@ import Publish from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
 import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
+import ListItem from '@material-ui/core/ListItem/ListItem';
 
 const styles = {
   root: {
@@ -151,7 +152,7 @@ class ProjectList extends React.Component {
               Init
             </Button>
             <this.deleteButton data={n} />
-            <IconButton className={styles.IconButton} aria-label="Delete">
+            <IconButton className={styles.IconButton} aria-label="Edit" component={Link} to={`/project/${n.data.id}`}>
               <EditIcon style={{ color: editIcon }} />
             </IconButton>
           </div>

@@ -27,10 +27,10 @@ const styles = theme => ({
       marginLeft: 'auto',
       marginRight: 'auto',
     },
-    zIndex: "2",
-    position: "relative",
-    paddingTop: "20vh",
-    color: "#FFFFFF"
+    zIndex: '2',
+    position: 'relative',
+    paddingTop: '20vh',
+    color: '#FFFFFF',
   },
   paper: {
     marginTop: theme.spacing.unit * 8,
@@ -75,15 +75,7 @@ const styles = theme => ({
     },
   },
 });
-// {
-//   "firstName": "string",
-//   "lastName": "string",
-//   "userType": "user",
-//   "username": "string",
-//   "email": "string",
-//   "emailVerified": true,
-//   "id": "string"
-// }
+
 
 class Login extends React.Component {
   constructor(props) {
@@ -152,59 +144,59 @@ class Login extends React.Component {
     return (
       <React.Fragment>
         <CssBaseline />
-          <Header
-            absolute
-            color="transparent"
-            brand="Ninja Fund"
-            rightLinks={<HeaderLinks />}
-          />
-          <div
-            className={classes.pageHeader}
-            style={{
-              backgroundImage: 'url(' + image + ')',
-              backgroundSize: 'cover',
-              backgroundPosition: 'top center',
-            }}
-          >
-        <main className={classes.layout}>
+        <Header
+          absolute
+          color="transparent"
+          brand="Ninja Fund"
+          rightLinks={<HeaderLinks />}
+        />
+        <div
+          className={classes.pageHeader}
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'top center',
+          }}
+        >
+          <main className={classes.layout}>
 
             <Paper className={classes.paper}>
-            <Typography variant="headline">Login</Typography>
-            <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Email *"
-                  onChange={this.handleChangeEmail}
-                  name="email"
-                  value={this.state.email}
-                  validators={['required', 'isEmail']}
-                  errorMessages={['this field is required', 'email is not valid']}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Enter password *"
-                  onChange={this.handleChange}
-                  name="password"
-                  type="password"
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  value={this.state.password}
-                />
-              </FormControl>
-              <FormHelperText id="name-helper-text" error>
-                {this.state.error}
-              </FormHelperText>
-              <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
+              <Typography variant="headline">Login</Typography>
+              <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
+                <FormControl margin="normal" required fullWidth>
+                  <TextValidator
+                    label="Email *"
+                    onChange={this.handleChangeEmail}
+                    name="email"
+                    value={this.state.email}
+                    validators={['required', 'isEmail']}
+                    errorMessages={['this field is required', 'email is not valid']}
+                  />
+                </FormControl>
+                <FormControl margin="normal" required fullWidth>
+                  <TextValidator
+                    label="Enter password *"
+                    onChange={this.handleChange}
+                    name="password"
+                    type="password"
+                    validators={['required']}
+                    errorMessages={['this field is required']}
+                    value={this.state.password}
+                  />
+                </FormControl>
+                <FormHelperText id="name-helper-text" error>
+                  {this.state.error}
+                </FormHelperText>
+                <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                 Submit
-              </Button>
-              <Typography color="primary" style={{ marginTop: 20 }}>
-                {this.state.successMsg}
-              </Typography>
-              {this.state.success && <Redirect to="/dashboard" />}
-            </ValidatorForm>
-          </Paper>
-        </main>
+                </Button>
+                <Typography color="primary" style={{ marginTop: 20 }}>
+                  {this.state.successMsg}
+                </Typography>
+                {this.state.success && <Redirect to="/dashboard" />}
+              </ValidatorForm>
+            </Paper>
+          </main>
         </div>
       </React.Fragment>
     );

@@ -9,21 +9,15 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import request from '@/utils/api';
-import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import Button from '@material-ui/core/Button';
-import { Switch, Route, Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import history from '@/utils/history';
 import { compose } from 'recompose';
 import axios from 'axios';
 import { mainListItems, secondaryListItems } from './listItems';
-import ListItem from '@material-ui/core/ListItem/ListItem';
 
 const drawerWidth = 240;
 
@@ -169,7 +163,8 @@ class Sidebar extends React.Component {
         >
           <div className={classes.toolbarIcon}>
             <a href="/">
-            <img src={require('assets/img/logo.svg')} width={70} style={{ marginRight: 30 }} alt="logo" /></a>
+              <img src={require('assets/img/logo.svg')} width={70} style={{ marginRight: 30 }} alt="logo" />
+            </a>
             <IconButton onClick={this.handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>

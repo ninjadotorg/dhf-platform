@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
 import ProjectList from './ProjectList';
 
 const styles = theme => ({
@@ -39,18 +37,6 @@ const styles = theme => ({
 class trade extends React.Component {
   state = {
     open: true,
-  };
-
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleDrawerClose = () => {
-    this.setState({ open: false });
-  };
-
-  componentDidMount = () => {
-    console.log('homepage');
   };
 
   render() {

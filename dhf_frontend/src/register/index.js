@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import { Redirect, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
@@ -75,15 +75,6 @@ const styles = theme => ({
     },
   },
 });
-// {
-//   "firstName": "string",
-//   "lastName": "string",
-//   "userType": "user",
-//   "username": "string",
-//   "email": "string",
-//   "emailVerified": true,
-//   "id": "string"
-// }
 
 class Register extends React.Component {
   constructor(props) {

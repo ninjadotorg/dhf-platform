@@ -8,8 +8,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import request from '@/utils/api';
-import { Link } from 'react-router-dom';
-import history from '@/utils/history';
 import { withRouter } from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
@@ -17,7 +15,6 @@ import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { compose } from 'recompose';
 
 const styles = {
@@ -135,7 +132,6 @@ class WalletList extends React.Component {
                   >
                     <DialogContent>
                       <DialogContentText>Please enter your password to use this wallet.</DialogContentText>
-                      {/* https://lollyrock.com/articles/nodejs-encryption/ user enters password use this algo to decrpyt the walletId and then use it in future api calls of wallet -_- */}
                       <TextField
                         autoFocus
                         margin="dense"

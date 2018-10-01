@@ -8,6 +8,7 @@ import Sidebar from '@/Sidebar';
 import HomePage from '@/homepage';
 import Register from '@/register';
 import createProject from '@/createProject';
+import editProject from '@/editProject';
 import wallet from '@/wallet';
 import Login from '@/login';
 import './style/index.scss';
@@ -68,11 +69,10 @@ class App extends React.Component {
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
                   <Route path="/create-project" component={createProject} />
-                  <Route path="/projects/:id" exact component={trade} />
+                  <Route path="/project/:id" exact component={editProject} />
                   <Route path="/wallet" exact component={wallet} />
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
-                  {/* <Route path="/dashboard" exact component={trade} /> */}
                   <Route path="/dashboard" exact component={HomePage} />
                   <Route path="/profile" exact component={profile} />
                   <Route path="/change-password" exact component={changePassword} />

@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import WalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import request from '@/utils/api';
 import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
@@ -123,9 +121,9 @@ class BuySellBlock extends React.Component {
       slidingEnter: {
         duration: 100,
       },
-      slidingExit:{
+      slidingExit: {
         duration: 100,
-      }
+      },
     });
   }
 
@@ -233,7 +231,7 @@ class BuySellBlock extends React.Component {
                   />
                 </FormControl>
               ) : (
-                <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none'}}>
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
                     className={classNames(classes.margin, classes.textField)}
