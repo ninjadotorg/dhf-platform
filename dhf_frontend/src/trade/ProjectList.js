@@ -113,6 +113,13 @@ class ProjectList extends React.Component {
     );
   };
 
+  handleEditClick = n => {
+    history.push({
+      pathname: `/projects/${n.id}`,
+      state: n,
+    });
+  };
+
   getButtonType = n => {
     switch (n.data.state) {
       case 'RELEASE':
@@ -151,7 +158,13 @@ class ProjectList extends React.Component {
               Init
             </Button>
             <this.deleteButton data={n} />
-            <IconButton className={styles.IconButton} aria-label="Delete">
+            <IconButton
+              className={styles.IconButton}
+              aria-label="Delete"
+              onClick={() => {
+                this.handleEditClick(n.data);
+              }}
+            >
               <EditIcon style={{ color: editIcon }} />
             </IconButton>
           </div>

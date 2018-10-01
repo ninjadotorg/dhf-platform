@@ -10,14 +10,15 @@ import HomePage from '@/homepage';
 import Typography from '@material-ui/core/Typography';
 import Register from '@/register';
 import createProject from '@/createProject';
+import editProject from '@/createProject/editProject';
 import wallet from '@/wallet';
 import Login from '@/login';
 import './style/index.scss';
 import history from '@/utils/history';
-import projectPage from '@/projectPage';
+// import projectPage from '@/projectPage';
 import trade from '@/trade';
 import LandingPage from '@/LandingPage/LandingPage';
-import LoginPage from '@/LoginPage/LoginPage';
+// import LoginPage from '@/LoginPage/LoginPage';
 import tradePage from '@/trade/tradePage';
 import profile from '@/profile';
 import Test from '@/test'
@@ -57,7 +58,7 @@ class App extends React.Component {
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
                   <Route path="/create-project" component={createProject} />
-                  <Route path="/projects/:id" exact component={trade} />
+                  <Route path="/projects/:id" exact component={editProject} />
                   <Route path="/wallet" exact component={wallet} />
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
