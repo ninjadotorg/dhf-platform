@@ -195,8 +195,8 @@ class Binance {
         }
       }
 
-      console.log(this.openOrders)
-      console.log(this.allOrders)
+      console.log('open orders', this.openOrders)
+      console.log('all orders', this.allOrders)
     })
   }
 }
