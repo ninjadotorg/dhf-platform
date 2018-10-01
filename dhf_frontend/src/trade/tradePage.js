@@ -1,24 +1,15 @@
 import React from 'react';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import Button from '@material-ui/core/Button';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
 import Paper from '@material-ui/core/Paper';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import request from '@/utils/api';
-import { Link } from 'react-router-dom';
-import history from '@/utils/history';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
@@ -29,7 +20,7 @@ import TradingViewWidget from 'react-tradingview-widget';
 import ReactNotification from 'react-notifications-component';
 import BuySellBlock from './buy-sell-block';
 import 'react-notifications-component/dist/theme.css';
-import moment from 'moment'
+import moment from 'moment';
 
 const styles = theme => ({
   button: {
@@ -180,14 +171,6 @@ class tradePage extends React.Component {
     this.notificationDOMRef = React.createRef();
   }
 
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleDrawerClose = () => {
-    this.setState({ open: false });
-  };
-
   setActivePrice = () => {
     const activePrice = _.find(this.state.priceList, (a, o) => {
       if (o == this.state.activeSymbol.symbol) {
@@ -198,7 +181,7 @@ class tradePage extends React.Component {
     this.setState({
       activePrice,
     });
-  }
+  };
 
   loadPrices = () => {
     request({
@@ -360,10 +343,11 @@ class tradePage extends React.Component {
       .catch(error => {});
   }
 
-  fetchOrderInfo=()=>{
+  fetchOrderInfo=() => {
     this.fetchOpenOrders();
     this.fetchOrderHistory();
   }
+
   handlePairChange = (event, n, price) => {
     this.setState({
       activeSymbol: n, activePrice: price,
@@ -559,7 +543,12 @@ class tradePage extends React.Component {
                     />
                   </Tabs>
 
-                  {this.state.activeSymbol && this.state.activeSymbol.baseAsset && this.state.activePrice && <BuySellBlock {...this.state} projectId={this.props.history.location.pathname.split('/')[2]} />}
+                  {this.state.activeSymbol && this.state.activeSymbol.baseAsset
+                  && this.state.activePrice && (
+                    <BuySellBlock {...this.state}
+                      projectId={this.props.history.location.pathname.split('/')[2]}
+                    />
+                  )}
                 </Grid>
               </Grid>
             </div>
@@ -606,9 +595,9 @@ class tradePage extends React.Component {
                           <TableCell numeric>{n.cummulativeQuoteQty}</TableCell>
                           <TableCell>{n.side}</TableCell>
                           <TableCell>
-                            <Button variant="outlined" color="secondary" onClick={()=>{this.cancelOrder(n)}}>
+                            <Button variant="outlined" color="secondary" onClick={() => { this.cancelOrder(n); }}>
                                                         Cancel
-                                                      </Button>
+                            </Button>
                             {' '}
                           </TableCell>
                         </TableRow>
@@ -649,14 +638,15 @@ class tradePage extends React.Component {
                           key={n.id}
                         >
                           <TableCell component="th" scope="row">
-                          {moment(Date(n.time*1000)).format('DD-MMMM-YYYY')}
+                            {moment(Date(n.time * 1000)).format('DD-MMMM-YYYY')}
                           </TableCell>
-                      <TableCell>{n.symbol}</TableCell>
-                      <TableCell>{n.orderId}</TableCell>
-                      <TableCell>{n.executedQty}</TableCell>
-                      <TableCell>{n.price}</TableCell>
-                      <TableCell style={n.side  === 'BUY' ? {color:'green'} : {color : 'red'}}>{n.side}</TableCell>
-                      <TableCell>{n.status}</TableCell>
+                          <TableCell>{n.symbol}</TableCell>
+                          <TableCell>{n.orderId}</TableCell>
+                          <TableCell>{n.executedQty}</TableCell>
+                          <TableCell>{n.price}</TableCell>
+                          <TableCell style={n.side === 'BUY' ? { color: 'green' } : { color: 'red' }}>{n.side}
+                          </TableCell>
+                          <TableCell>{n.status}</TableCell>
                         </TableRow>
                       );
                     })}

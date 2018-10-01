@@ -101,6 +101,35 @@
       },
       {
         "template": {
+          "method": "GET",
+          "url": "http://trader-api:9001/trade/project/{projectId}/getListenKey",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "getListenKey": ["projectId"]
+        }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "http://trader-api:9001/trade/project/{projectId}/{action}",
+          "options": {
+            "strictSSL": false
+          },
+          "body": {
+            "listenKey": "{listenKey}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "dataStream": ["projectId", "action", "listenKey"]
+        }
+      },
+      {
+        "template": {
           "method": "POST",
           "url": "http://trader-api:9001/trade/project/{projectId}/withdraw",
           "options": {

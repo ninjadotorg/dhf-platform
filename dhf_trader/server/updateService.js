@@ -41,6 +41,8 @@ async function updateOrder (orderId, status, fillQty) {
 }
 
 async function updateOrdersNotIn (orders, gateway, project) {
+  console.log('updating orders not in open orders...')
+
   const orderIds = []
   orders.forEach(o => orderIds.push(o.orderId))
 
@@ -68,6 +70,7 @@ async function updateOrdersNotIn (orders, gateway, project) {
 }
 
 async function updateOpenOrders (openOrders, gateway) {
+  console.log('updating open orders...')
   // openOrders get directly from binance api
   await Promise.map(
     openOrders,
@@ -100,6 +103,8 @@ async function getSymbols (project) {
 }
 
 async function updateOrders (project) {
+  console.log('updating orders for project', project)
+
   try {
     const gateway = await getGateway(project)
 
@@ -134,7 +139,7 @@ async function updateOrders (project) {
       ])
     })
   } catch (e) {
-    console.log(e)
+    throw e
   }
 }
 

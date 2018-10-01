@@ -11,7 +11,7 @@ module.exports = function(LinkToContract) {
       if (err) callback(err);
       let error = new Error();
       if (!data) {
-        error.status = 404;
+        error.status = 405;
         error.message = 'Contract not found!';
         return callback(error);
       }

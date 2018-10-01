@@ -18,6 +18,7 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
+import { toast } from 'react-toastify';
 
 const styles = theme => ({
   layout: {
@@ -43,15 +44,21 @@ const styles = theme => ({
     width: '100%', // Fix IE11 issue.
     marginTop: theme.spacing.unit,
   },
+  buttonWapper: {
+    flexWrap: 'wrap',
+    display: 'flex',
+    flexDirection: 'row',
+  },
   submit: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     marginLeft: 'auto',
-    marginRight: 'auto',
-    flexWrap: 'wrap',
-    display: 'flex',
+    marginRight: '0',
     width: 200,
-    flexDirection: 'row',
+    '& + button': {
+      marginLeft: '10px',
+      marginRight: 'auto',
+    },
   },
   button: {
     margin: theme.spacing.unit,
@@ -77,7 +84,7 @@ const styles = theme => ({
     overflow: 'auto',
   },
 });
-class createProject extends React.Component {
+class editProject extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -118,16 +125,21 @@ class createProject extends React.Component {
         });
       })
       .catch(error => {});
-    const time = moment(this.currentDateTime);
-    this.setState({
-      deadline: time.unix(),
-    });
+    request({
+      method: 'get',
+      url: `/projects/${this.props.match.params.id}`,
+    })
+      .then(response => {
+        this.setState(response);
+      })
+      .catch(error => {});
   }
 
   handleTimeChange = event => {
-    const time = moment(`${event.target.value}`);
+    console.log(event.target.value);
+    const time = moment(event.target.value).format('mm/dd/yyyy');
     this.setState({
-      [event.target.id]: time.unix(),
+      [event.target.id]: time,
     });
   };
 
@@ -150,12 +162,13 @@ class createProject extends React.Component {
       error: '',
     });
     request({
-      method: 'post',
-      url: 'projects',
+      method: 'put',
+      url: `/projects/${this.props.match.params.id}`,
       data,
     })
       .then(response => {
-        return history.push(`/dashboard`);
+        toast.success('Your project has been updated successfully!');
+        // return history.push('/dashboard');
       })
       .catch(error => {
         error.data
@@ -175,7 +188,9 @@ class createProject extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Create new project
+              Edit Project:
+              {' '}
+              {this.state.name}
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -183,7 +198,13 @@ class createProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <InputLabel htmlFor="name">Name of project</InputLabel>
-                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} />
+                      <Input id="name"
+                        name="name"
+                        autoComplete="name"
+                        autoFocus
+                        onChange={this.handleTextChange}
+                        value={this.state.name}
+                      />
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -195,6 +216,7 @@ class createProject extends React.Component {
                         autoComplete="target"
                         type="number"
                         autoFocus
+                        value={this.state.target}
                         onChange={this.handleTextChange}
                       />
                     </FormControl>
@@ -247,6 +269,7 @@ class createProject extends React.Component {
                         name="max"
                         autoComplete="max"
                         autoFocus
+                        value={this.state.max}
                         onChange={this.handleTextChange}
                         type="number"
                       />
@@ -260,6 +283,7 @@ class createProject extends React.Component {
                         name="commission"
                         autoComplete="commission"
                         autoFocus
+                        value={this.state.commission}
                         onChange={this.handleTextChange}
                         type="number"
                       />
@@ -273,6 +297,8 @@ class createProject extends React.Component {
                         id="deadline"
                         label="deadline"
                         type="date"
+                        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+                        value={this.state.deadline}
                         onChange={this.handleTimeChange}
                         defaultValue={this.currentDateTime}
                         className={classes.textField}
@@ -289,6 +315,7 @@ class createProject extends React.Component {
                         id="lifeTime"
                         name="lifeTime"
                         type="number"
+                        value={this.state.lifeTime}
                         onChange={this.handleTextChange}
                         endAdornment={<InputAdornment position="end">Number of Days</InputAdornment>}
                       />
@@ -298,9 +325,20 @@ class createProject extends React.Component {
                 <FormHelperText id="name-helper-text" error>
                   {this.state.error}
                 </FormHelperText>
-                <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
+                <div className={classes.buttonWapper}>
+                  <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
                   Submit
-                </Button>
+                  </Button>
+                  <Button type="submit"
+                    center
+                    variant="raised"
+                    color="success"
+                    className={classes.submit}
+                    onClick={() => history.push('/dashboard')}
+                  >
+                  Cancel
+                  </Button>
+                </div>
               </ValidatorForm>
             </Paper>
           </main>
@@ -310,8 +348,8 @@ class createProject extends React.Component {
   }
 }
 
-createProject.propTypes = {
+editProject.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(createProject);
+export default withStyles(styles)(editProject);

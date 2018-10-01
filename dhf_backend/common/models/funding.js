@@ -9,7 +9,7 @@ module.exports = function(Funding) {
         if (err) return next(err);
         let error = new Error();
         if (!project) {
-          error.status = 404;
+          error.status = 405;
           error.message = 'Project was not existed!';
           return next(error);
         }
@@ -39,12 +39,12 @@ module.exports = function(Funding) {
         Funding.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Funding.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
@@ -57,7 +57,7 @@ module.exports = function(Funding) {
         }}, function(err, funding) {
           if (err) return callback(err);
           if (!funding) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project don\'t have any funding!';
             return callback(error);
           }

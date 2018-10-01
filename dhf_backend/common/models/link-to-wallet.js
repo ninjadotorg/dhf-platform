@@ -10,7 +10,7 @@ module.exports = function(LinkToWallet) {
       if (err) callback(err);
       let error = new Error();
       if (!data) {
-        error.status = 404;
+        error.status = 405;
         error.message = 'Verify not found or code invalided!';
         return callback(error);
       }
@@ -27,7 +27,7 @@ module.exports = function(LinkToWallet) {
       } else {
         data.delete(data, function(err) {
           if (err) callback(err);
-          error.status = 404;
+          error.status = 405;
           error.message = 'Your active code has been expired!';
           return callback(error);
         });

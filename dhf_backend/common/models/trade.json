@@ -43,7 +43,10 @@
         "myTrades",
         "allOrders",
         "cancel",
-        "openOrders"
+        "openOrders",
+        "listenKey",
+        "keepDataStream",
+        "closeDataStream"
       ]
     }
   }

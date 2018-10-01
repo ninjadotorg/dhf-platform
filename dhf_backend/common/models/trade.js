@@ -13,17 +13,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (!project.userId || project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -37,7 +37,7 @@ module.exports = function(Trade) {
       //   let availableAmount = currentProject.releasedAmount -
       //     (currentProject.pendingAmount - currentProject.refundAmount);
       //   if (totalAmount > availableAmount) {
-      //     error.status = 404;
+      //     error.status = 405;
       //     error.message = 'Your balance of this project was not enough.';
       //     return callback(error);
       //   }
@@ -49,7 +49,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -80,17 +80,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -103,7 +103,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -126,17 +126,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -149,7 +149,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -172,17 +172,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -195,7 +195,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -218,17 +218,17 @@ module.exports = function(Trade) {
         Trade.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
           if (project.state !== PROJECT_STATE.RELEASE) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project not ready or finished';
             return callback(error);
           }
@@ -241,7 +241,7 @@ module.exports = function(Trade) {
           function(err, resp) {
             if (err) {
               error.message = errorHandler.filler(err);
-              error.status = 404;
+              error.status = 405;
               return callback(error);
             }
             orderResult = resp;
@@ -255,26 +255,26 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.myTrades = function(projectId, symbol, callback) {
+  Trade.myTrades = function(projectId, symbol ='', callback) {
     Trade.action(projectId, 'myTrades', symbol,
       function(err, resp) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
       });
   };
 
-  Trade.openOrders = function(projectId, symbol, callback) {
+  Trade.openOrders = function(projectId, symbol = '', callback) {
     Trade.action(projectId, 'openOrders', symbol,
       function(err, resp) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -287,7 +287,46 @@ module.exports = function(Trade) {
         if (err) {
           let error = new Error();
           error.message = errorHandler.filler(err);
-          error.status = 404;
+          error.status = 405;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.listenKey = function(projectId, callback) {
+    Trade.getListenKey(projectId, 'getListenKey',
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 405;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.keepDataStream = function(projectId, listenKey, callback) {
+    Trade.dataStream(projectId, 'keepDataStream', listenKey,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 405;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.closeDataStream = function(projectId, listenKey, callback) {
+    Trade.dataStream(projectId, 'closeDataStream', listenKey,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 405;
           return callback(error);
         }
         callback(null, resp);
@@ -398,9 +437,47 @@ module.exports = function(Trade) {
       description: 'Get all  orders of current user.',
       accepts: [
         {arg: 'projectId', type: 'string', required: true},
-        {arg: 'symbol', type: 'string', required: true},
+        {arg: 'symbol', type: 'string'},
       ],
       http: {verb: 'GET', path: '/orders'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+   Trade.remoteMethod(
+    'listenKey',
+    {
+      description: 'Get listen key.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/listen-key'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'keepDataStream',
+    {
+      description: 'keep data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/keep-data-stream'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'closeDataStream',
+    {
+      description: 'Close data stream.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+        {arg: 'listenKey', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/close-data-stream'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );

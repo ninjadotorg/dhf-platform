@@ -5,18 +5,13 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import { Redirect } from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
-import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import { ValidatorForm } from 'react-material-ui-form-validator';
 import Typography from '@material-ui/core/Typography';
 import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import history from '@/utils/history';
 import WalletList from '@/wallet/walletList';
 
 const styles = theme => ({
@@ -93,21 +88,10 @@ class wallet extends React.Component {
 
   componentWillMount = () => {};
 
-  handleTimeChange = event => {
-    const time = moment(event.target.value);
-    this.setState({
-      [event.target.id]: time.unix(),
-    });
-  };
-
   handleTextChange = event => {
     this.setState({
       [event.target.name]: event.target.value,
     });
-  };
-
-  handleExchangeChange = prop => event => {
-    this.setState({ [prop]: event.target.value });
   };
 
   handleSubmit = () => {
@@ -126,8 +110,8 @@ class wallet extends React.Component {
       .then(response => {
         console.log('submitForm', response);
         this.setState({
-          success :response.success
-        })
+          success: response.success,
+        });
       })
       .catch(error => {
         error.data
@@ -191,7 +175,7 @@ class wallet extends React.Component {
                   {this.state.error}
                 </FormHelperText>
               </ValidatorForm>
-              <WalletList success={this.state.success}/>
+              <WalletList success={this.state.success} />
             </Paper>
           </main>
         </React.Fragment>

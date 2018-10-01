@@ -10,12 +10,12 @@ module.exports = function(Transaction) {
         Transaction.app.models.project.findById(projectId, function(err, project) {
           if (err) return callback(err);
           if (!project) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'Project was not existed!';
             return callback(error);
           }
           if (project.userId.toString() !== Transaction.app.currentUserId.toString()) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'You don\'t have permission on this project';
             return callback(error);
           }
@@ -32,7 +32,7 @@ module.exports = function(Transaction) {
             }
           }
           if (!value) {
-            error.status = 404;
+            error.status = 405;
             error.message = 'State not validated';
             return callback(error);
           }

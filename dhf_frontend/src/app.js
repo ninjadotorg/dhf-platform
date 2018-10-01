@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Switch, Route, Router, BrowserRouter, Redirect } from 'react-router-dom';
+import { Switch, Route, Router, Redirect } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Todo from '@/page/todo';
 import Sidebar from '@/Sidebar';
 import HomePage from '@/homepage';
-import Typography from '@material-ui/core/Typography';
 import Register from '@/register';
 import createProject from '@/createProject';
 import editProject from '@/createProject/editProject';
@@ -21,7 +19,11 @@ import LandingPage from '@/LandingPage/LandingPage';
 // import LoginPage from '@/LoginPage/LoginPage';
 import tradePage from '@/trade/tradePage';
 import profile from '@/profile';
-import Test from '@/test'
+import changePassword from '@/changePassword';
+import Test from '@/test';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const styles = theme => ({
   content: {
     flexGrow: 1,
@@ -53,18 +55,29 @@ class App extends React.Component {
           <div>
             <React.Fragment>
               <CssBaseline />
+              <ToastContainer
+                position="top-center"
+                autoClose={2500}
+                hideProgressBar
+                newestOnTop
+                closeOnClick={false}
+                rtl={false}
+                pauseOnVisibilityChange={false}
+                draggable
+                pauseOnHover={false}
+              />
               <div className={classes.root}>
                 <Sidebar />
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
                   <Route path="/create-project" component={createProject} />
-                  <Route path="/projects/:id" exact component={editProject} />
+                  <Route path="/project/:id" exact component={editProject} />
                   <Route path="/wallet" exact component={wallet} />
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
-                  {/* <Route path="/dashboard" exact component={trade} /> */}
                   <Route path="/dashboard" exact component={HomePage} />
                   <Route path="/profile" exact component={profile} />
+                  <Route path="/change-password" exact component={changePassword} />
                 </main>
               </div>
             </React.Fragment>

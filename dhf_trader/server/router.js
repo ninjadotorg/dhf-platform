@@ -34,6 +34,8 @@ exports = module.exports = function (app, router) {
   // /trade/project/:project/sellMarket?symbol=ETHBTC&quantity=10
   // /trade/project/:project/getBalance?currencies=BTC
   // /trade/project/:project/withdraw?asset=...&address=...&amount=...
+  // /trade/project/:project/keepDataStream?listenKey=...
+  // /trade/project/:project/closeDataStream?listenKey=...
 
   router.all('*', function (req, res) {
     console.error('Not found: %s %s', req.method, req.url)
@@ -96,6 +98,9 @@ async function action (req, res) {
     let action = req.params.action
     let project = req.params.project
     let params = req.method == 'POST' ? req.body : req.query
+    if (!params.project) {
+      params.project = project
+    }
 
     if (!GatewayList[req.params.project]) {
       GatewayList[req.params.project] = new Gateway(
