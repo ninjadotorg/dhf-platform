@@ -129,7 +129,7 @@ class Binance {
         }
       })
 
-      this.tickerPrice = result
+      self.tickerPrice = result
     }
   }
 
