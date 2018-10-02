@@ -2,6 +2,7 @@
 var async = require('async');
 
 module.exports = function(LinkToWallet) {
+
   LinkToWallet.verify = function(verifyCode, callback) {
     LinkToWallet.findOne({where:{
       verifyCode: verifyCode,
@@ -35,7 +36,7 @@ module.exports = function(LinkToWallet) {
     });
   };
 
-  LinkToWallet.myWallet = function( callback) {
+  LinkToWallet.myWallet = function(callback) {
     LinkToWallet.find({where:{
         userId: LinkToWallet.app.currentUserId,
       }}, function(err, data) {
@@ -44,20 +45,32 @@ module.exports = function(LinkToWallet) {
     });
   };
 
-  LinkToWallet.isLinked = function(walletId, callback) {
-    LinkToWallet.findOne({where:{
-        walletId: walletId
-    }}, function(err, data) {
-      if (err) callback(err);
-      callback(null, data !== null);
-    });
+  LinkToWallet.isLinked = function(token, callback) {
+    LinkToWallet.app.models.walletProfile.profile(
+      token,
+      function (err, profile) {
+        if (err) return next(err);
+        if (!profile) {
+          let errNew = new Error();
+          errNew.status = 404;
+          errNew.message = 'Profile was not exist';
+        }
+        LinkToWallet.findOne({where:{
+            walletId: profile.data.id.toString()
+          }}, function(err, data) {
+          if (err) callback(err);
+          callback(null, data !== null);
+        });
+      });
   };
+
   LinkToWallet.remoteMethod('myWallet', {
     accepts: [
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/my-wallet', verb: 'get'},
   });
+
   LinkToWallet.remoteMethod('isLinked', {
     accepts: [
       {arg: 'walletId', type: 'string'},
@@ -91,36 +104,51 @@ module.exports = function(LinkToWallet) {
     })
   };
 
+  LinkToWallet.beforeRemote('create', function (ctx, data, next) {
+    let errNew = new Error();
+    if(!ctx.args.data.token) {
+      err.status = 405;
+      err.message = 'Token is required';
+      return next(err);
+    }
+    LinkToWallet.app.models.walletProfile.profile(
+      ctx.args.data.token,
+      function (err, profile) {
+        if (err) return next(err);
+        if (!profile) {
+          errNew.status = 404;
+          errNew.message = 'Profile was not existed';
+          return next(errNew);
+        }
+        if (profile.data.id.toString() !== ctx.args.data.walletId ||
+          profile.data.username !== ctx.args.data.walletName) {
+          errNew.status = 404;
+          errNew.message = 'Profile was not matched';
+          return next(errNew);
+        }
+        delete ctx.args.data.token;
+        next();
+      });
+  });
   LinkToWallet.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      LinkToWallet.findOne({where: {
-          walletId: ctx.instance.walletId
-        }}, function (err, data) {
-        if (err) return next(err);
-        if (data) {
-          let err = new Error();
-          err.status = 401;
-          err.message = 'Wallet existed';
-          return next(err);
-        }
-        LinkToWallet.createVerifyCode().then(function (key) {
-          ctx.instance.status = 'pending';
-          ctx.instance.requestDate = new Date();
-          ctx.instance.activeDate = new Date();
-          ctx.instance.verifyCode = key;
-          ctx.instance.userId = null;
-          next();
-        });
+      LinkToWallet.createVerifyCode().then(function (key) {
+        ctx.instance.status = 'pending';
+        ctx.instance.requestDate = new Date();
+        ctx.instance.activeDate = new Date();
+        ctx.instance.verifyCode = key;
+        ctx.instance.userId = null;
+        next();
       });
     } else {
       next();
     }
   });
-  LinkToWallet.afterRemote('create', function(context, remoteMethodOutput, next) {
+  LinkToWallet.afterRemote('create', function(ctx, data, next) {
     let createdDate = new Date();
     createdDate.setMinutes(createdDate.getMinutes() + 15);
-    remoteMethodOutput.expire = 15;
-    remoteMethodOutput.expireDate = createdDate;
+    data.expire = 15;
+    data.expireDate = createdDate;
     next();
   });
 };
