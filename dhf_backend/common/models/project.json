@@ -120,6 +120,12 @@
     "releaseState": {
       "type": "hasMany",
       "model": "release-state",
+      "foreignKey": "projectId",
+      "required": true
+    },
+    "funding": {
+      "type": "hasMany",
+      "model": "funding",
       "foreignKey": "",
       "required": true
     },
@@ -171,6 +177,13 @@
       "property": "myProjects"
     },
     {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "user",
+      "permission": "ALLOW",
+      "property": "myInvest"
+    },
+    {
       "accessType": "*",
       "principalType": "ROLE",
       "principalId": "admin",
@@ -187,6 +200,7 @@
         "replaceById",
         "listProjects",
         "myProjects",
+        "myInvest",
         "release"
       ]
     }

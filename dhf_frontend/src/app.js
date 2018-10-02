@@ -10,6 +10,8 @@ import Register from '@/register';
 import createProject from '@/createProject';
 import editProject from '@/createProject/editProject';
 import wallet from '@/wallet';
+import invest from '@/invest';
+import myInvest from '@/myInvest';
 import Login from '@/login';
 import './style/index.scss';
 import history from '@/utils/history';
@@ -74,6 +76,8 @@ class App extends React.Component {
                   <Route path="/create-project" component={createProject} />
                   <Route path="/project/:id" exact component={editProject} />
                   <Route path="/wallet" exact component={wallet} />
+                  <Route path="/invest" exact component={invest} />
+                  <Route path="/my-invest" exact component={myInvest} />
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
                   <Route path="/dashboard" exact component={HomePage} />

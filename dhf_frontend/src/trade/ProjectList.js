@@ -10,7 +10,6 @@ import Paper from '@material-ui/core/Paper';
 import request from '@/utils/api';
 import { Link } from 'react-router-dom';
 import history from '@/utils/history';
-import { withRouter } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import BarChart from '@material-ui/icons/BarChart';
@@ -20,7 +19,7 @@ import Publish from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
 import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
-import ListItem from '@material-ui/core/ListItem/ListItem';
+import moment from 'moment';
 
 const styles = {
   root: {
@@ -261,7 +260,7 @@ class ProjectList extends React.Component {
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
-                  <TableCell>{new Date(n.createdDate).toDateString()}</TableCell>
+                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY')}</TableCell>
                   <TableCell>{n.exchange}</TableCell>
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}

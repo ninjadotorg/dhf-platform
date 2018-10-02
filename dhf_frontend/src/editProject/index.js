@@ -92,6 +92,7 @@ const styles = theme => ({
 class editProject extends React.Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       name: '',
       exchange: '',
