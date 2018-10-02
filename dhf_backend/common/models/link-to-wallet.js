@@ -73,7 +73,7 @@ module.exports = function(LinkToWallet) {
 
   LinkToWallet.remoteMethod('isLinked', {
     accepts: [
-      {arg: 'walletId', type: 'string'},
+      {arg: 'toke', type: 'string'},
     ],
     returns: {arg: 'success', type: 'boolean'},
     http: {path: '/has-linked', verb: 'get'},
