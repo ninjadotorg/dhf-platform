@@ -138,6 +138,7 @@ class editProject extends React.Component {
           currency: response.currency,
           target: response.target,
           max: response.max,
+          deadline: response.deadline,
           commission: response.commission,
           lifeTime: response.lifeTime,
           state: response.state,
