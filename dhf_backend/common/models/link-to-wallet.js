@@ -18,7 +18,7 @@ module.exports = function(LinkToWallet) {
       let createdDate = new Date(data.requestDate);
       let now = new Date();
       let validated = (now - createdDate) / 1000; // convert to  minutes;
-      const limiestTime = 1440; // one day (24hours) in a  minute
+      const limiestTime = 15; // one day (24hours) in a  minute
       if (validated <= limiestTime) {
         data.userId = LinkToWallet.app.currentUserId;
         data.status = 'approved';
@@ -108,11 +108,19 @@ module.exports = function(LinkToWallet) {
           ctx.instance.requestDate = new Date();
           ctx.instance.activeDate = new Date();
           ctx.instance.verifyCode = key;
+          ctx.instance.userId = null;
           next();
         });
       });
     } else {
       next();
     }
+  });
+  LinkToWallet.afterRemote('create', function(context, remoteMethodOutput, next) {
+    let createdDate = new Date();
+    createdDate.setMinutes(createdDate.getMinutes() + 15);
+    remoteMethodOutput.expire = 15;
+    remoteMethodOutput.expireDate = createdDate;
+    next();
   });
 };

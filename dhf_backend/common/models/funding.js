@@ -1,10 +1,11 @@
 'use strict';
 let async = require('async');
+let {PROJECT_STATE} = require('../lib/constants');
 
 module.exports = function(Funding) {
   Funding.observe('before save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
-      ctx.instance.state = 'INITFUND';
+      ctx.instance.state = PROJECT_STATE.INITFUND;
       Funding.app.models.project.findById(ctx.instance.projectId, function(err, project) {
         if (err) return next(err);
         let error = new Error();
@@ -13,10 +14,18 @@ module.exports = function(Funding) {
           error.message = 'Project was not existed!';
           return next(error);
         }
+        console.log(123, project.state === PROJECT_STATE.READY);
+        if (!(project.state === PROJECT_STATE.READY ||
+        project.state === PROJECT_STATE.INITFUND)) {
+          error.status = 405;
+          error.message = 'Project was not ready for fund or finished!';
+          return next(error);
+        }
         next();
       });
+    } else {
+      next();
     }
-    next();
   });
   Funding.observe('after save', function(ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
@@ -28,8 +37,9 @@ module.exports = function(Funding) {
           next();
         });
       });
+    } else {
+      next();
     }
-    next();
   });
   Funding.listFunding = function(projectId, callback) {
     let error = new Error();

@@ -36,7 +36,7 @@ module.exports = function(Project) {
   });
   // listProjects
   Project.listProjects = function(userId, isFunding, callback) {
-    let fiter = {where: {}, include: 'User'}
+    let fiter = {where: {}, include: 'User'};
     if (userId) fiter.where.userId = userId;
     if (isFunding) {
       fiter.where.or = [];
@@ -54,6 +54,34 @@ module.exports = function(Project) {
 
     if (isTrading) fiter.where.state = PROJECT_STATE.RELEASE;
     Project.find(fiter, callback);
+  };
+
+  Project.myInvest = function(callback) {
+    let fiter = {
+      where: {
+        state: {neq: PROJECT_STATE.NEW},
+      },
+      include: {
+        relation: 'funding',
+        scope: {
+          fields: ['userId'],
+          where: {userId: Project.app.currentUserId},
+        },
+      },
+    };
+
+    Project.find(fiter, function(err, data) {
+      if (err) {
+        return callback(err);
+      }
+      let result = [];
+      data.forEach(function(item) {
+        if (item.funding().length > 0) {
+          result.push(item);
+        };
+      });
+      callback(null, result);
+    });
   };
 
   Project.release = function(projectId, callback) {
@@ -317,7 +345,7 @@ module.exports = function(Project) {
       {arg: 'isFunding', type: 'boolean'},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
-    http: {path: '/list/all', verb: 'get'},
+    http: {path: '/list', verb: 'get'},
   });
 
   Project.remoteMethod('release', {
@@ -335,6 +363,13 @@ module.exports = function(Project) {
       {arg: 'isTrading', type: 'boolean'},
     ],
     returns: {arg: '', root: true, type: 'Object'},
-    http: {path: '/list', verb: 'get'},
+    http: {path: '/list/my', verb: 'get'},
+  });
+
+  Project.remoteMethod('myInvest', {
+    description: 'Get all projects invested of current',
+    accepts: [],
+    returns: {arg: '', root: true, type: 'Object'},
+    http: {path: '/list/my-invest', verb: 'get'},
   });
 };
