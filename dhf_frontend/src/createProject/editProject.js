@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -19,6 +19,10 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
+
 
 const styles = theme => ({
   layout: {
@@ -81,22 +85,25 @@ const styles = theme => ({
 class editProject extends React.Component {
   constructor(props) {
     super(props);
-    const { name , exchange , currency ,target ,max,commission,deadline,lifeTime,state, userId} = props.location.state;
     this.state = {
-      name,
-      exchange,
-      currency,
-      target,
-      max,
-      commission,
+      name: '',
+      exchange: '',
+      currency: 0,
+      target: 0,
+      max: 0,
+      commission: 0,
       currencyList: [],
-      deadline,
-      lifeTime,
-      state,
+      deadline: new Date(),
+      lifeTime: 0,
+      state: '',
       exchangeList: [],
-      userId,
+      userId: 0,
     };
     this.moment = moment;
+  }
+
+  handleDateChange = (date) => {
+    this.setState({ deadline: date });
   }
 
   componentWillMount() {
@@ -120,10 +127,24 @@ class editProject extends React.Component {
         });
       })
       .catch(error => {});
-    const time = moment(this.currentDateTime);
-    this.setState({
-      deadline: time.unix(),
-    });
+    request({
+      method: 'get',
+      url: `projects/${this.props.history.location.pathname.split('/')[2]}`,
+    })
+      .then(response => {
+        this.setState({
+          name: response.name,
+          exchange: response.exchange,
+          currency: response.currency,
+          target: response.target,
+          max: response.max,
+          commission: response.commission,
+          lifeTime: response.lifeTime,
+          state: response.state,
+          userId: response.userId,
+        });
+      })
+      .catch(error => {});
   }
 
   handleTimeChange = event => {
@@ -157,7 +178,7 @@ class editProject extends React.Component {
       data,
     })
       .then(response => {
-        return history.push(`/dashboard`);
+        return history.push('/dashboard');
       })
       .catch(error => {
         error.data
@@ -177,7 +198,9 @@ class editProject extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Edit Project : {this.state.name}
+              Edit Project :
+              {' '}
+              {this.state.name}
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -185,7 +208,7 @@ class editProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <InputLabel htmlFor="name">Name of project</InputLabel>
-                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} value={this.state.name}/>
+                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} value={this.state.name} />
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -274,17 +297,15 @@ class editProject extends React.Component {
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="deadline"
-                        label="deadline"
-                        type="date"
-                        onChange={this.handleTimeChange}
-                        value={this.state.deadline}
-                        className={classes.textField}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
+                      <MuiPickersUtilsProvider utils={MomentUtils}>
+                        <InlineDatePicker
+                          label="Deadline"
+                          disablePast
+                          value={this.state.deadline}
+                          format="DD MMMM YYYY"
+                          onChange={this.handleDateChange}
+                        />
+                      </MuiPickersUtilsProvider>
                     </FormControl>
                   </Grid>
                   <Grid item xs>

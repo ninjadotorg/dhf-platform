@@ -18,6 +18,9 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
 
 const styles = theme => ({
   layout: {
@@ -88,13 +91,12 @@ class createProject extends React.Component {
       max: 0,
       commission: 0,
       currencyList: [],
-      deadline: 0,
+      deadline: new Date(),
       lifeTime: 0,
       state: 'NEW',
       exchangeList: [],
     };
     this.moment = moment;
-    this.currentDateTime = this.moment().format('YYYY-MM-DD');
   }
 
   componentWillMount() {
@@ -118,18 +120,12 @@ class createProject extends React.Component {
         });
       })
       .catch(error => {});
-    const time = moment(this.currentDateTime);
-    this.setState({
-      deadline: time.unix(),
-    });
   }
 
-  handleTimeChange = event => {
-    const time = moment(`${event.target.value}`);
-    this.setState({
-      [event.target.id]: time.unix(),
-    });
-  };
+  handleDateChange = (date) => {
+    console.log(date);
+    this.setState({ deadline: date });
+  }
 
   handleTextChange = event => {
     this.setState({
@@ -155,7 +151,7 @@ class createProject extends React.Component {
       data,
     })
       .then(response => {
-        return history.push(`/dashboard`);
+        return history.push('/dashboard');
       })
       .catch(error => {
         error.data
@@ -269,17 +265,15 @@ class createProject extends React.Component {
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="deadline"
-                        label="deadline"
-                        type="date"
-                        onChange={this.handleTimeChange}
-                        defaultValue={this.currentDateTime}
-                        className={classes.textField}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
+                      <MuiPickersUtilsProvider utils={MomentUtils}>
+                        <InlineDatePicker
+                          label="Deadline"
+                          disablePast
+                          value={this.state.deadline}
+                          format="DD MMMM YYYY"
+                          onChange={this.handleDateChange}
+                        />
+                      </MuiPickersUtilsProvider>
                     </FormControl>
                   </Grid>
                   <Grid item xs>

@@ -23,7 +23,6 @@ import changePassword from '@/changePassword';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'react-day-picker/lib/style.css';
 
 const styles = theme => ({
   content: {
@@ -72,7 +71,7 @@ class App extends React.Component {
                 <main className={classes.content}>
                   <div className={classes.appBarSpacer} />
                   <Route path="/create-project" component={createProject} />
-                  <Route path="/project/:id" exact component={editProject} />
+                  <Route path="/project/:id" component={editProject} />
                   <Route path="/wallet" exact component={wallet} />
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
