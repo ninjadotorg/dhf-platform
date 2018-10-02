@@ -1,10 +1,8 @@
 'use strict'
 const moment = require('moment')
+const Promise = require('bluebird')
 var BinanceAPI = require('binance-api-node').default
 const OrderDB = require('../../common/models/orders')
-
-const INVALID_SYMBOL = -1121
-const LOT_SIZE = -1013
 
 module.exports = class Binance {
   constructor (cred) {
@@ -102,14 +100,14 @@ module.exports = class Binance {
     return result
   }
 
-  async openOrders ({ symbol }) {
+  async openOrders ({ symbol } = {}) {
     if (symbol) {
       return await this.client.openOrders({ symbol })
     }
     return await this.client.openOrders()
   }
 
-  async allOrders ({ project = '', symbol = '', limit = 10 }) {
+  async allOrders ({ project = '', symbol = '', limit = 10 } = {}) {
     if (symbol) {
       return await this.client.allOrders({ symbol, limit })
     }
@@ -209,28 +207,40 @@ module.exports = class Binance {
     const { balances } = await this.client.accountInfo()
     const invalidAssets = {}
 
+    // cancel all open orders
+    const orders = await this.openOrders()
+    if (orders.length) {
+      await Promise.map(
+        orders,
+        async o =>
+          await this.cancelOrder({ symbol: o.symbol, orderId: o.orderId }),
+        { concurrency: 2 }
+      )
+    }
+
     for (let i = 0; i < balances.length; i++) {
-      const balance = balances[i]
-      const asset = balance.asset
+      const { asset, free } = balances[i]
       if (asset === 'ETH') {
         continue
       }
-      const quantity = Number(balance.free)
+      const quantity = Number(free)
       if (quantity === 0) {
         continue
       }
 
       const symbol = `${asset}ETH` // sell asset to get eth
       try {
+        console.log('selling symbol', symbol, 'with quantity', quantity)
         await this.sellMarket({ symbol, quantity })
       } catch (e) {
-        // ETH doesn't have this symbol
-        if (e.code === INVALID_SYMBOL) {
+        // Invalid symbol
+        if (e.code === -1121) {
           invalidAssets[asset] = quantity
           continue
         }
 
-        if (e.code == LOT_SIZE) {
+        // Filter failure: LOT_SIZE
+        if (e.code == -1013) {
           continue
         }
 
@@ -253,19 +263,25 @@ module.exports = class Binance {
       }
     }
 
-    const balancesAfterSell = await this.client.accountInfo()
+    const { balances: balancesAfterSell } = await this.client.accountInfo()
     for (let i = 0; i < balancesAfterSell.length; i++) {
       if (balancesAfterSell[i].asset !== 'BTC') {
         continue
       }
 
-      // sell all btc to get eth
-      await this.sellMarket({
-        symbol: 'ETHBTC',
-        quantity: balancesAfterSell[i].free
-      })
+      console.log(balancesAfterSell[i])
 
-      break
+      // sell all btc to get eth
+      try {
+        await this.sellMarket({
+          symbol: 'ETHBTC',
+          quantity: Number(balancesAfterSell[i].free)
+        })
+      } catch (e) {
+        console.log('error while selling btc to get eth', e)
+      } finally {
+        break
+      }
     }
   }
 
