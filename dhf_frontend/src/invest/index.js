@@ -16,8 +16,6 @@ import 'react-notifications-component/dist/theme.css';
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
 import Typography from '@material-ui/core/Typography/Typography';
 import moment from 'moment';
-import { ValidatorForm } from 'react-material-ui-form-validator';
-
 
 const styles = theme => ({
   layout: {
@@ -94,7 +92,7 @@ class Invest extends React.Component {
   fetchProjects = () => {
     request({
       method: 'get',
-      url: '/projects/list/all?isFunding=true',
+      url: '/projects/list?isFunding=true',
     })
       .then(response => {
         this.setState({

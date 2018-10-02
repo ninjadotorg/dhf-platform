@@ -92,7 +92,7 @@ class Invest extends React.Component {
   fetchProjects = () => {
     request({
       method: 'get',
-      url: '/projects/list/all?isFunding=true',
+      url: '/projects/list/my-invest',
     })
       .then(response => {
         this.setState({

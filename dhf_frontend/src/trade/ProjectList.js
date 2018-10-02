@@ -60,7 +60,7 @@ class ProjectList extends React.Component {
   fetchProjects = () => {
     request({
       method: 'get',
-      url: '/projects/list',
+      url: '/projects/list/my',
     })
       .then(response => {
         this.setState({
