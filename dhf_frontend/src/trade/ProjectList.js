@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
+import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -20,6 +21,10 @@ import IconButton from '@material-ui/core/IconButton';
 import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
 import moment from 'moment';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 const styles = {
   root: {
@@ -41,6 +46,8 @@ class ProjectList extends React.Component {
     super(props);
     this.state = {
       projects: [],
+      open: false,
+      activeProject: {},
     };
     this.notificationDOMRef = React.createRef();
   }
@@ -55,6 +62,17 @@ class ProjectList extends React.Component {
 
   initFund = n => {
     console.log(n);
+    this.setState({
+      open: true,
+      activeWallet: n,
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      open: false,
+      activeWallet: {},
+    });
   };
 
   fetchProjects = () => {
@@ -129,7 +147,7 @@ class ProjectList extends React.Component {
               variant="contained"
               color="primary"
               type="button"
-              style={{ width: 130, marginRight: 10 }}
+              style={{ width: 120, marginRight: 10 }}
               onClick={() => {
                 this.handleRowClick(n.data);
               }}
@@ -149,7 +167,7 @@ class ProjectList extends React.Component {
               variant="contained"
               color="primary"
               type="button"
-              style={{ width: 130, marginRight: 10, backgroundColor: green }}
+              style={{ width: 80, marginRight: 10, backgroundColor: green }}
               onClick={() => {
                 this.initFund(n.data);
               }}
@@ -276,6 +294,33 @@ class ProjectList extends React.Component {
             })}
           </TableBody>
         </Table>
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+          disableBackdropClick
+          disableEscapeKeyDown
+        >
+          <DialogContent>
+            <DialogContentText>Please enter your password to use this wallet.</DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              style={{ marginTop: 20 }}
+              label="Enter your password"
+              type="password"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />
       </Paper>
     );
