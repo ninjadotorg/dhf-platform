@@ -50,10 +50,11 @@ module.exports = function(LinkToWallet) {
       token,
       function (err, profile) {
         if (err) return next(err);
-        if (!profile) {
+        if (!profile || !profile.status) {
           let errNew = new Error();
           errNew.status = 404;
           errNew.message = 'Profile was not exist';
+          return callback(errNew);
         }
         LinkToWallet.findOne({where:{
             walletId: profile.data.id.toString()
@@ -115,7 +116,7 @@ module.exports = function(LinkToWallet) {
       ctx.args.data.token,
       function (err, profile) {
         if (err) return next(err);
-        if (!profile) {
+        if (!profile || !profile.status) {
           errNew.status = 404;
           errNew.message = 'Profile was not existed';
           return next(errNew);
