@@ -139,7 +139,7 @@ class Invest extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Invest to projects
+              Invest in Projects
               {' '}
             </Typography>
             <Paper className={classes.paper}>
@@ -172,32 +172,36 @@ class Invest extends React.Component {
                         <TableCell>{this.changeStateText(n)}</TableCell>
                         <TableCell>
                           <div className={classes.buttonWapper}>
-                            <Button
-                              variant="contained"
-                              className={classes.button}
-                              color="primary"
-                              type="button"
-                              style={{ marginRight: 10 }}
-                              onClick={() => {
-                                this.handleRowClick(n.data);
-                              }}
-                            >
-                              <LocalAtm style={{ marginRight: 10 }} />
+                            {(n.state === 'FUNDING' || n.state === 'READY') && (
+                              <Button
+                                variant="contained"
+                                className={classes.button}
+                                color="primary"
+                                type="button"
+                                style={{ marginRight: 10 }}
+                                onClick={() => {
+                                  this.handleRowClick(n.data);
+                                }}
+                              >
+                                <LocalAtm style={{ marginRight: 10 }} />
                             Invest
-                            </Button>
-                            <Button
-                              variant="contained"
-                              className={classes.button}
-                              color="secondary"
-                              type="button"
-                              style={{ marginRight: 10 }}
-                              onClick={() => {
-                                this.handleRowClick(n.data);
-                              }}
-                            >
-                              <Wallet style={{ marginRight: 10 }} />
+                              </Button>
+                            )}
+                            {(n.state === 'WITHDRAW' || n.state === 'INITFUND') && (
+                              <Button
+                                variant="contained"
+                                className={classes.button}
+                                color="secondary"
+                                type="button"
+                                style={{ marginRight: 10 }}
+                                onClick={() => {
+                                  this.handleRowClick(n.data);
+                                }}
+                              >
+                                <Wallet style={{ marginRight: 10 }} />
                             Withdraw
-                            </Button>
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

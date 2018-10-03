@@ -154,7 +154,6 @@ class Invest extends React.Component {
                     <TableCell>Exchange</TableCell>
                     <TableCell>Funding Amount</TableCell>
                     <TableCell>State</TableCell>
-                    <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -173,34 +172,6 @@ class Invest extends React.Component {
                           Funders : 20
                         </TableCell>
                         <TableCell>{this.changeStateText(n)}</TableCell>
-                        <TableCell>
-                          <div className={classes.buttonWapper}>
-                            <Button
-                              variant="contained"
-                              className={classes.button}
-                              color="primary"
-                              type="button"
-                              onClick={() => {
-                                this.handleRowClick(n.data);
-                              }}
-                            >
-                              <LocalAtm style={{ marginRight: 10 }} />
-                            Invest
-                            </Button>
-                            <Button
-                              variant="contained"
-                              className={classes.button}
-                              color="secondary"
-                              type="button"
-                              onClick={() => {
-                                this.handleRowClick(n.data);
-                              }}
-                            >
-                              <Wallet style={{ marginRight: 10 }} />
-                            Withdraw
-                            </Button>
-                          </div>
-                        </TableCell>
                       </TableRow>
                     );
                   })}
