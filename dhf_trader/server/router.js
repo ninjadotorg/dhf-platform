@@ -25,6 +25,7 @@ exports = module.exports = function (app, router) {
 
   router.all('/trade/project/:project/getOrSetAccount', getOrSetAccount)
   router.all('/trade/project/:project/unLockAccount', unLockAccount)
+  router.get('/trade/project/:project/credentials', getCredentials)
 
   // trade
   router.all('/trade/project/:project/:action', action)
@@ -41,6 +42,15 @@ exports = module.exports = function (app, router) {
     console.error('Not found: %s %s', req.method, req.url)
     res.status('404').end()
   })
+}
+
+async function getCredentials (req, res) {
+  const {
+    keyRead: key,
+    secretRead: secret
+  } = await ExchangeDB.getProjectAccount(req.params.project)
+
+  return res.json({ key, secret })
 }
 
 async function getOrSetAccount (req, res) {
