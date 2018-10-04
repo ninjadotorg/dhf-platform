@@ -255,7 +255,7 @@ module.exports = function(Trade) {
     });
   };
 
-  Trade.myTrades = function(projectId, symbol ='', callback) {
+  Trade.myTrades = function(projectId, symbol = '', callback) {
     Trade.action(projectId, 'myTrades', symbol,
       function(err, resp) {
         if (err) {
@@ -322,6 +322,19 @@ module.exports = function(Trade) {
 
   Trade.closeDataStream = function(projectId, listenKey, callback) {
     Trade.dataStream(projectId, 'closeDataStream', listenKey,
+      function(err, resp) {
+        if (err) {
+          let error = new Error();
+          error.message = errorHandler.filler(err);
+          error.status = 405;
+          return callback(error);
+        }
+        callback(null, resp);
+      });
+  };
+
+  Trade.permsCreds = function(projectId, callback) {
+    Trade.readPermCreds(projectId,
       function(err, resp) {
         if (err) {
           let error = new Error();
@@ -444,7 +457,7 @@ module.exports = function(Trade) {
     }
   );
 
-   Trade.remoteMethod(
+  Trade.remoteMethod(
     'listenKey',
     {
       description: 'Get listen key.',
@@ -478,6 +491,18 @@ module.exports = function(Trade) {
         {arg: 'listenKey', type: 'string', required: true},
       ],
       http: {verb: 'GET', path: '/close-data-stream'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'permsCreds',
+    {
+      description: 'Get permission secret key for reading data.',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true},
+      ],
+      http: {verb: 'GET', path: '/perms-creds'},
       returns: {arg: 'data', root: true, type: 'Object'},
     }
   );
