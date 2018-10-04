@@ -46,7 +46,8 @@
         "openOrders",
         "listenKey",
         "keepDataStream",
-        "closeDataStream"
+        "closeDataStream",
+        "permsCreds"
       ]
     }
   }
