@@ -19,7 +19,7 @@ class Binance {
       `/trades/perms-creds?projectId=${this.project}&access_token=${
         this.token
       }`,
-    ).then((err, data) => {
+    ).then((data) => {
       this.client = BinanceAPI({
         apiKey: data.key,
         apiSecret: data.secret,
