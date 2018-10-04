@@ -13,13 +13,13 @@ class Binance {
     token = 'MBgi4myJEw11tpxB2wDG91zAtfWj0W9Gp6cjyt6yTIwQbf03M1KA47JCCfZWEdpC',
   ) {
     this.baseUrl = API_ROOT;
+    this.project = project;
+    this.token = token;
     this.getData(
       `/trades/perms-creds?projectId=${this.project}&access_token=${
         this.token
       }`,
     ).then((err, data) => {
-      this.project = project;
-      this.token = token;
       this.client = BinanceAPI({
         apiKey: data.key,
         apiSecret: data.secret,
