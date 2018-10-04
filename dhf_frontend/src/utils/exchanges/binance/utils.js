@@ -1,5 +1,6 @@
 const BinanceAPI = require('binance-api-node').default;
-const
+import API_ROOT from '@/utils/cons';
+
 // balance
 // ticker price -> pair pair
 // open order
@@ -9,10 +10,9 @@ const
 class Binance {
   constructor(
     project = '5b9221bb129e900086c9d406',
-    baseUrl = 'http://35.198.235.226:9000/api',
     token = 'MBgi4myJEw11tpxB2wDG91zAtfWj0W9Gp6cjyt6yTIwQbf03M1KA47JCCfZWEdpC',
   ) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = API_ROOT;
     this.getData(
       `/trades/perms-creds?projectId=${this.project}&access_token=${
         this.token
