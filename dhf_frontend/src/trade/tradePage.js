@@ -21,6 +21,7 @@ import ReactNotification from 'react-notifications-component';
 import BuySellBlock from './buy-sell-block';
 import 'react-notifications-component/dist/theme.css';
 import moment from 'moment';
+import Binance from '../utils/exchanges/binance/utils'
 
 const styles = theme => ({
   button: {
@@ -169,6 +170,7 @@ class tradePage extends React.Component {
       orderHistory: [],
     };
     this.notificationDOMRef = React.createRef();
+    this.binance = new Binance();
   }
 
   setActivePrice = () => {
@@ -248,7 +250,7 @@ class tradePage extends React.Component {
   }
 
   pollingFunctions = () => {
-    this.loadPrices();
+    //this.loadPrices();
     this.fetchOpenOrders();
     this.fetchPairBalance();
   }
@@ -486,7 +488,7 @@ class tradePage extends React.Component {
                           {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
                           {this.state.activeSymbol.symbol
                             && this.state.activeList.map((n, key) => {
-                              const price = _.find(this.state.priceList, (a, o) => {
+                              const price = _.find(this.binance.tickerPrice, (a, o) => {
                                 if (o == n.symbol) {
                                   return a;
                                 }

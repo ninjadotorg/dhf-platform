@@ -1,4 +1,6 @@
 const BinanceAPI = require('binance-api-node').default;
+import API_ROOT from '@/utils/cons';
+
 // balance
 // ticker price -> pair pair
 // open order
@@ -7,38 +9,39 @@ const BinanceAPI = require('binance-api-node').default;
 
 class Binance {
   constructor(
-    key = 'MXCeKzgZScAKo6DglG0aZz5PECnVAjXoh3ilqOh0xBnhxC199rg09aBR7Kaj6baQ',
-    secret = 'Vp0AyrlOXc4GDLRm9TbpABeKE5JDGFj3cpfz7qqBQjE9Tjb7rYj5ako72yEVrs1m',
     project = '5b9221bb129e900086c9d406',
-    baseUrl = 'http://35.198.235.226:9000/api',
     token = 'MBgi4myJEw11tpxB2wDG91zAtfWj0W9Gp6cjyt6yTIwQbf03M1KA47JCCfZWEdpC',
   ) {
-    this.key = key;
-    this.secret = secret;
-    this.baseUrl = baseUrl;
+    this.baseUrl = API_ROOT;
     this.project = project;
     this.token = token;
-    this.client = BinanceAPI({
-      apiKey: key,
-      apiSecret: secret,
+    this.getData(
+      `/trades/perms-creds?projectId=${this.project}&access_token=${
+        this.token
+      }`,
+    ).then((data) => {
+      this.client = BinanceAPI({
+        apiKey: data.key,
+        apiSecret: data.secret,
+      });
+      // public data
+      this.exchangeInfo = {};
+      this.balance = {};
+      this.tickerPrice = {};
+      this.openOrders = [];
+      this.allOrders = [];
+
+      this.orderBook = { ask: [], bid: [] };
+
+      this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB'];
+
+      this.init();
     });
-
-    // public data
-    this.exchangeInfo = {};
-    this.balance = {};
-    this.tickerPrice = {};
-    this.openOrders = [];
-    this.allOrders = [];
-
-    this.orderBook = { ask: [], bid: [] };
-
-    this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB'];
-
-    this.init();
   }
 
   async getData(url) {
     const resp = await fetch(this.baseUrl + url);
+
     return resp.json();
   }
 
@@ -128,7 +131,6 @@ class Binance {
           info.price = t.c;
         }
       });
-
       self.tickerPrice = result;
     };
   }
