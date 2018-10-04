@@ -7,8 +7,8 @@ const OrderDB = require('../../common/models/orders')
 module.exports = class Binance {
   constructor (cred) {
     this.client = BinanceAPI({
-      apiKey: cred.key,
-      apiSecret: cred.secret
+      apiKey: cred.tradePermKey,
+      apiSecret: cred.tradePermSecret
     })
   }
 
@@ -141,7 +141,7 @@ module.exports = class Binance {
   }
 
   async sellMarket (params) {
-    let result = await this.client.orderTest({
+    let result = await this.client.order({
       symbol: params.symbol,
       side: 'SELL',
       type: 'MARKET',
@@ -223,14 +223,14 @@ module.exports = class Binance {
       if (asset === 'ETH') {
         continue
       }
-      const quantity = Number(free)
+      const quantity = Number(free.match(/\d+(?:\.\d{0,2})?/)[0])
       if (quantity === 0) {
         continue
       }
 
       const symbol = `${asset}ETH` // sell asset to get eth
       try {
-        console.log('selling symbol', symbol, 'with quantity', quantity)
+        console.log('selling symbol:', symbol, 'quantity:', quantity)
         await this.sellMarket({ symbol, quantity })
       } catch (e) {
         // Invalid symbol
@@ -248,18 +248,20 @@ module.exports = class Binance {
       }
     }
 
-    for (let asset in invalidAssets) {
-      if (asset === 'BTC') {
-        continue
-      }
-      try {
-        // sell asset to get btc
-        await this.sellMarket({
-          symbol: `${asset}BTC`,
-          quantity: invalidAssets[asset]
-        })
-      } catch (e) {
-        console.log('error while selling asset', asset, 'to BTC', e)
+    if (Object.keys(invalidAssets).length) {
+      for (let asset in invalidAssets) {
+        if (asset === 'BTC') {
+          continue
+        }
+        try {
+          // sell asset to get btc
+          await this.sellMarket({
+            symbol: `${asset}BTC`,
+            quantity: invalidAssets[asset]
+          })
+        } catch (e) {
+          console.log('error while selling asset', asset, 'to BTC', e)
+        }
       }
     }
 
@@ -269,8 +271,6 @@ module.exports = class Binance {
         continue
       }
 
-      console.log(balancesAfterSell[i])
-
       // sell all btc to get eth
       try {
         await this.sellMarket({
@@ -278,10 +278,12 @@ module.exports = class Binance {
           quantity: Number(balancesAfterSell[i].free)
         })
       } catch (e) {
-        console.log('error while selling btc to get eth', e)
-      } finally {
-        break
+        if (e.code !== -1013) {
+          console.log('error while selling btc to get eth', e)
+        }
       }
+
+      break
     }
   }
 

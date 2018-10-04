@@ -1,4 +1,4 @@
-import React from 'react';
+import React  from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -14,13 +14,13 @@ import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
+
 
 const styles = theme => ({
   layout: {
@@ -56,13 +56,7 @@ const styles = theme => ({
     width: 200,
     flexDirection: 'row',
   },
-  button: {
-    margin: theme.spacing.unit,
-    marginLeft: 30,
-    float: 'right',
-    marginBottom: 30,
-    marginTop: 10,
-  },
+
   input: {
     display: 'none',
   },
@@ -80,23 +74,28 @@ const styles = theme => ({
     overflow: 'auto',
   },
 });
-class createProject extends React.Component {
+class editProject extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: '',
       exchange: '',
-      currency: '',
+      currency: 0,
       target: 0,
       max: 0,
       commission: 0,
       currencyList: [],
       deadline: new Date(),
       lifeTime: 0,
-      state: 'NEW',
+      state: '',
       exchangeList: [],
+      userId: 0,
     };
     this.moment = moment;
+  }
+
+  handleDateChange = (date) => {
+    this.setState({ deadline: date });
   }
 
   componentWillMount() {
@@ -120,12 +119,33 @@ class createProject extends React.Component {
         });
       })
       .catch(error => {});
+    request({
+      method: 'get',
+      url: `projects/${this.props.history.location.pathname.split('/')[2]}`,
+    })
+      .then(response => {
+        this.setState({
+          name: response.name,
+          exchange: response.exchange,
+          currency: response.currency,
+          target: response.target,
+          max: response.max,
+          deadline: response.deadline,
+          commission: response.commission,
+          lifeTime: response.lifeTime,
+          state: response.state,
+          userId: response.userId,
+        });
+      })
+      .catch(error => {});
   }
 
-  handleDateChange = (date) => {
-    console.log(date);
-    this.setState({ deadline: date });
-  }
+  handleTimeChange = event => {
+    const time = moment(`${event.target.value}`);
+    this.setState({
+      [event.target.id]: time.unix(),
+    });
+  };
 
   handleTextChange = event => {
     this.setState({
@@ -146,8 +166,8 @@ class createProject extends React.Component {
       error: '',
     });
     request({
-      method: 'post',
-      url: 'projects',
+      method: 'put',
+      url: `projects/${this.props.history.location.pathname.split('/')[2]}`,
       data,
     })
       .then(response => {
@@ -171,7 +191,9 @@ class createProject extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Create new project
+              Edit Project :
+              {' '}
+              {this.state.name}
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -179,7 +201,7 @@ class createProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <InputLabel htmlFor="name">Name of project</InputLabel>
-                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} />
+                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} value={this.state.name} />
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -189,6 +211,7 @@ class createProject extends React.Component {
                         id="target"
                         name="target"
                         autoComplete="target"
+                        value={this.state.target}
                         type="number"
                         autoFocus
                         onChange={this.handleTextChange}
@@ -242,6 +265,7 @@ class createProject extends React.Component {
                         id="max"
                         name="max"
                         autoComplete="max"
+                        value={this.state.max}
                         autoFocus
                         onChange={this.handleTextChange}
                         type="number"
@@ -255,6 +279,7 @@ class createProject extends React.Component {
                         id="commission"
                         name="commission"
                         autoComplete="commission"
+                        value={this.state.commission}
                         autoFocus
                         onChange={this.handleTextChange}
                         type="number"
@@ -283,6 +308,7 @@ class createProject extends React.Component {
                         id="lifeTime"
                         name="lifeTime"
                         type="number"
+                        value={this.state.lifeTime}
                         onChange={this.handleTextChange}
                         endAdornment={<InputAdornment position="end">Number of Days</InputAdornment>}
                       />
@@ -304,8 +330,8 @@ class createProject extends React.Component {
   }
 }
 
-createProject.propTypes = {
+editProject.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(createProject);
+export default withStyles(styles)(editProject);

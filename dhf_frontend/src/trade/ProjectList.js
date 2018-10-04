@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -15,6 +14,7 @@ import { Button } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import BarChart from '@material-ui/icons/BarChart';
 import EditIcon from '@material-ui/icons/Edit';
+import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import AccountBalanceWallet from '@material-ui/icons/AccountBalanceWallet';
 import Publish from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
@@ -29,6 +29,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Grow from '@material-ui/core/Grow';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const styles = {
   root: {
@@ -37,6 +42,10 @@ const styles = {
   },
   table: {
     minWidth: 700,
+  },
+  button: {
+    margin: 0,
+    minWidth: 125,
   },
   IconButton: {
     marginLeft: 10,
@@ -56,9 +65,12 @@ class ProjectList extends React.Component {
     super(props);
     this.state = {
       projects: [],
+      anchorEl: null,
       open: false,
       initWallet: 'metamask',
       activeProject: {},
+      placement: null,
+      currentItem: null,
     };
     this.notificationDOMRef = React.createRef();
   }
@@ -72,7 +84,6 @@ class ProjectList extends React.Component {
   };
 
   initFund = n => {
-    console.log(n);
     this.setState({
       open: true,
       activeWallet: n,
@@ -242,6 +253,91 @@ class ProjectList extends React.Component {
     }
   };
 
+  handleClose = event => {
+    this.setState({ open: false });
+  };
+
+  handleClick = (placement, currentItem) => event => {
+    const { currentTarget } = event;
+    this.setState(state => ({
+      anchorEl: currentTarget,
+      open: state.placement !== placement || !state.open,
+      placement,
+      currentItem,
+    }));
+  };
+
+  getActionButton = (n) => {
+    const { anchorEl, open, placement, currentItem } = this.state;
+    return (
+      <div>
+        <Button
+          aria-owns={open ? 'menu-list-grow' : null}
+          aria-haspopup="true"
+          onClick={this.handleClick('bottom', n)}
+        >
+          <MoreHoriz />
+        </Button>
+        <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
+          {({ TransitionProps }) => (
+            <Grow
+              {...TransitionProps}
+              id="menu-list-grow"
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={this.handleClose}>
+                  <MenuList>
+                    {(currentItem.data.state === 'RELEASE') && (
+                      <MenuItem onClick={() => {
+                        this.handleRowClick(currentItem.data);
+                      }}
+                      >
+                        <BarChart style={{ fontSize: 15, marginRight: 5 }} />
+                      Trade
+                      </MenuItem>
+                    )}
+                    {(currentItem.data.state === 'APPROVED') && (
+                      <MenuItem onClick={() => {
+                        this.initFund(currentItem.data);
+                      }}
+                      >
+                        <Publish style={{ fontSize: 15, marginRight: 10 }} />
+                      Start
+                      </MenuItem>
+                    )}
+                    {(currentItem.data.state === 'NEW') && (
+                      <MenuItem onClick={this.handleClose}>
+                        <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
+                      Init
+                      </MenuItem>
+                    )}
+                    {(currentItem.data.state === 'NEW') && (
+                      <MenuItem component={Link} to={`/project/${currentItem.data.id}`}>
+                        <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
+                      Edit
+                      </MenuItem>
+                    )}
+                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (
+                      <MenuItem onClick={() => {
+                        this.deleteProject(currentItem);
+                      }}
+                      style={{ color: red }}
+                      >
+                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                      Cancel
+                      </MenuItem>
+                    )}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
+    );
+  };
+
   changeStateText = n => {
     switch (n.state) {
       case 'NEW':
@@ -302,7 +398,7 @@ class ProjectList extends React.Component {
                   </TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
-                    <this.getButtonType data={n} />
+                    <this.getActionButton data={n} />
                   </TableCell>
                 </TableRow>
               );

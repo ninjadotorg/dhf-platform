@@ -101,5 +101,10 @@
     "dataSource": "storage",
     "public": true,
     "options": {}
+  },
+  "wallet-profile": {
+    "dataSource": "rest",
+    "public": false,
+    "options": {}
   }
 }

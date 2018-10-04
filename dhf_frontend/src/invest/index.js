@@ -47,10 +47,8 @@ const styles = theme => ({
     flexDirection: 'row',
   },
   button: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-    marginLeft: 'auto',
-    marginRight: '0',
+    margin: 0,
+    minWidth: 125,
     '& + button': {
       marginLeft: '10px',
       marginRight: 'auto',

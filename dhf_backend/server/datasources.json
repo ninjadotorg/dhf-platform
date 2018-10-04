@@ -226,6 +226,24 @@
         "functions": {
           "smartContactVersionReTract": ["version", "projectId", "scale", "denominator"]
         }
+      },
+      {
+        "template": {
+          "method": "POST",
+          "url": "https://ninja.org/api/user/profile",
+          "options": {
+            "strictSSL": false
+          },
+          "headers": {
+            "accepts": "application/json",
+            "content-type": "application/json",
+            "Payload" : "{token}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "profile": ["token"]
+        }
       }
     ]
   },

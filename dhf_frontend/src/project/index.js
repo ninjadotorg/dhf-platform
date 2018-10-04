@@ -17,13 +17,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
-import { toast } from 'react-toastify';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-
-import {
-  formatDate,
-  parseDate,
-} from 'react-day-picker/moment';
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
 
 const styles = theme => ({
   layout: {
@@ -49,28 +45,19 @@ const styles = theme => ({
     width: '100%', // Fix IE11 issue.
     marginTop: theme.spacing.unit,
   },
-  buttonWapper: {
-    flexWrap: 'wrap',
-    display: 'flex',
-    flexDirection: 'row',
-  },
   submit: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     marginLeft: 'auto',
-    marginRight: '0',
+    marginRight: 'auto',
+    flexWrap: 'wrap',
+    display: 'flex',
     width: 200,
-    '& + button': {
-      marginLeft: '10px',
-      marginRight: 'auto',
-    },
+    flexDirection: 'row',
   },
   button: {
-    margin: theme.spacing.unit,
-    marginLeft: 30,
-    float: 'right',
-    marginBottom: 30,
-    marginTop: 10,
+    margin: 0,
+    minWidth: 125,
   },
   input: {
     display: 'none',
@@ -89,10 +76,9 @@ const styles = theme => ({
     overflow: 'auto',
   },
 });
-class editProject extends React.Component {
+class createProject extends React.Component {
   constructor(props) {
     super(props);
-    
     this.state = {
       name: '',
       exchange: '',
@@ -101,13 +87,12 @@ class editProject extends React.Component {
       max: 0,
       commission: 0,
       currencyList: [],
-      deadline: 0,
+      deadline: new Date(),
       lifeTime: 0,
       state: 'NEW',
       exchangeList: [],
     };
     this.moment = moment;
-    this.currentDateTime = this.moment().format('YYYY-MM-DD');
   }
 
   componentWillMount() {
@@ -131,21 +116,12 @@ class editProject extends React.Component {
         });
       })
       .catch(error => {});
-    request({
-      method: 'get',
-      url: `/projects/${this.props.match.params.id}`,
-    })
-      .then(response => {
-        this.setState(response);
-      })
-      .catch(error => {});
   }
 
-  handleDayChange = value => {
-    this.setState({
-      deadline: value,
-    });
-  };
+  handleDateChange = (date) => {
+    console.log(date);
+    this.setState({ deadline: date });
+  }
 
   handleTextChange = event => {
     this.setState({
@@ -166,13 +142,12 @@ class editProject extends React.Component {
       error: '',
     });
     request({
-      method: 'put',
-      url: `/projects/${this.props.match.params.id}`,
+      method: 'post',
+      url: 'projects',
       data,
     })
       .then(response => {
-        toast.success('Your project has been updated successfully!');
-        // return history.push('/dashboard');
+        return history.push('/dashboard');
       })
       .catch(error => {
         error.data
@@ -192,9 +167,7 @@ class editProject extends React.Component {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Typography variant="display1" gutterBottom>
-              Edit Project:
-              {' '}
-              {this.state.name}
+              Create new project
             </Typography>
             <Paper className={classes.paper}>
               <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
@@ -202,13 +175,7 @@ class editProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <InputLabel htmlFor="name">Name of project</InputLabel>
-                      <Input id="name"
-                        name="name"
-                        autoComplete="name"
-                        autoFocus
-                        onChange={this.handleTextChange}
-                        value={this.state.name}
-                      />
+                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} />
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -220,7 +187,6 @@ class editProject extends React.Component {
                         autoComplete="target"
                         type="number"
                         autoFocus
-                        value={this.state.target}
                         onChange={this.handleTextChange}
                       />
                     </FormControl>
@@ -273,7 +239,6 @@ class editProject extends React.Component {
                         name="max"
                         autoComplete="max"
                         autoFocus
-                        value={this.state.max}
                         onChange={this.handleTextChange}
                         type="number"
                       />
@@ -287,7 +252,6 @@ class editProject extends React.Component {
                         name="commission"
                         autoComplete="commission"
                         autoFocus
-                        value={this.state.commission}
                         onChange={this.handleTextChange}
                         type="number"
                       />
@@ -296,18 +260,16 @@ class editProject extends React.Component {
                 </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>
-                    <FormControl margin="normal" required fullWidth  className={classes.margin}>
-                      <InputLabel htmlFor="deadline">Deadline</InputLabel>
-                      <DayPickerInput
-                        onDayChange={this.handleDayChange}
-                        id="deadline"
-                        label="deadline"
-                        value={`${formatDate(this.state.deadline)}`}
-                        className={classes.textField}
-                        formatDate={formatDate}
-                        parseDate={parseDate}
-                        placeholder=""
-                      />
+                    <FormControl margin="normal" required fullWidth>
+                      <MuiPickersUtilsProvider utils={MomentUtils}>
+                        <InlineDatePicker
+                          label="Deadline"
+                          disablePast
+                          value={this.state.deadline}
+                          format="DD MMMM YYYY"
+                          onChange={this.handleDateChange}
+                        />
+                      </MuiPickersUtilsProvider>
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -317,7 +279,6 @@ class editProject extends React.Component {
                         id="lifeTime"
                         name="lifeTime"
                         type="number"
-                        value={this.state.lifeTime}
                         onChange={this.handleTextChange}
                         endAdornment={<InputAdornment position="end">Number of Days</InputAdornment>}
                       />
@@ -327,20 +288,9 @@ class editProject extends React.Component {
                 <FormHelperText id="name-helper-text" error>
                   {this.state.error}
                 </FormHelperText>
-                <div className={classes.buttonWapper}>
-                  <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
+                <Button type="submit" center variant="raised" color="primary" className={classes.submit}>
                   Submit
-                  </Button>
-                  <Button type="submit"
-                    center
-                    variant="raised"
-                    color="success"
-                    className={classes.submit}
-                    onClick={() => history.push('/dashboard')}
-                  >
-                  Cancel
-                  </Button>
-                </div>
+                </Button>
               </ValidatorForm>
             </Paper>
           </main>
@@ -350,8 +300,8 @@ class editProject extends React.Component {
   }
 }
 
-editProject.propTypes = {
+createProject.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(editProject);
+export default withStyles(styles)(createProject);

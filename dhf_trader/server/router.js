@@ -25,6 +25,7 @@ exports = module.exports = function (app, router) {
 
   router.all('/trade/project/:project/getOrSetAccount', getOrSetAccount)
   router.all('/trade/project/:project/unLockAccount', unLockAccount)
+  router.get('/trade/project/:project/readPermCreds', readPermCreds)
 
   // trade
   router.all('/trade/project/:project/:action', action)
@@ -36,11 +37,21 @@ exports = module.exports = function (app, router) {
   // /trade/project/:project/withdraw?asset=...&address=...&amount=...
   // /trade/project/:project/keepDataStream?listenKey=...
   // /trade/project/:project/closeDataStream?listenKey=...
+  // /trade/project/:project/readPermCreds
 
   router.all('*', function (req, res) {
     console.error('Not found: %s %s', req.method, req.url)
     res.status('404').end()
   })
+}
+
+async function readPermCreds (req, res) {
+  const {
+    readPermKey: key,
+    readPermSecret: secret
+  } = await ExchangeDB.getProjectAccount(req.params.project)
+
+  return res.json({ key, secret })
 }
 
 async function getOrSetAccount (req, res) {
