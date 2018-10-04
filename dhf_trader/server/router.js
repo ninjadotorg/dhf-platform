@@ -25,7 +25,7 @@ exports = module.exports = function (app, router) {
 
   router.all('/trade/project/:project/getOrSetAccount', getOrSetAccount)
   router.all('/trade/project/:project/unLockAccount', unLockAccount)
-  router.get('/trade/project/:project/credentials', getCredentials)
+  router.get('/trade/project/:project/readPermCreds', readPermCreds)
 
   // trade
   router.all('/trade/project/:project/:action', action)
@@ -44,10 +44,10 @@ exports = module.exports = function (app, router) {
   })
 }
 
-async function getCredentials (req, res) {
+async function readPermCreds (req, res) {
   const {
-    keyRead: key,
-    secretRead: secret
+    readPermKey: key,
+    readPermSecret: secret
   } = await ExchangeDB.getProjectAccount(req.params.project)
 
   return res.json({ key, secret })

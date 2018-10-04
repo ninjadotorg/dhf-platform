@@ -7,8 +7,8 @@ const OrderDB = require('../../common/models/orders')
 module.exports = class Binance {
   constructor (cred) {
     this.client = BinanceAPI({
-      apiKey: cred.key,
-      apiSecret: cred.secret
+      apiKey: cred.tradePermKey,
+      apiSecret: cred.tradePermSecret
     })
   }
 
