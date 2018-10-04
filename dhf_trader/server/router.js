@@ -46,12 +46,14 @@ exports = module.exports = function (app, router) {
 }
 
 async function readPermCreds (req, res) {
-  const {
-    readPermKey: key,
-    readPermSecret: secret
-  } = await ExchangeDB.getProjectAccount(req.params.project)
+  const result = await ExchangeDB.getProjectAccount(req.params.project)
+  if (result) {
+    return res.json({ key: result.readPermKey, secret: result.readPermSecret })
+  }
 
-  return res.json({ key, secret })
+  return res
+    .status(404)
+    .json({ error: 'could not find key for project ' + req.params.project })
 }
 
 async function getOrSetAccount (req, res) {
