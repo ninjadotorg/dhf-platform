@@ -29,6 +29,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import TextField from '@material-ui/core/TextField';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
@@ -67,7 +68,8 @@ class ProjectList extends React.Component {
       projects: [],
       anchorEl: null,
       open: false,
-      initWallet: 'metamask',
+      initFundModal: false,
+      initWallet: 'Metamask',
       activeProject: {},
       placement: null,
       currentItem: null,
@@ -85,14 +87,14 @@ class ProjectList extends React.Component {
 
   initFund = n => {
     this.setState({
-      open: true,
+      initFundModal: true,
       activeWallet: n,
     });
   };
 
-  handleClose = () => {
+  handleModalClose = () => {
     this.setState({
-      open: false,
+      initFundModal: false,
       activeWallet: {},
     });
   };
@@ -164,95 +166,6 @@ class ProjectList extends React.Component {
     });
   };
 
-  getButtonType = n => {
-    switch (n.data.state) {
-      case 'RELEASE':
-        return (
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              style={{ width: 120, marginRight: 10 }}
-              onClick={() => {
-                this.handleRowClick(n.data);
-              }}
-            >
-              <BarChart style={{ marginRight: 10 }} />
-              Trade
-            </Button>
-            <this.deleteButton data={n} />
-          </div>
-        );
-
-      case 'NEW':
-        return (
-          <div>
-            {' '}
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              style={{ width: 80, marginRight: 10, backgroundColor: green }}
-              onClick={() => {
-                this.initFund(n.data);
-              }}
-            >
-              <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
-              Init
-            </Button>
-            <this.deleteButton data={n} />
-            <IconButton className={styles.IconButton} aria-label="Edit" component={Link} to={`/project/${n.data.id}`}>
-              <EditIcon style={{ color: editIcon }} />
-            </IconButton>
-          </div>
-        );
-
-      case 'APPROVED':
-        return (
-          <div>
-            {' '}
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              style={{ width: 130, marginRight: 10 }}
-              onClick={() => {
-                this.initFund(n.data);
-              }}
-            >
-              <Publish style={{ fontSize: 15, marginRight: 10 }} />
-              Start
-            </Button>
-            <this.deleteButton data={n} />
-          </div>
-        );
-
-      case 'INITFUND':
-        return (
-          <div>
-            {' '}
-            <Button
-              variant="contained"
-              color="primary"
-              type="button"
-              disabled
-              style={{ width: 130, marginRight: 10, color: '#fff', backgroundColor: '#fff' }}
-              onClick={() => {
-                this.handleRowClick(n.data);
-              }}
-            >
-              <BarChart style={{ marginRight: 10 }} />
-              Trade
-            </Button>
-            <this.deleteButton data={n} />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   handleClose = event => {
     this.setState({ open: false });
   };
@@ -299,7 +212,7 @@ class ProjectList extends React.Component {
                     )}
                     {(currentItem.data.state === 'APPROVED') && (
                       <MenuItem onClick={() => {
-                        this.initFund(currentItem.data);
+                        // this.initFund(currentItem.data);
                       }}
                       >
                         <Publish style={{ fontSize: 15, marginRight: 10 }} />
@@ -307,7 +220,7 @@ class ProjectList extends React.Component {
                       </MenuItem>
                     )}
                     {(currentItem.data.state === 'NEW') && (
-                      <MenuItem onClick={this.handleClose}>
+                      <MenuItem onClick={this.initFund}>
                         <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                       Init
                       </MenuItem>
@@ -322,7 +235,7 @@ class ProjectList extends React.Component {
                       <MenuItem onClick={() => {
                         this.deleteProject(currentItem);
                       }}
-                      style={{ color: red }}
+                        style={{ color: red }}
                       >
                         <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                       Cancel
@@ -406,43 +319,42 @@ class ProjectList extends React.Component {
           </TableBody>
         </Table>
         <Dialog
-          open={this.state.open}
-          onClose={this.handleClose}
+          open={this.state.initFundModal}
+          onClose={this.handleModalClose}
           aria-labelledby="form-dialog-title"
           disableBackdropClick
           disableEscapeKeyDown
         >
           <DialogContent>
-            <DialogContentText>Please enter your password to use this wallet.</DialogContentText>
-            <FormLabel component="legend">Gender</FormLabel>
+            <DialogContentText>Please select the wallet you want to use.</DialogContentText>
             <RadioGroup
-              aria-label="Gender"
-              name="gender1"
+              aria-label="Wallet"
+              name="wallet"
               className={classes.group}
               value={this.state.initWallet}
               onChange={this.handleRadioChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="Female" />
-              <FormControlLabel value="male" control={<Radio />} label="Male" />
-              <FormControlLabel value="other" control={<Radio />} label="Other" />
-              <FormControlLabel
-                value="disabled"
-                disabled
-                control={<Radio />}
-                label="(Disabled option)"
-              />
+              <FormControlLabel value="Metamask" control={<Radio />} label="Metamask" />
+              <FormControlLabel value="NinjaWallet" control={<Radio />} label="NinjaWallet" />
             </RadioGroup>
+            <FormLabel component="legend">
+            Note : If you have not linked your wallet please visit
+              {' '}
+              <Link to="/wallet">Wallet</Link>
+              {' '}
+            and link it.
+            </FormLabel>
             <TextField
               autoFocus
               margin="dense"
               style={{ marginTop: 20 }}
-              label="Enter your password"
+              label="You have selected address - "
               type="password"
               fullWidth
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
+            <Button onClick={this.handleModalClose} color="primary">
               Cancel
             </Button>
             <Button onClick={this.handleSubmit} color="primary">
