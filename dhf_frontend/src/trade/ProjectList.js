@@ -22,8 +22,6 @@ import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
 import moment from 'moment';
 import Dialog from '@material-ui/core/Dialog';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -35,6 +33,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import WalletStepper from '@/trade/WalletStepper';
 
 const styles = {
   root: {
@@ -69,7 +68,6 @@ class ProjectList extends React.Component {
       anchorEl: null,
       open: false,
       initFundModal: false,
-      initWallet: 'Metamask',
       activeProject: {},
       placement: null,
       currentItem: null,
@@ -81,9 +79,6 @@ class ProjectList extends React.Component {
     this.fetchProjects();
   };
 
-  handleRowClick = n => {
-    return history.push(`/trade/${n.id}`);
-  };
 
   initFund = n => {
     this.setState({
@@ -138,10 +133,6 @@ class ProjectList extends React.Component {
         this.fetchProjects();
       })
       .catch(error => {});
-  };
-
-  handleRadioChange = event => {
-    this.setState({ initWallet: event.target.value });
   };
 
   deleteButton = n => {
@@ -235,7 +226,7 @@ class ProjectList extends React.Component {
                       <MenuItem onClick={() => {
                         this.deleteProject(currentItem);
                       }}
-                        style={{ color: red }}
+                      style={{ color: red }}
                       >
                         <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                       Cancel
@@ -319,48 +310,19 @@ class ProjectList extends React.Component {
           </TableBody>
         </Table>
         <Dialog
-          open={this.state.initFundModal}
+          open={!this.state.initFundModal}
           onClose={this.handleModalClose}
           aria-labelledby="form-dialog-title"
           disableBackdropClick
           disableEscapeKeyDown
+          maxWidth="lg"
+          style={{ margin: '0 auto' }}
         >
-          <DialogContent>
-            <DialogContentText>Please select the wallet you want to use.</DialogContentText>
-            <RadioGroup
-              aria-label="Wallet"
-              name="wallet"
-              className={classes.group}
-              value={this.state.initWallet}
-              onChange={this.handleRadioChange}
-            >
-              <FormControlLabel value="Metamask" control={<Radio />} label="Metamask" />
-              <FormControlLabel value="NinjaWallet" control={<Radio />} label="NinjaWallet" />
-            </RadioGroup>
-            <FormLabel component="legend">
-            Note : If you have not linked your wallet please visit
-              {' '}
-              <Link to="/wallet">Wallet</Link>
-              {' '}
-            and link it.
-            </FormLabel>
-            <TextField
-              autoFocus
-              margin="dense"
-              style={{ marginTop: 20 }}
-              label="You have selected address - "
-              type="password"
-              fullWidth
-            />
+          <DialogContent
+            style={{ width: '1200px', margin: '0 auto' }}
+          >
+            <WalletStepper handleModalClose={this.handleModalClose} />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleModalClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleSubmit} color="primary">
-              Submit
-            </Button>
-          </DialogActions>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />
       </Paper>
