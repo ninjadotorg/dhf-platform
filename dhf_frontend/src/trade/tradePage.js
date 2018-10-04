@@ -21,7 +21,7 @@ import ReactNotification from 'react-notifications-component';
 import BuySellBlock from './buy-sell-block';
 import 'react-notifications-component/dist/theme.css';
 import moment from 'moment';
-import Binance from '../utils/exchanges/binance/utils'
+import Binance from '../utils/exchanges/binance/utils';
 
 const styles = theme => ({
   button: {
@@ -250,7 +250,7 @@ class tradePage extends React.Component {
   }
 
   pollingFunctions = () => {
-    //this.loadPrices();
+    // this.loadPrices();
     this.fetchOpenOrders();
     this.fetchPairBalance();
   }
@@ -350,9 +350,9 @@ class tradePage extends React.Component {
     this.fetchOrderHistory();
   }
 
-  handlePairChange = (event, n, price) => {
+  handlePairChange = (event, n) => {
     this.setState({
-      activeSymbol: n, activePrice: price,
+      activeSymbol: n,
     }, this.fetchOrderInfo);
     const pair = `${n.baseAsset},${n.quoteAsset}`;
     request({
@@ -487,20 +487,22 @@ class tradePage extends React.Component {
                         <TableBody>
                           {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
                           {this.state.activeSymbol.symbol
-                            && this.state.activeList.map((n, key) => {
-                              const price = _.find(this.binance.tickerPrice, (a, o) => {
-                                if (o == n.symbol) {
-                                  return a;
+                            && this.binance.tickerPrice
+                            && this.binance.tickerPrice[this.state.quoteAsset]
+                            && this.binance.tickerPrice[this.state.quoteAsset].map((n, key) => {
+                              const price = _.find(this.state.activeList, (a) => {
+                                if (a.symbol == n.symbol) {
+                                  return n.price;
                                 }
                                 return false;
                               });
-                              return (
+                            return (
                                 price && (
                                   <TableRow
-                                    key={key}
+                                    key={key.quoteAsset}
                                     button
                                     onClick={event => {
-                                      this.handlePairChange(event, n, price);
+                                      this.handlePairChange(event, n);
                                     }}
                                     style={{
                                       cursor: 'pointer',
@@ -514,8 +516,8 @@ class tradePage extends React.Component {
                                         n.symbol === this.state.activeSymbol.symbol ? classes.activeSymbolRowItem : ''
                                       }
                                     >
-                                      {`${n.baseAsset}/${n.quoteAsset}`}
-                                      <span style={{ right: 30, position: 'absolute' }}>{price}</span>
+                                      {`${price.symbol}`}
+                                      <span style={{ right: 30, position: 'absolute' }}>{`${n.price}`}</span>
                                     </TableCell>
                                   </TableRow>
                                 )
@@ -646,7 +648,8 @@ class tradePage extends React.Component {
                           <TableCell>{n.orderId}</TableCell>
                           <TableCell>{n.executedQty}</TableCell>
                           <TableCell>{n.price}</TableCell>
-                          <TableCell style={n.side === 'BUY' ? { color: 'green' } : { color: 'red' }}>{n.side}
+                          <TableCell style={n.side === 'BUY' ? { color: 'green' } : { color: 'red' }}>
+                            {n.side}
                           </TableCell>
                           <TableCell>{n.status}</TableCell>
                         </TableRow>
