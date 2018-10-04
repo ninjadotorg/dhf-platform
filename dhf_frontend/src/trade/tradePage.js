@@ -350,9 +350,9 @@ class tradePage extends React.Component {
     this.fetchOrderHistory();
   }
 
-  handlePairChange = (event, n) => {
+  handlePairChange = (event, n, price) => {
     this.setState({
-      activeSymbol: n,
+      activeSymbol: n, activePrice: price,
     }, this.fetchOrderInfo);
     const pair = `${n.baseAsset},${n.quoteAsset}`;
     request({
@@ -502,7 +502,7 @@ class tradePage extends React.Component {
                                     key={key.quoteAsset}
                                     button
                                     onClick={event => {
-                                      this.handlePairChange(event, n);
+                                      this.handlePairChange(event, n, price);
                                     }}
                                     style={{
                                       cursor: 'pointer',
