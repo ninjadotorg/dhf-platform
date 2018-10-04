@@ -2,37 +2,69 @@
 var async = require('async');
 
 module.exports = function(LinkToWallet) {
-
   LinkToWallet.verify = function(verifyCode, callback) {
-    LinkToWallet.findOne({where:{
-      verifyCode: verifyCode,
-      status: 'pending',
-    }}, function(err, data) {
-      if (err) callback(err);
-      let error = new Error();
-      if (!data) {
-        error.status = 405;
-        error.message = 'Verify not found or code invalided!';
-        return callback(error);
-      }
-
-      let createdDate = new Date(data.requestDate);
-      let now = new Date();
-      let validated = (now - createdDate) / 1000; // convert to  minutes;
-      const limiestTime = 15; // one day (24hours) in a  minute
-      if (validated <= limiestTime) {
-        data.userId = LinkToWallet.app.currentUserId;
-        data.status = 'approved';
-        data.activeDate = new Date();
-        data.save(data, callback);
-      } else {
-        data.delete(data, function(err) {
+    let currentLinked = null;
+    async.series([
+      function checkCode(callback) {
+        LinkToWallet.findOne({
+          where: {
+            verifyCode: verifyCode,
+            status: 'pending',
+          }
+        }, function (err, data) {
           if (err) callback(err);
-          error.status = 405;
-          error.message = 'Your active code has been expired!';
-          return callback(error);
+          let error = new Error();
+          if (!data) {
+            error.status = 405;
+            error.message = 'Verify not found or code invalided!';
+            return callback(error);
+          }
+
+          let createdDate = new Date(data.requestDate);
+          let now = new Date();
+          let validated = (now - createdDate) / 1000; // convert to  minutes;
+          const limiestTime = 15; // one day (24hours) in a  minute
+          if (validated <= limiestTime) {
+            currentLinked = data;
+            callback();
+          } else {
+            data.delete(data, function (err) {
+              if (err) callback(err);
+              error.status = 405;
+              error.message = 'Your active code has been expired!';
+              return callback(error);
+            });
+          }
         });
-      }
+      },
+      function removePreviousLink(callback) {
+        if (currentLinked) {
+          LinkToWallet.destroyAll({
+              walletId: currentLinked.walletId,
+          }, function (err, results) {
+            if (err)
+              return callback(err);
+
+            callback();
+          });
+        } else {
+          callback();
+        }
+      },
+      function addNewLink(callback) {
+        if (currentLinked) {
+          currentLinked.userId = LinkToWallet.app.currentUserId;
+          currentLinked.status = 'approved';
+          currentLinked.activeDate = new Date();
+          currentLinked.save(currentLinked, callback);
+        } else {
+          callback()
+        }
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, currentLinked);
     });
   };
 

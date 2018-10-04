@@ -114,6 +114,19 @@
       },
       {
         "template": {
+          "method": "GET",
+          "url": "http://trader-api:9001/trade/project/{projectId}/readPermCreds",
+          "options": {
+            "strictSSL": false
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "readPermCreds": ["projectId"]
+        }
+      },
+      {
+        "template": {
           "method": "POST",
           "url": "http://trader-api:9001/trade/project/{projectId}/{action}",
           "options": {
