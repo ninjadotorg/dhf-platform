@@ -21,6 +21,14 @@ import IconButton from '@material-ui/core/IconButton';
 import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
 import moment from 'moment';
+import Dialog from '@material-ui/core/Dialog';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
@@ -42,6 +50,12 @@ const styles = {
   IconButton: {
     marginLeft: 10,
   },
+  formControl: {
+    margin: 10,
+  },
+  group: {
+    margin: 10,
+  },
 };
 const red = '#FF3D00';
 const green = '#388E3C';
@@ -53,6 +67,8 @@ class ProjectList extends React.Component {
       projects: [],
       anchorEl: null,
       open: false,
+      initWallet: 'metamask',
+      activeProject: {},
       placement: null,
       currentItem: null,
     };
@@ -120,6 +136,10 @@ class ProjectList extends React.Component {
         this.fetchProjects();
       })
       .catch(error => {});
+  };
+
+  handleRadioChange = event => {
+    this.setState({ initWallet: event.target.value });
   };
 
   deleteButton = n => {
@@ -302,7 +322,7 @@ class ProjectList extends React.Component {
                       <MenuItem onClick={() => {
                         this.deleteProject(currentItem);
                       }}
-                        style={{ color: red }}
+                      style={{ color: red }}
                       >
                         <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                       Cancel
@@ -385,6 +405,51 @@ class ProjectList extends React.Component {
             })}
           </TableBody>
         </Table>
+        <Dialog
+          open={this.state.open}
+          onClose={this.handleClose}
+          aria-labelledby="form-dialog-title"
+          disableBackdropClick
+          disableEscapeKeyDown
+        >
+          <DialogContent>
+            <DialogContentText>Please enter your password to use this wallet.</DialogContentText>
+            <FormLabel component="legend">Gender</FormLabel>
+            <RadioGroup
+              aria-label="Gender"
+              name="gender1"
+              className={classes.group}
+              value={this.state.initWallet}
+              onChange={this.handleRadioChange}
+            >
+              <FormControlLabel value="female" control={<Radio />} label="Female" />
+              <FormControlLabel value="male" control={<Radio />} label="Male" />
+              <FormControlLabel value="other" control={<Radio />} label="Other" />
+              <FormControlLabel
+                value="disabled"
+                disabled
+                control={<Radio />}
+                label="(Disabled option)"
+              />
+            </RadioGroup>
+            <TextField
+              autoFocus
+              margin="dense"
+              style={{ marginTop: 20 }}
+              label="Enter your password"
+              type="password"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleSubmit} color="primary">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />
       </Paper>
     );
