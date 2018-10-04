@@ -13,11 +13,15 @@ var Exchange = new Schema({
   key: { type: String },
   secret: { type: String },
 
-  readPermKey: { type: String },
-  readPermSecret: { type: String },
+  readPermCred: {
+    key: String,
+    secret: String
+  },
 
-  tradePermKey: { type: String },
-  tradePermSecret: { type: String },
+  tradePermCred: {
+    key: String,
+    secret: String
+  },
 
   isLock: { type: Boolean, index: true, default: false },
   lock: {

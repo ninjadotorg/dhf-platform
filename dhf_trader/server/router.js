@@ -48,7 +48,10 @@ exports = module.exports = function (app, router) {
 async function readPermCreds (req, res) {
   const result = await ExchangeDB.getProjectAccount(req.params.project)
   if (result) {
-    return res.json({ key: result.readPermKey, secret: result.readPermSecret })
+    return res.json({
+      key: result.readPermCred.key,
+      secret: result.readPermCred.secret
+    })
   }
 
   return res
