@@ -277,9 +277,18 @@ class WalletStepper extends React.Component {
               </div>
             )}
         </div>
-        <div style={{ float: 'right', margin: '10px 75px' }}>
+        <div style={{ float: 'right', margin: '10px 34px' }}>
           <Button onClick={this.props.handleModalClose} color="primary" variant="outlined" className={classes.button}>
               Cancel
+          </Button>
+          <Button
+            disabled={activeStep === 0}
+            onClick={this.handleBack}
+            color="primary"
+            variant="outlined"
+            className={classes.button}
+          >
+                  Back
           </Button>
           <Button
             variant="outlined"
@@ -300,7 +309,7 @@ class WalletStepper extends React.Component {
                       Skip
             </Button>
           )}
-          {activeStep !== steps.length && (this.state.completed.has(this.state.activeStep)
+          {/* {activeStep !== steps.length && (this.state.completed.has(this.state.activeStep)
             ? (
               <Typography variant="caption" className={classes.completed}>
                         Step
@@ -317,7 +326,7 @@ class WalletStepper extends React.Component {
                   ? 'Finish'
                   : 'Complete Step'}
               </Button>
-            ))}
+            ))} */}
         </div>
       </div>
     );

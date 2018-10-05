@@ -310,7 +310,7 @@ class ProjectList extends React.Component {
           </TableBody>
         </Table>
         <Dialog
-          open={!this.state.initFundModal}
+          open={this.state.initFundModal}
           onClose={this.handleModalClose}
           aria-labelledby="form-dialog-title"
           disableBackdropClick
@@ -319,7 +319,7 @@ class ProjectList extends React.Component {
           style={{ margin: '0 auto' }}
         >
           <DialogContent
-            style={{ width: '1200px', margin: '0 auto' }}
+            style={{ width: '700px', margin: '0 auto' }}
           >
             <WalletStepper handleModalClose={this.handleModalClose} />
           </DialogContent>
