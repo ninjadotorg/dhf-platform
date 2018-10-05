@@ -14,11 +14,21 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
   root: {
     width: '100%',
     margin: '0 auto',
+  },
+  table: {
+    minWidth: 700,
+    marginBottom: 30,
   },
   button: {
     marginRight: theme.spacing.unit,
@@ -39,11 +49,11 @@ const styles = theme => ({
 });
 
 function getSteps() {
-  return ['Select wallet type', 'Select address', 'Decrypt wallet key', 'Confirm wallet Address'];
+  return ['Select wallet type', 'Select Wallet', 'Decrypt Wallet', 'Confirm wallet Address', 'Fees and Confirm'];
 }
 
 function getStepsMetaMask() {
-  return ['Select wallet type', 'Confirm wallet Address'];
+  return ['Select wallet type', 'Fees and Confirm'];
 }
 
 
@@ -54,6 +64,11 @@ class WalletStepper extends React.Component {
     skipped: new Set(),
     walletType: 'MetaMask',
     address: '',
+    checkedTandC: false,
+  };
+
+  handleCheckBoxChange = name => event => {
+    this.setState({ [name]: event.target.checked });
   };
 
   handleWalletChange = event => {
@@ -128,11 +143,143 @@ class WalletStepper extends React.Component {
             </FormControl>
           </div>
         );
+      case 3:
+        return (
+          <div>
+            <Select
+              value={this.state.address}
+              onChange={this.handleAddressChange}
+              fullWidth
+              displayEmpty
+              style={{ marginTop: 20 }}
+              inputProps={{
+                name: 'address',
+                id: 'address',
+              }}
+            >
+              <MenuItem value="" disabled>
+                Please select Ninja Wallet Address
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </div>
+        );
+      case 4:
+        return (
+          <div style={{ marginBottom: 10 }}>
+            <Table className={styles.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow button style={{ height: 60 }}>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+            <h4>Terms and Conditions</h4>
+            <textarea rows="4" cols="50" readOnly style={{ width: '100%' }}>
+              At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.
+            </textarea>
+            <FormControlLabel
+              control={(
+                <Checkbox
+                  checked={this.state.checkedTandC}
+                  onChange={this.handleCheckBoxChange('checkedTandC')}
+                  value="checkedTandC"
+                />
+              )}
+              label="I agree to the Terms of Service."
+            />
+          </div>
+        );
       default:
-        return (<div>'Step 1: Select campaign settings...</div>);
+        return (<div />);
     }
   };
 
+  getStepContentMetaMask = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <div>
+            {' '}
+            <RadioGroup
+              aria-label="walletType"
+              name="walletType"
+              className={styles.group}
+              value={this.state.walletType}
+              onChange={this.handleWalletChange}
+            >
+              <FormControlLabel value="MetaMask" control={<Radio />} label="MetaMask" />
+              <FormControlLabel value="NinjaWallet" control={<Radio />} label="NinjaWallet" />
+            </RadioGroup>
+
+          </div>
+        );
+      case 1:
+        return (
+          <div style={{ marginBottom: 10 }}>
+            <Table className={styles.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow button style={{ height: 60 }}>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Time</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+            <h4>Terms and Conditions</h4>
+            <textarea rows="4" cols="50" readOnly style={{ width: '100%' }}>
+              At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.
+            </textarea>
+            <FormControlLabel
+              control={(
+                <Checkbox
+                  checked={this.state.checkedTandC}
+                  onChange={this.handleCheckBoxChange('checkedTandC')}
+                  value="checkedTandC"
+                />
+              )}
+              label="I agree to the Terms of Service."
+            />
+          </div>
+        );
+      default:
+        return (<div />);
+    }
+  };
 
   handleSkip = () => {
     const { activeStep } = this.state;
@@ -273,7 +420,7 @@ class WalletStepper extends React.Component {
             )
             : (
               <div>
-                <Typography className={classes.instructions}>{this.getStepContent(activeStep)}</Typography>
+                <Typography className={classes.instructions}>{this.state.walletType === 'MetaMask' ? this.getStepContentMetaMask(activeStep) : this.getStepContent(activeStep)}</Typography>
               </div>
             )}
         </div>
@@ -296,7 +443,7 @@ class WalletStepper extends React.Component {
             onClick={this.handleNext}
             className={classes.button}
           >
-                    Next
+            {this.isLastStep() ? 'Submit' : 'Next'}
           </Button>
           {this.isStepOptional(activeStep) && !this.state.completed
             .has(this.state.activeStep) && (
