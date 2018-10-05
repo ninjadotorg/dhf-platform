@@ -243,7 +243,7 @@
       {
         "template": {
           "method": "POST",
-          "url": "https://ninja.org/api/user/profile",
+          "url": "https://staging.ninja.org/api/user/profile",
           "options": {
             "strictSSL": false
           },
