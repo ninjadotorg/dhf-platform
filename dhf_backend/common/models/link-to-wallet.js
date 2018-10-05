@@ -77,24 +77,13 @@ module.exports = function(LinkToWallet) {
     });
   };
 
-  LinkToWallet.isLinked = function(token, callback) {
-    LinkToWallet.app.models.walletProfile.profile(
-      token,
-      function (err, profile) {
-        if (err) return next(err);
-        if (!profile || !profile.status) {
-          let errNew = new Error();
-          errNew.status = 404;
-          errNew.message = 'Profile was not exist';
-          return callback(errNew);
-        }
-        LinkToWallet.findOne({where:{
-            walletId: profile.data.id.toString()
-          }}, function(err, data) {
-          if (err) callback(err);
-          callback(null, data !== null);
-        });
-      });
+  LinkToWallet.isLinked = function(walletId, callback) {
+    LinkToWallet.findOne({where:{
+        walletId: walletId
+      }}, function(err, data) {
+      if (err) callback(err);
+      callback(null, data !== null);
+    });
   };
 
   LinkToWallet.remoteMethod('myWallet', {
@@ -106,7 +95,7 @@ module.exports = function(LinkToWallet) {
 
   LinkToWallet.remoteMethod('isLinked', {
     accepts: [
-      {arg: 'toke', type: 'string'},
+      {arg: 'walletId', type: 'string', required: true},
     ],
     returns: {arg: 'success', type: 'boolean'},
     http: {path: '/has-linked', verb: 'get'},
