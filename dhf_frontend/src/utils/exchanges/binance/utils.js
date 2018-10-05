@@ -37,7 +37,7 @@ class Binance {
 
       this.supportedSymbols = ['BTC', 'ETH', 'USDT', 'BNB'];
 
-      this.init();
+      // this.init();
     });
   }
 

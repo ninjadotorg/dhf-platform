@@ -168,9 +168,16 @@ class tradePage extends React.Component {
       openOrders: [],
       orderHistory: [],
       projectId: props.history.location.pathname.split('/')[2],
+      isBinanceReady: false,
     };
     this.notificationDOMRef = React.createRef();
     this.binance = new Binance(this.state.projectId, this.binanceCallback);
+    // make sure everything is load sync
+    this.loadBinanceAPI();
+  }
+
+  loadBinanceAPI = () => {
+    this.binance.init().then(r => this.setState({ isBinanceReady: true })).catch(err => err);
   }
 
   binanceCallback = () => {
@@ -321,6 +328,9 @@ class tradePage extends React.Component {
   }
 
   render() {
+    if (!this.state.isBinanceReady) {
+      return (<div>Loading....</div>)
+    }
     const { classes } = this.props;
     const { orderType } = this.state;
     return (
