@@ -1,14 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import createHistory from 'history/createBrowserHistory';
 import { AppContainer } from 'react-hot-loader';
 
 import App from './app';
-// import configureStore from './store/configure-store';
-
-// const history = createHistory();
-// const store = configureStore({ history });
 import store from '../src/store';
 
 const render = Component => {
