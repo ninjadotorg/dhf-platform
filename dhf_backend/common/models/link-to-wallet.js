@@ -22,9 +22,8 @@ module.exports = function(LinkToWallet) {
 
           let createdDate = new Date(data.requestDate);
           let now = new Date();
-          let validated = (now - createdDate) / 1000; // convert to  minutes;
-          const limiestTime = 15; // one day (24hours) in a  minute
-          if (validated <= limiestTime) {
+          createdDate.setMinutes(createdDate.getMinutes() + 15);
+          if (createdDate <= now) {
             currentLinked = data;
             callback();
           } else {
