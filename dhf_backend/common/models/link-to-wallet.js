@@ -23,7 +23,7 @@ module.exports = function(LinkToWallet) {
           let createdDate = new Date(data.requestDate);
           let now = new Date();
           createdDate.setMinutes(createdDate.getMinutes() + 15);
-          if (createdDate <= now) {
+          if (createdDate >= now) {
             currentLinked = data;
             callback();
           } else {
