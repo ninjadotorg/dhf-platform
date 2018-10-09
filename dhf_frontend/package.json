@@ -28,6 +28,7 @@
     "babel-polyfill": "^6.26.0",
     "binance-api-node": "github:0xyeti/binance-api-node",
     "classnames": "^2.2.6",
+    "crypto-js": "^3.1.9-1",
     "history": "^4.7.2",
     "lodash": "^4.17.10",
     "material-ui-pickers": "1.0.0-rc.17",

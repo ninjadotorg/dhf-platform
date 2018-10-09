@@ -29,7 +29,7 @@ import MenuList from '@material-ui/core/MenuList';
 import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
-
+import SelectWallet from './BlockStep/SelectWallet';
 const styles = {
   root: {
     width: '100%',
@@ -295,6 +295,7 @@ class ProjectList extends React.Component {
           </DialogContent>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />
+        <SelectWallet  onChangeWallet={e => console.log('props handle', e)}/>
       </Paper>
     );
   }
