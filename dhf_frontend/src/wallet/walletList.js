@@ -34,6 +34,11 @@ class WalletList extends React.Component {
     open: false,
   };
 
+  componentWillReceiveProps(props) {
+    if(this.props.success !== props.success) {
+      this.state.projects.push(props.success);
+    }
+  }
   componentDidMount = () => {
     request({
       method: 'get',
@@ -50,7 +55,7 @@ class WalletList extends React.Component {
       });
   };
 
-  componentWillUpdate = () => {};
+  // componentWillUpdate = () => {};
 
   handleClickOpen = n => {
     this.setState({
@@ -85,7 +90,7 @@ class WalletList extends React.Component {
 
   render() {
     const { classes } = this.props;
-
+    
     return (
       <Paper className={classes.root}>
         <Table className={classes.table}>
@@ -94,7 +99,7 @@ class WalletList extends React.Component {
               <TableCell>Wallet Name</TableCell>
               <TableCell>Wallet ID</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Select Wallet</TableCell>
+              {/* <TableCell>Select Wallet</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -111,7 +116,7 @@ class WalletList extends React.Component {
                   ) : (
                     <TableCell style={{ color: 'red', textTransform: 'capitalize' }}>{n.status}</TableCell>
                   )}
-                  <TableCell>
+                  {/* <TableCell>
                     <Button
                       variant="outlined"
                       color="primary"
@@ -122,7 +127,7 @@ class WalletList extends React.Component {
                     >
                       Use this Wallet
                     </Button>
-                  </TableCell>
+                  </TableCell> */}
                   <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
