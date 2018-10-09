@@ -22,6 +22,7 @@
   "dependencies": {
     "@material-ui/core": "^3.0.2",
     "@material-ui/icons": "^3.0.1",
+    "@rematch/core": "^1.0.6",
     "axios": "^0.18.0",
     "axios-rest-client": "^0.1.8",
     "babel-polyfill": "^6.26.0",

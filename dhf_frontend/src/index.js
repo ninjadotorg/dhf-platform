@@ -5,10 +5,11 @@ import createHistory from 'history/createBrowserHistory';
 import { AppContainer } from 'react-hot-loader';
 
 import App from './app';
-import configureStore from './store/configure-store';
+// import configureStore from './store/configure-store';
 
-const history = createHistory();
-const store = configureStore({ history });
+// const history = createHistory();
+// const store = configureStore({ history });
+import store from '../src/store';
 
 const render = Component => {
   ReactDOM.render(
