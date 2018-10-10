@@ -89,7 +89,6 @@ module.exports = function(Project) {
   Project.updateAttr = function(projectId, data, callback) {
     let error = new Error();
     Project.findById(projectId, function(err, project) {
-      console.log(project);
       if (err) return callback(err);
       if (!project) {
         error.status = 405;
@@ -97,7 +96,6 @@ module.exports = function(Project) {
         return callback(error);
       }
       Object.keys(data).forEach(function(key, value) {
-        console.log(123, key, value);
         if (!project[key]) {
           error.status = 404;
           error.message = 'The `project` instance is not valid.' + key + ' was not exist!';

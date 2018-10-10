@@ -96,7 +96,8 @@
       "type": "string"
     },
     "isProcessing": {
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "state": {
       "type": "string",
