@@ -27,7 +27,9 @@ module.exports = function(Project) {
           next();
         });
     } else {
-      ctx.instance.updatedDate = new Date();
+      if (ctx.instance){
+        ctx.instance.updatedDate = new Date();
+      }
       next();
     }
   });
@@ -81,6 +83,28 @@ module.exports = function(Project) {
         };
       });
       callback(null, result);
+    });
+  };
+
+  Project.updateAttr = function(projectId, data, callback) {
+    let error = new Error();
+    Project.findById(projectId, function(err, project) {
+      console.log(project);
+      if (err) return callback(err);
+      if (!project) {
+        error.status = 405;
+        error.message = 'Project was not existed!';
+        return callback(error);
+      }
+      Object.keys(data).forEach(function(key, value) {
+        console.log(123, key, value);
+        if (!project[key]) {
+          error.status = 404;
+          error.message = 'The `project` instance is not valid.' + key + ' was not exist!';
+          return callback(error);
+        }
+      });
+      project.updateAttributes(data, callback);
     });
   };
 
@@ -346,6 +370,21 @@ module.exports = function(Project) {
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/list', verb: 'get'},
+  });
+
+  Project.remoteMethod('updateAttr', {
+    description: 'update each properties of project',
+    accessType: 'WRITE',
+    accepts: [
+      {arg: 'projectId', type: 'string', required: true, http: {source: 'query'}},
+      {
+        arg: 'data', type: 'object', allowArray: true,
+        description: 'Model instance data',
+        http: {source: 'body'},
+      },
+    ],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/upsert', verb: 'put'},
   });
 
   Project.remoteMethod('release', {
