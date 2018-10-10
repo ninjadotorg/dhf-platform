@@ -5,3 +5,8 @@
 ////@import "component/*.scss";
 ////@import "view/*.scss";
 // @import "page/p-todo.scss";
+.clearfix::after {
+  display: block;
+  content: "";
+  clear: both;
+}

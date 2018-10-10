@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Switch, Route, Router, Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Sidebar from '@/Sidebar';
 import HomePage from '@/homepage';
@@ -25,7 +24,80 @@ import changePassword from '@/changePassword';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      // light: will be calculated from palette.primary.main,
+      main: '#35C37D',
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    },
+    secondary: {
+      light: '#35C37D',
+      main: '#35C37D',
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: '#35C37D',
+    },
+    // error: will use the default color
+  },
+  overrides: {
+    MuiButton: {
+      // Name of the rule
+      root: {
+        // Some CSS
+        background: 'rgba(53, 195, 125, 100)',
+        borderRadius: 0,
+        border: 0,
+        colorInherit: '#fff',
+        color: 'white',
+        height: 40,
+        padding: '0 30px',
+        boxShadow: '4px 9px 26px 0 rgba(16,124,71,0.10)',
+        /* Rectangle 141: */
+      },
+      textPrimary: {
+        color: '#fff',
+      },
+      textSecondary: {
+        color: '#fff',
+      },
+      contained: {
+        color: '#fff',
+      },
+
+      containedPrimary: {
+        color: '#fff',
+      },
+
+      containedSecondary: {
+        color: '#fff',
+      },
+
+      raised: {
+        color: '#fff',
+      },
+
+      colorInherit: {
+        color: '#fff',
+      },
+
+    },
+  },
+  typography: {
+    fontFamily: 'azo-sans-web',
+    // The default font size of the Material Specification.
+    fontSize: 14, // px
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    // Tell Material-UI what's the font-size on the html element.
+    // 16px is the default font-size used by browsers.
+    htmlFontSize: 16,
+  },
+});
+// font-family: "azo-sans-web" !important;
 const styles = theme => ({
   content: {
     flexGrow: 1,
@@ -101,18 +173,20 @@ class App extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <div>
-        <Router history={history}>
-          <Switch>
-            <Route path="/register" component={Register} />
-            <Route path="/login" component={Login} />
-            <Route path="/" exact component={LandingPage} />
-            <Route path="/test" component={Test} />
-            <this.PrivateRoute path="/" />
-            <Route component={() => <div>404 Not found</div>} />
-          </Switch>
-        </Router>
-      </div>
+      <MuiThemeProvider theme={theme}>
+        <div>
+          <Router history={history}>
+            <Switch>
+              <Route path="/register" component={Register} />
+              <Route path="/login" component={Login} />
+              <Route path="/" exact component={LandingPage} />
+              <Route path="/test" component={Test} />
+              <this.PrivateRoute path="/" />
+              <Route component={() => <div>404 Not found</div>} />
+            </Switch>
+          </Router>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

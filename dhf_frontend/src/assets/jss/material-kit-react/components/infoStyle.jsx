@@ -6,63 +6,69 @@ import {
   infoColor,
   roseColor,
   grayColor,
-  title
-} from "assets/jss/material-kit-react.jsx";
+  title,
+} from 'assets/jss/material-kit-react.jsx';
 
 const infoStyle = {
   infoArea: {
-    maxWidth: "360px",
-    margin: "0 auto",
-    padding: "0px"
+    maxWidth: '360px',
+    margin: '0 auto',
+    padding: '0px',
+    paddingBottom: '7px',
+    textAlign: 'left',
   },
   iconWrapper: {
-    float: "left",
-    marginTop: "24px",
-    marginRight: "10px"
+    float: 'left',
+    marginTop: '10px',
+    marginRight: '10px',
+    position: 'relative',
+    right: 9,
   },
   primary: {
-    color: primaryColor
+    color: primaryColor,
   },
   warning: {
-    color: warningColor
+    color: warningColor,
   },
   danger: {
-    color: dangerColor
+    color: dangerColor,
   },
   success: {
-    color: successColor
+    color: successColor,
   },
   info: {
-    color: infoColor
+    color: infoColor,
   },
   rose: {
-    color: roseColor
+    color: roseColor,
   },
   gray: {
-    color: grayColor
+    color: grayColor,
   },
   icon: {
-    width: "36px",
-    height: "36px"
+    width: '36px',
+    height: '36px',
   },
   descriptionWrapper: {
-    color: grayColor,
-    overflow: "hidden"
+    color: '#000',
+    marginTop: -40,
+    overflow: 'hidden',
+    marginLeft: 14,
   },
   title,
   description: {
-    color: grayColor,
-    overflow: "hidden",
-    marginTop: "0px",
-    fontSize: "14px"
+    color: '#000',
+    overflow: 'hidden',
+    marginTop: '0px',
+    fontSize: '14px',
   },
   iconWrapperVertical: {
-    float: "none"
+    float: 'none',
   },
   iconVertical: {
-    width: "61px",
-    height: "61px"
-  }
+    width: '61px',
+    height: '61px',
+  },
 };
 
 export default infoStyle;

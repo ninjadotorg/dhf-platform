@@ -16,6 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Menu from '@material-ui/icons/Menu';
 // core components
 import headerStyle from 'assets/jss/material-kit-react/components/headerStyle.jsx';
+import LogoImage from './logo.svg';
 
 class Header extends React.Component {
   constructor(props) {
@@ -63,14 +64,17 @@ class Header extends React.Component {
       [classes.absolute]: absolute,
       [classes.fixed]: fixed,
     });
+
     const brandComponent = (
-      <Button className={classes.title} component={Link} to="/">
-        {brand}
-      </Button>
+      <Link to="/" style={{ padding: '8px 0' }}>
+        <img src={LogoImage} width={60} alt="logo" />
+      </Link>
     );
     return (
       <AppBar className={appBarClasses}>
-        <Toolbar className={classes.container}>
+        <Toolbar className={classes.container}
+          style={{ borderBottom: '1px solid rgba(51, 51, 51,0.2)', padding: '0', zIndex: 1000 }}
+        >
           {leftLinks !== undefined ? brandComponent : null}
           <div className={classes.flex}>
             {leftLinks !== undefined ? (

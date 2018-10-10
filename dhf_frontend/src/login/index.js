@@ -8,7 +8,7 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { compose } from 'recompose';
@@ -18,45 +18,40 @@ import image from 'assets/img/bg7.jpg';
 
 const styles = theme => ({
   layout: {
-    width: 'auto',
+    width: '50%',
     display: 'block', // Fix IE11 issue.
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
-      width: 400,
-      marginLeft: 'auto',
-      marginRight: 'auto',
-    },
+    backgroundColor: 'white',
+    float: 'right',
     zIndex: '2',
-    position: 'relative',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
     paddingTop: '20vh',
     color: '#FFFFFF',
-  },
-  paper: {
-    marginTop: theme.spacing.unit * 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
   },
   avatar: {
     margin: theme.spacing.unit,
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE11 issue.
+    width: '400px', // Fix IE11 issue.
     marginTop: theme.spacing.unit,
+    margin: '90px 80px',
   },
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
   pageHeader: {
     minHeight: '100vh',
-    maxHeight: '1200px',
-    height: 'auto',
+    maxHeight: '100vh',
     display: 'inherit',
-    position: 'relative',
+    position: 'absolute',
+    top: 0,
+    width: '50%',
+    float: 'left',
     margin: '0',
+    bottom: '0',
     padding: '0',
     border: '0',
     alignItems: 'center',
@@ -143,60 +138,69 @@ class Login extends React.Component {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        <CssBaseline />
-        <Header
-          absolute
-          color="transparent"
-          brand="Ninja Fund"
-          rightLinks={<HeaderLinks />}
-        />
-        <div
-          className={classes.pageHeader}
-          style={{
-            backgroundImage: `url(${image})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'top center',
-          }}
-        >
+        <div style={{ backgroundColor: '#fff' }}>
+          <CssBaseline />
+          <Header
+            brand="Ninja Fund"
+            rightLinks={<HeaderLinks />}
+          />
+          <div
+            className={classes.pageHeader}
+            style={{
+              backgroundSize: 'cover',
+              backgroundPosition: 'top center',
+              backgroundImage: `url(${image})`,
+            }}
+          />
           <main className={classes.layout}>
 
-            <Paper className={classes.paper}>
-              <Typography variant="headline">Login</Typography>
-              <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
-                <FormControl margin="normal" required fullWidth>
-                  <TextValidator
-                    label="Email *"
-                    onChange={this.handleChangeEmail}
-                    name="email"
-                    value={this.state.email}
-                    validators={['required', 'isEmail']}
-                    errorMessages={['this field is required', 'email is not valid']}
-                  />
-                </FormControl>
-                <FormControl margin="normal" required fullWidth>
-                  <TextValidator
-                    label="Enter password *"
-                    onChange={this.handleChange}
-                    name="password"
-                    type="password"
-                    validators={['required']}
-                    errorMessages={['this field is required']}
-                    value={this.state.password}
-                  />
-                </FormControl>
-                <FormHelperText id="name-helper-text" error>
-                  {this.state.error}
-                </FormHelperText>
-                <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
-                Submit
-                </Button>
-                <Typography color="primary" style={{ marginTop: 20 }}>
-                  {this.state.successMsg}
+            <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
+              <Typography variant="h5" bold>Sign in to Ninja Fund</Typography>
+              <FormControl margin="normal" required fullWidth>
+                <TextValidator
+                  label="Email *"
+                  onChange={this.handleChangeEmail}
+                  name="email"
+                  value={this.state.email}
+                  validators={['required', 'isEmail']}
+                  errorMessages={['this field is required', 'email is not valid']}
+                />
+              </FormControl>
+              <FormControl margin="normal" required fullWidth>
+                <TextValidator
+                  label="Enter password *"
+                  onChange={this.handleChange}
+                  name="password"
+                  type="password"
+                  validators={['required']}
+                  errorMessages={['this field is required']}
+                  value={this.state.password}
+                />
+                <Typography style={{ marginTop: 10, textAlign: 'right' }}>
+                  <Link to="/register" color="primary">Forgot Password ?</Link>
+
                 </Typography>
-                {this.state.success && <Redirect to="/dashboard" />}
-              </ValidatorForm>
-            </Paper>
+              </FormControl>
+              <FormHelperText id="name-helper-text" error>
+                {this.state.error}
+              </FormHelperText>
+              <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
+                Submit
+              </Button>
+              <Typography color="primary" style={{ marginTop: 20 }}>
+                {this.state.successMsg}
+              </Typography>
+              {this.state.success && <Redirect to="/dashboard" />}
+              <Typography style={{ textAlign: 'center' }}>
+                Don't have an account?
+                {' '}
+                <Link to="/register">Create an account</Link>
+
+              </Typography>
+            </ValidatorForm>
+            <div />
           </main>
+
         </div>
       </React.Fragment>
     );
