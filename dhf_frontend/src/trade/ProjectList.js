@@ -78,6 +78,7 @@ class ProjectList extends React.Component {
     this.setState({
       initFundModal: true,
       activeWallet: n,
+      activeProject: n,
     });
   };
 
@@ -144,6 +145,7 @@ class ProjectList extends React.Component {
   };
 
   getActionButton = (n) => {
+    console.log('getAction Button ', n);
     const { anchorEl, open, placement, currentItem } = this.state;
     return (
       <div>
@@ -180,7 +182,7 @@ class ProjectList extends React.Component {
                       </MenuItem>
                     )}
                     {(currentItem.data.state === 'NEW') && (
-                      <MenuItem onClick={this.initFund}>
+                      <MenuItem onClick={() => this.initFund(n)}>
                         <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                       Init
                       </MenuItem>
@@ -290,7 +292,7 @@ class ProjectList extends React.Component {
           <DialogContent
             style={{ width: '700px', margin: '0 auto' }}
           >
-            <WalletStepper handleModalClose={this.handleModalClose} />
+            <WalletStepper activeProject={this.state.activeProject} handleModalClose={this.handleModalClose} />
           </DialogContent>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />

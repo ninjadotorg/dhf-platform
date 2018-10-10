@@ -127,7 +127,7 @@ class WalletStepper extends React.Component {
         return (
           <div style={{ marginBottom: 10 }}>
           {console.log(this.state)}
-            <SubmitInitProject privateKey={this.state.selectedConfirmWallet.privateKey} />
+            <SubmitInitProject activeProject={this.props.activeProject.data} privateKey={this.state.selectedConfirmWallet.privateKey} />
             {/* <Table className={styles.table}>
               <TableHead>
                 <TableRow>
