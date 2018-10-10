@@ -20,6 +20,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
+import SelectWallet from './BlockStep/SelectWallet';
+import ConfirmPassword from './BlockStep/ConfirmPassword';
+import ConfirmWallet from './BlockStep/ConfirmWallet';
+import SubmitInitProject from './BlockStep/SubmitInitProject';
 
 const styles = theme => ({
   root: {
@@ -65,6 +69,9 @@ class WalletStepper extends React.Component {
     walletType: 'MetaMask',
     address: '',
     checkedTandC: false,
+    selectedWallet: null,
+    myDecryptedWallet: [],
+    selectedConfirmWallet: null,
   };
 
   handleCheckBoxChange = name => event => {
@@ -111,65 +118,17 @@ class WalletStepper extends React.Component {
           </div>
         );
       case 1:
-        return (
-          <div>
-            <Select
-              value={this.state.address}
-              onChange={this.handleAddressChange}
-              fullWidth
-              displayEmpty
-              style={{ marginTop: 20 }}
-              inputProps={{
-                name: 'address',
-                id: 'address',
-              }}
-            >
-              <MenuItem value="" disabled>
-                Please select Ninja Wallet Address
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-
-          </div>
-        );
+        return (<SelectWallet  onChangeWallet={selectedWallet => this.setState({ selectedWallet })}/>);
       case 2:
-        return (
-          <div>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="name">Enter password</InputLabel>
-              <Input id="password" name="password" autoComplete="password" autoFocus onChange={this.handleAddressChange} value={this.state.password} type="password" />
-            </FormControl>
-          </div>
-        );
+        return (<ConfirmPassword wallet={this.state.selectedWallet} ref={'confirmPassword'} handleWalletDecrypted={myDecryptedWallet => this.setState({ myDecryptedWallet })}/>);
       case 3:
-        return (
-          <div>
-            <Select
-              value={this.state.address}
-              onChange={this.handleAddressChange}
-              fullWidth
-              displayEmpty
-              style={{ marginTop: 20 }}
-              inputProps={{
-                name: 'address',
-                id: 'address',
-              }}
-            >
-              <MenuItem value="" disabled>
-                Please select Ninja Wallet Address
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </div>
-        );
+        return (<ConfirmWallet wallets={this.state.myDecryptedWallet} onChangeWallet={selectedConfirmWallet=> this.setState({ selectedConfirmWallet })} />);
       case 4:
         return (
           <div style={{ marginBottom: 10 }}>
-            <Table className={styles.table}>
+          {console.log(this.state)}
+            <SubmitInitProject privateKey={this.state.selectedConfirmWallet.privateKey} />
+            {/* <Table className={styles.table}>
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
@@ -206,7 +165,7 @@ class WalletStepper extends React.Component {
                 />
               )}
               label="I agree to the Terms of Service."
-            />
+            /> */}
           </div>
         );
       default:
@@ -301,7 +260,13 @@ class WalletStepper extends React.Component {
 
   handleNext = () => {
     let activeStep;
-
+    console.log('handle Next', this.state.activeStep);
+    if (this.state.activeStep === 2) {
+      console.log(this.refs.confirmPassword);
+      console.log('check password correct or not');
+      const result = this.refs.confirmPassword.decryptWallet();
+      if (!result) return;
+    }
     if (this.isLastStep() && !this.allStepsCompleted()) {
       // It's the last step, but not all steps have been completed find the first step
       // that has been completed
@@ -320,7 +285,8 @@ class WalletStepper extends React.Component {
   };
 
   handleStep = step => () => {
-    this.setState({ activeStep: step });
+    // console.log('handle step click', step);
+    // this.setState({ activeStep: step });
   };
 
   handleComplete = () => {

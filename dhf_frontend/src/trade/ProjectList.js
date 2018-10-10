@@ -29,7 +29,6 @@ import MenuList from '@material-ui/core/MenuList';
 import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
-
 const styles = {
   root: {
     width: '100%',
