@@ -27,7 +27,7 @@ module.exports = function(Project) {
           next();
         });
     } else {
-      if (ctx.instance){
+      if (ctx.instance) {
         ctx.instance.updatedDate = new Date();
       }
       next();
@@ -95,13 +95,16 @@ module.exports = function(Project) {
         error.message = 'Project was not existed!';
         return callback(error);
       }
+      error = null;
       Object.keys(data).forEach(function(key, value) {
         if (!project[key]) {
+          error = new Error();
           error.status = 404;
           error.message = 'The `project` instance is not valid.' + key + ' was not exist!';
-          return callback(error);
+          return error;
         }
       });
+      if (error) return callback(error);
       project.updateAttributes(data, callback);
     });
   };
