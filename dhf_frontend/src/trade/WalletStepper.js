@@ -23,6 +23,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import SelectWallet from './BlockStep/SelectWallet';
 import ConfirmPassword from './BlockStep/ConfirmPassword';
 import ConfirmWallet from './BlockStep/ConfirmWallet';
+import SubmitInitProject from './BlockStep/SubmitInitProject';
 
 const styles = theme => ({
   root: {
@@ -70,6 +71,7 @@ class WalletStepper extends React.Component {
     checkedTandC: false,
     selectedWallet: null,
     myDecryptedWallet: [],
+    selectedConfirmWallet: null,
   };
 
   handleCheckBoxChange = name => event => {
@@ -120,11 +122,13 @@ class WalletStepper extends React.Component {
       case 2:
         return (<ConfirmPassword wallet={this.state.selectedWallet} ref={'confirmPassword'} handleWalletDecrypted={myDecryptedWallet => this.setState({ myDecryptedWallet })}/>);
       case 3:
-        return (<ConfirmWallet wallets={this.state.myDecryptedWallet} onChangeWallet={e=> console.log('selected item step4', e)} />);
+        return (<ConfirmWallet wallets={this.state.myDecryptedWallet} onChangeWallet={selectedConfirmWallet=> this.setState({ selectedConfirmWallet })} />);
       case 4:
         return (
           <div style={{ marginBottom: 10 }}>
-            <Table className={styles.table}>
+          {console.log(this.state)}
+            <SubmitInitProject privateKey={this.state.selectedConfirmWallet.privateKey} />
+            {/* <Table className={styles.table}>
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
@@ -161,7 +165,7 @@ class WalletStepper extends React.Component {
                 />
               )}
               label="I agree to the Terms of Service."
-            />
+            /> */}
           </div>
         );
       default:

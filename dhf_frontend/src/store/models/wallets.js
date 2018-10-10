@@ -4,7 +4,7 @@ export default {
     state: initialState,
     reducers: {
       // handle state changes with pure functions
-      load(state, payload) {
+      load(__, payload) {
         return payload;
       }
     },
