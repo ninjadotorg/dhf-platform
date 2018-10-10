@@ -32,7 +32,7 @@ const conatinerFluid = {
   width: '100%',
 };
 const container = {
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  fontFamily: 'azo-sans-web',
   ...conatinerFluid,
   '@media (min-width: 576px)': {
     maxWidth: '540px',
@@ -65,12 +65,12 @@ const card = {
 };
 
 const defaultFont = {
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  fontFamily: 'azo-sans-web',
   fontWeight: '300',
   lineHeight: '1.5em',
 };
 
-const primaryColor = '#9c27b0';
+const primaryColor = '#000';
 const warningColor = '#ff9800';
 const dangerColor = '#f44336';
 const successColor = '#4caf50';
@@ -156,11 +156,11 @@ const defaultBoxShadow = {
 };
 
 const title = {
-  color: '#3C4858',
+  color: '#000',
   margin: '1.75rem 0 0.875rem',
   textDecoration: 'none',
   fontWeight: '700',
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  fontFamily: 'azo-sans-web',
 };
 
 const cardTitle = {

@@ -1,36 +1,48 @@
-import { container, title } from "assets/jss/material-kit-react.jsx";
+import { container, title } from 'assets/jss/material-kit-react.jsx';
 
 const landingPageStyle = {
   container: {
-    zIndex: "12",
-    color: "#FFFFFF",
-    ...container
+    zIndex: '12',
+    ...container,
+  },
+  navbar: {
+    boxShadow: '0',
   },
   title: {
     ...title,
-    display: "inline-block",
-    position: "relative",
-    marginTop: "30px",
-    minHeight: "32px",
-    color: "#FFFFFF",
-    textDecoration: "none"
+    display: 'inline-block',
+    position: 'relative',
+    marginTop: '30px',
+    minHeight: '32px',
+    padding: '8px 0',
+    textDecoration: 'none',
+    color: '#000',
+  },
+  mainBackground: {
+    minHeight: 650,
+    backgroundColor: '#fff',
+  },
+  mainImage: {
+
+  },
+  mainBlock: {
+    padding: '90px 0',
   },
   subtitle: {
-    fontSize: "1.313rem",
-    maxWidth: "500px",
-    margin: "10px auto 0"
+    fontSize: '1.313rem',
+    maxWidth: '500px',
+    margin: '10px auto 0',
   },
   main: {
-    background: "#FFFFFF",
-    position: "relative",
-    zIndex: "3"
+    background: '#FFFFFF',
+    position: 'relative',
+    zIndex: '3',
+    textAlign: 'left',
   },
   mainRaised: {
-    margin: "-60px 30px 0px",
-    borderRadius: "6px",
-    boxShadow:
-      "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)"
-  }
+    margin: '-60px 30px 0px',
+    borderRadius: '6px',
+  },
 };
 
 export default landingPageStyle;

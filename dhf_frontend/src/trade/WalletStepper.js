@@ -126,46 +126,7 @@ class WalletStepper extends React.Component {
       case 4:
         return (
           <div style={{ marginBottom: 10 }}>
-          {console.log(this.state)}
-            <SubmitInitProject privateKey={this.state.selectedConfirmWallet.privateKey} />
-            {/* <Table className={styles.table}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow button style={{ height: 60 }}>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            <h4>Terms and Conditions</h4>
-            <textarea rows="4" cols="50" readOnly style={{ width: '100%' }}>
-              At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.
-            </textarea>
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={this.state.checkedTandC}
-                  onChange={this.handleCheckBoxChange('checkedTandC')}
-                  value="checkedTandC"
-                />
-              )}
-              label="I agree to the Terms of Service."
-            /> */}
+            <SubmitInitProject activeProject={this.props.activeProject.data} privateKey={this.state.selectedConfirmWallet.privateKey} />
           </div>
         );
       default:
@@ -260,13 +221,12 @@ class WalletStepper extends React.Component {
 
   handleNext = () => {
     let activeStep;
-    console.log('handle Next', this.state.activeStep);
+    if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
     if (this.state.activeStep === 2) {
-      console.log(this.refs.confirmPassword);
-      console.log('check password correct or not');
       const result = this.refs.confirmPassword.decryptWallet();
       if (!result) return;
     }
+    if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     if (this.isLastStep() && !this.allStepsCompleted()) {
       // It's the last step, but not all steps have been completed find the first step
       // that has been completed

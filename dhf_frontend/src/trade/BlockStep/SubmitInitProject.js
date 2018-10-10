@@ -16,8 +16,18 @@ class SubmitInitProject extends React.Component {
     }
     initProject = async () => {
         try {
-            const privateKey = this.props.privateKey;
-            const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey, 100, 1000, new Date() -0, 100000, 5, "1001");
+            const { 
+                privateKey,
+                activeProject: {
+                    target,
+                    max,
+                    deadline,
+                    lifeTime,
+                    commission,
+                    id
+                }
+            } = this.props;
+            const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey, Number(target), Number(max), Math.floor(new Date(deadline)/1000)-0, Number(lifeTime), Number(commission), '0x' + id);
             const estimateGasValue = (await estimateGas() * await getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
             console.log('estimateGasValue', estimateGasValue);
             this.setState({ estimateGasValue });
@@ -41,6 +51,7 @@ class SubmitInitProject extends React.Component {
       }
 
     render() {
+        console.log('SubmitInitProject.activeproject', this.props.activeProject);
         if (!this.state.estimateGasValue) return <div>Loading...</div>
         return (<div>
             <div style={{ textAlign: 'center', fontSize: '18px' }}> Your ETH Fee: {this.state.estimateGasValue}</div>

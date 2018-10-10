@@ -46,23 +46,23 @@ function HeaderLinks({ ...props }) {
       </ListItem>
       <ListItem className={classes.listItem}>
         {!localStorage.getItem('token') && (
-          <Button component={Link} to="/register" color="transparent" className={classes.navLink}>
+          <Link to="/register"  className={classes.navLink}>
             {' '}
             Register
-          </Button>
+          </Link>
         )}
       </ListItem>
       <ListItem className={classes.listItem}>
         {localStorage.getItem('token') ? (
-          <Button color="transparent" component={Link} to="/dashboard" className={classes.navLink}>
+          <Link to="/dashboard"  className={classes.navLink}>
             {' '}
             Dashboard
-          </Button>
+          </Link>
         ) : (
-          <Button color="transparent" component={Link} to="/login" className={classes.navLink}>
+          <Link to="/login"  className={classes.navLink}>
             {' '}
             Login
-          </Button>
+          </Link>
         )}
       </ListItem>
     </List>
