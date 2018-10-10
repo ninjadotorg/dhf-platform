@@ -22,19 +22,13 @@ import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
 import moment from 'moment';
 import Dialog from '@material-ui/core/Dialog';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import TextField from '@material-ui/core/TextField';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
-
 const styles = {
   root: {
     width: '100%',
@@ -84,6 +78,7 @@ class ProjectList extends React.Component {
     this.setState({
       initFundModal: true,
       activeWallet: n,
+      activeProject: n,
     });
   };
 
@@ -135,28 +130,6 @@ class ProjectList extends React.Component {
       .catch(error => {});
   };
 
-  deleteButton = n => {
-    return (
-      <IconButton
-        className={styles.IconButton}
-        aria-label="Delete"
-        color="primary"
-        onClick={() => {
-          this.deleteProject(n);
-        }}
-      >
-        <CancelIcon style={{ color: red }} />
-      </IconButton>
-    );
-  };
-
-  handleEditClick = n => {
-    history.push({
-      pathname: `/projects/${n.id}`,
-      state: n,
-    });
-  };
-
   handleClose = event => {
     this.setState({ open: false });
   };
@@ -193,10 +166,7 @@ class ProjectList extends React.Component {
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
                     {(currentItem.data.state === 'RELEASE') && (
-                      <MenuItem onClick={() => {
-                        this.handleRowClick(currentItem.data);
-                      }}
-                      >
+                      <MenuItem component={Link} to={`/trade/${currentItem.data.id}`}>
                         <BarChart style={{ fontSize: 15, marginRight: 5 }} />
                       Trade
                       </MenuItem>
@@ -211,7 +181,7 @@ class ProjectList extends React.Component {
                       </MenuItem>
                     )}
                     {(currentItem.data.state === 'NEW') && (
-                      <MenuItem onClick={this.initFund}>
+                      <MenuItem onClick={() => this.initFund(n)}>
                         <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                       Init
                       </MenuItem>
@@ -321,7 +291,7 @@ class ProjectList extends React.Component {
           <DialogContent
             style={{ width: '700px', margin: '0 auto' }}
           >
-            <WalletStepper handleModalClose={this.handleModalClose} />
+            <WalletStepper activeProject={this.state.activeProject} handleModalClose={this.handleModalClose} />
           </DialogContent>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />

@@ -69,7 +69,6 @@ const styles = theme => ({
   buttonItem: {
     maxWidth: 40,
     minWidth: 40,
-    marginRight: 10,
   },
   activeButton: {
     color: 'blue',
@@ -158,7 +157,7 @@ class tradePage extends React.Component {
     this.state = {
       open: true,
       history: [],
-      exchangeInfo: {},
+      exchangeInfo: null,
       activeList: [],
       quoteAsset: 'BTC',
       activeSymbol: {},
@@ -168,77 +167,43 @@ class tradePage extends React.Component {
       balancePair: [],
       openOrders: [],
       orderHistory: [],
+      projectId: props.history.location.pathname.split('/')[2],
+      isBinanceReady: false,
     };
     this.notificationDOMRef = React.createRef();
-    this.binance = new Binance();
+    this.binance = new Binance(this.state.projectId, this.binanceCallback);
+    // make sure everything is load sync
+    this.loadBinanceAPI();
   }
 
-  setActivePrice = () => {
-    const activePrice = _.find(this.state.priceList, (a, o) => {
-      if (o == this.state.activeSymbol.symbol) {
-        return a;
-      }
-      return false;
-    });
-    this.setState({
-      activePrice,
-    });
-  };
+  loadBinanceAPI = () => {
+    this.binance.init().then(r => this.setState({ isBinanceReady: true })).catch(err => err);
+  }
 
-  loadPrices = () => {
-    request({
-      method: 'get',
-      url: '/infos/prices',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-      },
-    })
-      .then(response => {
-        this.setState({
-          priceList: response,
-        }, this.setActivePrice);
-      })
-      .catch(error => {});
+  binanceCallback = () => {
+    if (!this.state.exchangeInfo) {
+      this.setState(
+        {
+          exchangeInfo: this.binance.exchangeInfo,
+          activeSymbol: this.binance.exchangeInfo.symbols[0],
+        },
+        this.filterList,
+      );
+    }
+    if (!this.state.activePrice) {
+      const activePrice = _.find(this.binance.tickerPrice[this.state.quoteAsset], (a, o) => {
+        if (a.symbol == this.state.activeSymbol.symbol) {
+          return a;
+        }
+        return false;
+      });
+      this.setState({
+        activePrice: activePrice.price,
+      });
+    }
   };
 
   componentWillMount = () => {
-    request({
-      method: 'get',
-      url: '/infos/prices',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-      },
-    })
-      .then(response => {
-        this.setState({
-          priceList: response,
-          activePrice: response[Object.keys(response)[0]],
-        });
-      })
-      .catch(error => {});
-    request({ method: 'get', url: '/projects/list' })
-      .then(response => {
-        this.setState({ history: response });
-      })
-      .catch(error => {});
-
-    request({
-      method: 'get',
-      url: '/infos/exchange-info',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-      },
-    })
-      .then(response => {
-        this.setState(
-          {
-            exchangeInfo: response,
-            activeSymbol: response.symbols[0],
-          },
-          this.filterList,
-        );
-      })
-      .catch(error => {});
   };
 
   componentDidMount = () => {
@@ -250,38 +215,24 @@ class tradePage extends React.Component {
   }
 
   pollingFunctions = () => {
-    // this.loadPrices();
-    this.fetchOpenOrders();
     this.fetchPairBalance();
   }
 
   filterList = () => {
-    const filteredArray = this.state.exchangeInfo.symbols.filter(item => {
-      return item.quoteAsset == this.state.quoteAsset;
+    const filteredArray = this.binance.exchangeInfo.symbols.filter(item => {
+      return item.quoteAsset == this.state.quoteAsset && item.price;
     });
 
-    const price = _.find(this.state.priceList, (a, o) => {
-      if (o == filteredArray[0].symbol) {
-        return a;
-      }
-      return false;
+    const price = this.binance.tickerPrice[this.state.quoteAsset].filter((item) => {
+      return (item.symbol == filteredArray[0].symbol);
     });
 
-    const activePair = `${filteredArray[0].baseAsset},${filteredArray[0].quoteAsset}`;
-    request({
-      method: 'get',
-      url: '/infos/balance',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-        currencies: activePair,
-      },
-    })
-      .then(response => {
-        this.setState({
-          balancePair: response, activeList: filteredArray, activeSymbol: filteredArray[0], activePrice: price,
-        }, this.fetchOrderInfo);
-      })
-      .catch(error => {});
+    this.setState({
+      balancePair: this.binance.balance,
+      activeList: filteredArray,
+      activeSymbol: filteredArray[0],
+      activePrice: price.price,
+    });
   };
 
   filterCoinList = quoteAsset => {
@@ -299,7 +250,7 @@ class tradePage extends React.Component {
       method: 'get',
       url: '/infos/balance',
       params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
+        projectId: this.state.projectId,
         currencies: pair,
       },
     })
@@ -311,55 +262,17 @@ class tradePage extends React.Component {
       .catch(error => {});
   }
 
-  fetchOpenOrders = () => {
-    request({
-      method: 'get',
-      url: '/trades/orders-open',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-        symbol: this.state.activeSymbol.symbol,
-      },
-    })
-      .then(response => {
-        this.setState({
-          openOrders: response,
-        });
-      })
-      .catch(error => {});
-  }
-
-  fetchOrderHistory = () => {
-    request({
-      method: 'get',
-      url: '/trades/orders',
-      params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
-        symbol: this.state.activeSymbol.symbol,
-      },
-    })
-      .then(response => {
-        this.setState({
-          orderHistory: response,
-        });
-      })
-      .catch(error => {});
-  }
-
-  fetchOrderInfo=() => {
-    this.fetchOpenOrders();
-    this.fetchOrderHistory();
-  }
 
   handlePairChange = (event, n, price) => {
     this.setState({
       activeSymbol: n, activePrice: price,
-    }, this.fetchOrderInfo);
+    });
     const pair = `${n.baseAsset},${n.quoteAsset}`;
     request({
       method: 'get',
       url: '/infos/balance',
       params: {
-        projectId: this.props.history.location.pathname.split('/')[2],
+        projectId: this.state.projectId,
         currencies: pair,
       },
     })
@@ -401,7 +314,7 @@ class tradePage extends React.Component {
       method: 'post',
       url: '/trades/cancel',
       data: {
-        projectId: this.props.history.location.pathname.split('/')[2],
+        projectId: this.state.projectId,
         symbol: orderData.symbol,
         orderId: `${orderData.orderId}`,
       },
@@ -415,6 +328,9 @@ class tradePage extends React.Component {
   }
 
   render() {
+    if (!this.state.isBinanceReady) {
+      return (<div>Loading....</div>)
+    }
     const { classes } = this.props;
     const { orderType } = this.state;
     return (
@@ -496,13 +412,13 @@ class tradePage extends React.Component {
                                 }
                                 return false;
                               });
-                            return (
+                              return (
                                 price && (
                                   <TableRow
                                     key={key.quoteAsset}
                                     button
                                     onClick={event => {
-                                      this.handlePairChange(event, n, price);
+                                      this.handlePairChange(event, n, n.price);
                                     }}
                                     style={{
                                       cursor: 'pointer',
@@ -550,7 +466,7 @@ class tradePage extends React.Component {
                   {this.state.activeSymbol && this.state.activeSymbol.baseAsset
                   && this.state.activePrice && (
                     <BuySellBlock {...this.state}
-                      projectId={this.props.history.location.pathname.split('/')[2]}
+                      projectId={this.state.projectId}
                     />
                   )}
                 </Grid>
@@ -581,7 +497,7 @@ class tradePage extends React.Component {
                   </TableHead>
                   <TableBody>
                     {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
-                    {this.state.openOrders.map(n => {
+                    {this.binance.openOrders && this.binance.openOrders.map(n => {
                       return (
                         <TableRow
                           key={n.id}
@@ -636,7 +552,7 @@ class tradePage extends React.Component {
                   </TableHead>
                   <TableBody>
                     {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
-                    {this.state.orderHistory.map(n => {
+                    {this.binance.allOrders && this.binance.allOrders.map(n => {
                       return (
                         <TableRow
                           key={n.id}

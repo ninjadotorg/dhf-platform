@@ -22,11 +22,13 @@
   "dependencies": {
     "@material-ui/core": "^3.2.0",
     "@material-ui/icons": "^3.0.1",
+    "@rematch/core": "^1.0.6",
     "axios": "^0.18.0",
     "axios-rest-client": "^0.1.8",
     "babel-polyfill": "^6.26.0",
     "binance-api-node": "github:0xyeti/binance-api-node",
     "classnames": "^2.2.6",
+    "crypto-js": "^3.1.9-1",
     "history": "^4.7.2",
     "lodash": "^4.17.10",
     "material-ui-pickers": "1.0.0-rc.17",
@@ -49,7 +51,8 @@
     "recompose": "^0.30.0",
     "redux": "^4.0.0",
     "redux-saga": "^0.16.0",
-    "reselect": "^3.0.1"
+    "reselect": "^3.0.1",
+    "truffle-privatekey-provider": "^0.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
