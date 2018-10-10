@@ -23,13 +23,13 @@ function validatingPrivateKey (s) {
   return '0x' + s
 }
 
-function getCurrentGasPrice (webjs) {
+export const getCurrentGasPrice = () => {
   return fetch('https://www.etherchain.org/api/gasPriceOracle')
     .then(res => {
       return res.json()
     })
     .then(function (gasPrice) {
-      return webjs.utils.toWei(gasPrice.standard, 'gwei')
+      return Web3js.utils.toWei(gasPrice.standard + '', 'gwei')
     })
 }
 
@@ -80,14 +80,14 @@ class HedgeFundAPI extends NetworkAPI {
     let contract = new web3js.eth.Contract(this.ABI, this.contractAddress)
     console.log(
       'gasPrice: ',
-      await getCurrentGasPrice(web3js),
+      await getCurrentGasPrice(),
       await web3js.eth.getTransactionCount(account)
     )
     
     let sendF = contract.methods[method](...params).send.bind(this, {
       from: account,
-      value: web3js.utils.toWei(value, 'ether'),
-      gasPrice: await getCurrentGasPrice(web3js),
+      value: web3js.utils.toWei(value + '', 'ether'),
+      gasPrice: await getCurrentGasPrice(),
       nonce: await web3js.eth.getTransactionCount(account)
     })
     
@@ -96,7 +96,7 @@ class HedgeFundAPI extends NetworkAPI {
       [method](...params)
       .estimateGas.bind(this, {
         from: account,
-        value: web3js.utils.toWei(value, 'ether'),
+        value: web3js.utils.toWei(value + '', 'ether'),
       })
 
 
