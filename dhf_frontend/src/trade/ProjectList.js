@@ -145,7 +145,6 @@ class ProjectList extends React.Component {
   };
 
   getActionButton = (n) => {
-    console.log('getAction Button ', n);
     const { anchorEl, open, placement, currentItem } = this.state;
     return (
       <div>
