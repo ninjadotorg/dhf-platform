@@ -15,17 +15,7 @@ module.exports = function(Project) {
       ctx.instance.currentStage = null;
       ctx.instance.createdDate = new Date();
       ctx.instance.updatedDate = new Date();
-      Project.app.models.smartContract.smartContactGetVersion('currentVersion',
-        function(err, data) {
-          if (err) {
-            let error = new Error();
-            error.message = errorHandler.filler(err);
-            error.status = 405;
-            return next(error);
-          }
-          ctx.instance.smartContractVersion = data.version;
-          next();
-        });
+      next();
     } else {
       if (ctx.instance) {
         ctx.instance.updatedDate = new Date();
@@ -95,16 +85,15 @@ module.exports = function(Project) {
         error.message = 'Project was not existed!';
         return callback(error);
       }
-      error = null;
+      console.log(project);
       Object.keys(data).forEach(function(key, value) {
-        if (!project[key]) {
-          error = new Error();
+        if (project[key] === undefined) {
           error.status = 404;
-          error.message = 'The `project` instance is not valid.' + key + ' was not exist!';
+          error.message = 'The `project` instance is not valid. ' + key + ' was not exist!';
           return error;
         }
       });
-      if (error) return callback(error);
+      if (error.status === 404) return callback(error);
       project.updateAttributes(data, callback);
     });
   };
