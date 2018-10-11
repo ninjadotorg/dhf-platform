@@ -17,6 +17,7 @@ import facebook from './facebook.svg';
 import linkedin from './linkedin.svg';
 import telegram from './telegram.svg';
 import youtube from './youtube.svg';
+import github from './github-logo.svg';
 
 function Footer({
   ...props
@@ -73,6 +74,8 @@ function Footer({
         <a target="_blank" style={{marginRight:20}} href="https://t.me/ninjacash"><img src={telegram} alt=""/></a>
         <a target="_blank" style={{marginRight:20}} href="https://www.youtube.com/channel/UCnVIB9HmXpHI6hipu6-M5Ag"><img src={youtube}
             alt=""/></a>
+        <a target="_blank" href="https://github.com/ninjadotorg/dhf-platform"><img width="40" src={github}
+          alt="" /></a>
       </div>
     </div>
   </div>
