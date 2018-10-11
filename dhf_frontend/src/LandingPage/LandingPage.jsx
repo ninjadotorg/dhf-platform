@@ -50,7 +50,7 @@ class LandingPage extends React.Component {
                   Get more funds with less work. Stop investing time on looking for investors hopelessly. Register just in minutes, and connect with your investors effortlessly.
                   </div>
                   <br />
-                  <Button type="submit" variant="raised" color="primary" component={Link} to="/register">
+                  <Button type="submit" variant="raised" color="primary" component={Link} to={localStorage.getItem('token') ? '/dashboard' : '/register'}>
                   Become a Ninja Trader
                   </Button>
                 </GridItem>

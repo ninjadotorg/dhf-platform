@@ -102,7 +102,7 @@ class ProductSection extends React.Component {
                 <strong>less than a minute.</strong>
               </div>
               <br />
-              <Button type="submit" variant="raised" color="primary" component={Link} to="/register" style={{ marginBottom: 100 }}>
+              <Button type="submit" variant="raised" color="primary" component={Link} to={localStorage.getItem('token') ? '/dashboard' : '/register'} style={{ marginBottom: 100 }}>
                   Become a Ninja Trader
               </Button>
             </GridItem>
