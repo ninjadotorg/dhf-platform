@@ -27,9 +27,9 @@ import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/
 const theme = createMuiTheme({
   palette: {
     primary: {
-      // light: will be calculated from palette.primary.main,
+      light: '#35C37D',
       main: '#35C37D',
-      // dark: will be calculated from palette.primary.main,
+      dark: '#35C37D',
       // contrastText: will be calculated to contrast with palette.primary.main
     },
     secondary: {
@@ -53,7 +53,14 @@ const theme = createMuiTheme({
         height: 40,
         padding: '0 30px',
         boxShadow: '4px 9px 26px 0 rgba(16,124,71,0.10)',
-        /* Rectangle 141: */
+        '&:hover': {
+          textDecoration: 'none',
+          backgroundColor: '#35C37D',
+          // Reset on touch devices, it doesn't add specificity
+          '@media (hover: none)': {
+            backgroundColor: '#35C37D',
+          },
+        },
       },
       textPrimary: {
         color: '#fff',
@@ -64,7 +71,11 @@ const theme = createMuiTheme({
       contained: {
         color: '#fff',
       },
-
+      outlined: {
+        '&:hover': {
+          backgroundColor: '#35C37D',
+        },
+      },
       containedPrimary: {
         color: '#fff',
       },
