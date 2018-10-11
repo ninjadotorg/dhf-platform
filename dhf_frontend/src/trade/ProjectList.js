@@ -180,7 +180,7 @@ class ProjectList extends React.Component {
                       Start
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW') && (
+                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing) && (
                       <MenuItem onClick={() => this.initFund(n)}>
                         <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                       Init

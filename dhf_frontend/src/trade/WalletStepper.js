@@ -72,6 +72,8 @@ class WalletStepper extends React.Component {
     selectedWallet: null,
     myDecryptedWallet: [],
     selectedConfirmWallet: null,
+    isSubmitting: null,
+    isTrxCompleted: null,
   };
 
   handleCheckBoxChange = name => event => {
@@ -126,7 +128,11 @@ class WalletStepper extends React.Component {
       case 4:
         return (
           <div style={{ marginBottom: 10 }}>
-            <SubmitInitProject activeProject={this.props.activeProject.data} privateKey={this.state.selectedConfirmWallet.privateKey} />
+            <SubmitInitProject ref={'submitInitProject'}
+              activeProject={this.props.activeProject.data}
+              privateKey={this.state.selectedConfirmWallet.privateKey}
+              onFinishedTrx={(hash) => this.setState({ isTrxCompleted: true })}
+            />
           </div>
         );
       default:
@@ -156,43 +162,10 @@ class WalletStepper extends React.Component {
       case 1:
         return (
           <div style={{ marginBottom: 10 }}>
-            <Table className={styles.table}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow button style={{ height: 60 }}>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            <h4>Terms and Conditions</h4>
-            <textarea rows="4" cols="50" readOnly style={{ width: '100%' }}>
-              At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.
-            </textarea>
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={this.state.checkedTandC}
-                  onChange={this.handleCheckBoxChange('checkedTandC')}
-                  value="checkedTandC"
-                />
-              )}
-              label="I agree to the Terms of Service."
+            <SubmitInitProject ref={'submitInitProject'}
+              walletType={this.state.walletType}
+              activeProject={this.props.activeProject.data}
+              onFinishedTrx={(hash) => this.setState({ isTrxCompleted: true })}
             />
           </div>
         );
@@ -220,19 +193,29 @@ class WalletStepper extends React.Component {
   };
 
   handleNext = () => {
+    console.log(this.state.activeStep);
     let activeStep;
-    if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
-    if (this.state.activeStep === 2) {
-      const result = this.refs.confirmPassword.decryptWallet();
-      if (!result) return;
+    if (this.state.walletType !== 'MetaMask') {
+      if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
+      if (this.state.activeStep === 2) {
+        const result = this.refs.confirmPassword.decryptWallet();
+        if (!result) return;
+      }
+      if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     }
-    if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     if (this.isLastStep() && !this.allStepsCompleted()) {
+      // if (this.state.walletType !== 'MetaMask') {
+        this.setState({ isSubmitting: true });
+        this.refs.submitInitProject.handleConfirmTransaction();
+        return;
+      // }
+      console.log('islaststep all NOT finished');
       // It's the last step, but not all steps have been completed find the first step
       // that has been completed
       const steps = getSteps();
       activeStep = steps.findIndex((step, i) => !this.state.completed.has(i));
     } else {
+      console.log('laststep all finsihed');
       activeStep = this.state.activeStep + 1;
     }
     this.setState({ activeStep });
@@ -363,14 +346,23 @@ class WalletStepper extends React.Component {
           >
                   Back
           </Button>
-          <Button
+          {!this.state.isTrxCompleted && <Button
             variant="outlined"
             color="primary"
             onClick={this.handleNext}
             className={classes.button}
+            disabled={this.isLastStep() && this.state.isSubmitting}
           >
             {this.isLastStep() ? 'Submit' : 'Next'}
-          </Button>
+          </Button>}
+          {this.state.isTrxCompleted && 
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={this.props.handleModalClose}
+            className={classes.button}>
+            Close
+          </Button>}
           {this.isStepOptional(activeStep) && !this.state.completed
             .has(this.state.activeStep) && (
             <Button

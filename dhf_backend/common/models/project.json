@@ -95,6 +95,10 @@
     "smartContractVersion": {
       "type": "string"
     },
+    "isProcessing": {
+      "type": "string",
+      "default": ""
+    },
     "state": {
       "type": "string",
       "required": true,
@@ -201,7 +205,9 @@
         "listProjects",
         "myProjects",
         "myInvest",
-        "release"
+        "release",
+        "updateAttr",
+        "upsert"
       ]
     }
   }

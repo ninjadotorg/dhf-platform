@@ -2,6 +2,15 @@ import PrivateKeyProvider from 'truffle-privatekey-provider'
 import Web3js from 'web3'
 import NetworkAPI from './NetworkAPI'
 
+export const NETWORK_TYPE = {
+  NONE: 0,
+  MAIN: 1,
+  ROPSTEN: 2,
+  KOVAN: 3,
+  RINKEBY: 4,
+  LOCAL: 5,
+  CUSTOM: 6,
+}
 /*
   Note:
     reserved web3 for metamask
@@ -49,6 +58,17 @@ class HedgeFundAPI extends NetworkAPI {
     let contract = new web3js.eth.Contract(this.ABI, this.contractAddress)
     var result = contract.methods[method](...params).call()
     return result
+  }
+
+  getMetamaskNetwork = async () => {
+    if (!this.useMetamask) return NETWORK_TYPE.NONE;
+    try {
+      var web3js = new Web3js(web3.currentProvider);
+      return await web3js.eth.net.getId(); 
+    } catch (err) {
+      console.log('getMetamaskNetwork', err);
+      return NETWORK_TYPE.NONE;
+    }
   }
 
   async _createTx (privateKey, value = 0, method, ...params) {

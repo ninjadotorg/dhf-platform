@@ -15,19 +15,11 @@ module.exports = function(Project) {
       ctx.instance.currentStage = null;
       ctx.instance.createdDate = new Date();
       ctx.instance.updatedDate = new Date();
-      Project.app.models.smartContract.smartContactGetVersion('currentVersion',
-        function(err, data) {
-          if (err) {
-            let error = new Error();
-            error.message = errorHandler.filler(err);
-            error.status = 405;
-            return next(error);
-          }
-          ctx.instance.smartContractVersion = data.version;
-          next();
-        });
+      next();
     } else {
-      ctx.instance.updatedDate = new Date();
+      if (ctx.instance) {
+        ctx.instance.updatedDate = new Date();
+      }
       next();
     }
   });
@@ -81,6 +73,28 @@ module.exports = function(Project) {
         };
       });
       callback(null, result);
+    });
+  };
+
+  Project.updateAttr = function(projectId, data, callback) {
+    let error = new Error();
+    Project.findById(projectId, function(err, project) {
+      if (err) return callback(err);
+      if (!project) {
+        error.status = 405;
+        error.message = 'Project was not existed!';
+        return callback(error);
+      }
+      console.log(project);
+      Object.keys(data).forEach(function(key, value) {
+        if (project[key] === undefined) {
+          error.status = 404;
+          error.message = 'The `project` instance is not valid. ' + key + ' was not exist!';
+          return error;
+        }
+      });
+      if (error.status === 404) return callback(error);
+      project.updateAttributes(data, callback);
     });
   };
 
@@ -346,6 +360,21 @@ module.exports = function(Project) {
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/list', verb: 'get'},
+  });
+
+  Project.remoteMethod('updateAttr', {
+    description: 'update each properties of project',
+    accessType: 'WRITE',
+    accepts: [
+      {arg: 'projectId', type: 'string', required: true, http: {source: 'query'}},
+      {
+        arg: 'data', type: 'object', allowArray: true,
+        description: 'Model instance data',
+        http: {source: 'body'},
+      },
+    ],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/upsert', verb: 'put'},
   });
 
   Project.remoteMethod('release', {
