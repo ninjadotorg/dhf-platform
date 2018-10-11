@@ -19,7 +19,6 @@ class ConfirmWallet extends React.Component {
     }
     
     render() {
-        console.log(this.props.wallets);
         return (<div>
             <Select
               value={this.state.selectedItem}

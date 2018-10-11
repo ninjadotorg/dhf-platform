@@ -1,15 +1,34 @@
-import Web3js from 'web3'
+const Web3js = require('web3')
 
-export default class NetworkAPI {
+class NetworkAPI {
+    static get NETWORK_TYPE() {
+        return {
+          NONE: 0,
+          MAIN: 1,
+          ROPSTEN: 2,
+          KOVAN: 3,
+          RINKEBY: 4,
+          LOCAL: 5,
+          CUSTOM: 6,
+        }
+      }
+      
     constructor(network){
-        this.network = network
-        this.checkTransactionStatus("0x0b0f4fe34e2b0ef11f778b258ed051bfc5b2c96bcbb1b900d0f0bff2a053ab3f")
+        if (network) this.network = network
     }
 
     async checkTransactionStatus(txid){
-        var web3js = new Web3js(new Web3js.providers.HttpProvider(this.network))
+        let network = this.network || "https://mainnet.infura.io/"
+        var web3js = new Web3js(new Web3js.providers.HttpProvider(network))
         let trans = await web3js.eth.getTransaction(txid);
-        console.log("trans.blockNumber", trans.blockNumber)
         return (trans && trans.blockNumber)
     }
+
+    async getGasPrice(){
+        let network = this.network || "https://mainnet.infura.io/"
+        var web3js = new Web3js(new Web3js.providers.HttpProvider(network))
+        return await web3js.eth.getGasPrice()
+    }
 }
+
+module.exports = NetworkAPI

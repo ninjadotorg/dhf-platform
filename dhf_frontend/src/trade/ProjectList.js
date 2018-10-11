@@ -66,6 +66,7 @@ class ProjectList extends React.Component {
       activeProject: {},
       placement: null,
       currentItem: null,
+      stepperAction: null,
     };
     this.notificationDOMRef = React.createRef();
   }
@@ -129,6 +130,15 @@ class ProjectList extends React.Component {
     }));
   };
 
+  stopInitProject = n => {
+    console.log(n);
+    this.setState({
+      initFundModal: true,
+      activeProject: n,
+      stepperAction: 'STOP'
+    })
+  }
+
   getActionButton = (n) => {
     const { anchorEl, open, placement, currentItem } = this.state;
     return (
@@ -177,7 +187,7 @@ class ProjectList extends React.Component {
                       Edit
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (
+                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (!currentItem.data.isProcessing) && (
                       <MenuItem onClick={() => {
                         this.deleteProject(currentItem);
                       }}
@@ -187,6 +197,16 @@ class ProjectList extends React.Component {
                       Cancel
                       </MenuItem>
                     )}
+                    {currentItem.data.isProcessing === 'PENDING' && 
+                      <MenuItem onClick={() => {
+                        this.stopInitProject(currentItem);
+                      }}
+                      style={{ color: red }}
+                      >
+                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                      Stop
+                      </MenuItem>
+                    }
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -276,7 +296,7 @@ class ProjectList extends React.Component {
           <DialogContent
             style={{ width: '700px', margin: '0 auto' }}
           >
-            <WalletStepper activeProject={this.state.activeProject} handleModalClose={this.handleModalClose} />
+            <WalletStepper stepperAction={this.state.stepperAction} activeProject={this.state.activeProject} handleModalClose={this.handleModalClose} />
           </DialogContent>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />

@@ -24,6 +24,7 @@ import SelectWallet from './BlockStep/SelectWallet';
 import ConfirmPassword from './BlockStep/ConfirmPassword';
 import ConfirmWallet from './BlockStep/ConfirmWallet';
 import SubmitInitProject from './BlockStep/SubmitInitProject';
+import SubmitCancelProject from './BlockStep/SubmitCancelProject';
 
 const styles = theme => ({
   root: {
@@ -128,11 +129,17 @@ class WalletStepper extends React.Component {
       case 4:
         return (
           <div style={{ marginBottom: 10 }}>
-            <SubmitInitProject ref={'submitInitProject'}
+            {this.props.stepperAction !== 'STOP' ?(<SubmitInitProject ref={'submitInitProject'}
               activeProject={this.props.activeProject.data}
               privateKey={this.state.selectedConfirmWallet.privateKey}
               onFinishedTrx={(hash) => this.setState({ isTrxCompleted: true })}
-            />
+            />) : (
+              <SubmitCancelProject ref={'submitCancelProject'}
+                activeProject={this.props.activeProject.data}
+                privateKey={this.state.selectedConfirmWallet.privateKey}
+                onFinishedTrx={hash => this.setState({ isTrxCompleted: true })}
+              />
+            )}
           </div>
         );
       default:
@@ -193,7 +200,6 @@ class WalletStepper extends React.Component {
   };
 
   handleNext = () => {
-    console.log(this.state.activeStep);
     let activeStep;
     if (this.state.walletType !== 'MetaMask') {
       if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
@@ -204,11 +210,15 @@ class WalletStepper extends React.Component {
       if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     }
     if (this.isLastStep() && !this.allStepsCompleted()) {
-      // if (this.state.walletType !== 'MetaMask') {
+      if (this.props.stepperAction !== 'STOP') {
         this.setState({ isSubmitting: true });
         this.refs.submitInitProject.handleConfirmTransaction();
         return;
-      // }
+      } else {
+        this.setState({ isSubmitting: true });
+        this.refs.submitCancelProject.handleConfirmTransaction();
+        return;
+      }
       console.log('islaststep all NOT finished');
       // It's the last step, but not all steps have been completed find the first step
       // that has been completed

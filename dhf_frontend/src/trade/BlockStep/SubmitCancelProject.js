@@ -8,7 +8,7 @@ import LoadingSVG from '../../assets/img/loading.svg';
 import axios from 'axios';
 const MetaMask = 'MetaMask';
 
-class SubmitInitProject extends React.Component {
+class SubmitCancelProject extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -16,6 +16,7 @@ class SubmitInitProject extends React.Component {
             hash: null,
             status: null,
             isValidated: true,
+            msg: null,
         }
         this.hedgeFundApi = new  HedgeFundAPI('latest', props.walletType === MetaMask);
         this.runTrx = null;
@@ -27,10 +28,31 @@ class SubmitInitProject extends React.Component {
         if (this.props.walletType === MetaMask) {
             const metaMaskNetwork = await this.hedgeFundApi.getMetamaskNetwork();
             isValidated = metaMaskNetwork === HedgeFundAPI.NETWORK_TYPE.RINKEBY;
-            this.setState({ isValidated });
+            this.setState({ isValidated, msg: 'Wrong current network in MetaMask, Please choose Rinkeby' });
             return isValidated;
         }
         return isValidated;
+    }
+
+    validateOwner = async () => {
+        try {
+            const { 
+                privateKey,
+                activeProject: {
+                    owner
+                }
+            } = this.props;
+            const currentAccount = await this.hedgeFundApi.getAccount(privateKey || null);
+            const isValidated = currentAccount === owner;
+            console.log(currentAccount);
+            console.log(owner);
+            console.log(isValidated);
+            this.setState({ isValidated, msg: 'You are not the owner of this project' });
+            return isValidated;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
     }
 
     initProject = async () => {
@@ -38,15 +60,11 @@ class SubmitInitProject extends React.Component {
             const { 
                 privateKey,
                 activeProject: {
-                    target,
-                    max,
-                    deadline,
-                    lifeTime,
-                    commission,
                     id
                 }
-            } = this.props; 
-            const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey || null, Number(target), Number(max), Math.floor(new Date(deadline)/1000)-0, Number(lifeTime), Number(commission), '0x' + id);
+            } = this.props;
+            console.log('init project', this.props.activeProject);
+            const { run, estimateGas } = await this.hedgeFundApi.stopProject(privateKey || null, '0x' + id);
             const estimateGasValue = (await estimateGas() * await HedgeFundAPI.getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
             this.setState({ estimateGasValue });
             this.runTrx = run;
@@ -58,14 +76,15 @@ class SubmitInitProject extends React.Component {
     initValidatingProject = async () => {
         const isValidated = await this.validateNetwork();
         if (!isValidated) return;
+        const isOwner = await this.validateOwner();
+        if (!isOwner) return;
         this.initProject();
     }
 
-    updateStatusAPI = async (owner, isProcessing) => {
+    updateStatusAPI = async (isProcessing) => {
         try {
             const { status, data } = await axios.put(`http://35.198.235.226:9000/api/projects/upsert?projectId=${this.props.activeProject.id}`, {
-                isProcessing,
-                owner
+                isProcessing
             });
         } catch (err) {
             console.log('updateStatusAPI', err);
@@ -79,7 +98,7 @@ class SubmitInitProject extends React.Component {
           this.setState({ hash });
           this.props.onFinishedTrx(hash);
           this.hedgeFundApi.getAccount(this.props.privateKey || null).then(address => {
-            this.updateStatusAPI(address, 'PENDING');
+            this.updateStatusAPI('SUSPENDING');
           }).catch(err => console.log(err))
         }).on('receipt', (receipt) => {
           const status = 'DONE';
@@ -92,7 +111,7 @@ class SubmitInitProject extends React.Component {
         if (!this.state.estimateGasValue && this.state.isValidated) return (<div style={{ display: 'flex', justifyContent: 'center' }}><img src={LoadingSVG} style={{ width: '50px', height: '50px' }} /></div>)
         if (!this.state.estimateGasValue && !this.state.isValidated) return (
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                <label style={{ color: 'red', fontSize: '16px', margin: '10px' }}>Wrong current network in MetaMask, Please choose Rinkeby</label>
+                <label style={{ color: 'red', fontSize: '16px', margin: '10px' }}>{this.state.msg}</label>
             </div>
         )
         return (<div>
@@ -113,9 +132,9 @@ class SubmitInitProject extends React.Component {
     }
 }
 
-SubmitInitProject.propTypes = {
+SubmitCancelProject.propTypes = {
     walletType: PropTypes.string,
     activeProject: PropTypes.object,
     onFinishedTrx: PropTypes.func
 }
-export default SubmitInitProject;
+export default SubmitCancelProject;

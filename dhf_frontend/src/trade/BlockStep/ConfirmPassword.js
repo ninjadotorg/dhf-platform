@@ -21,8 +21,6 @@ class ConfirmPassword extends React.Component {
         try {
             const { password } = this.state;
             const { wallets } = this.props.wallet || {};
-            console.log(wallets);
-            console.log(password);
             const walletsDecrypted = decryptWalletsByPassword(wallets, password);
             if (!walletsDecrypted) {
                 this.setState({ error })
