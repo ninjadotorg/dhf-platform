@@ -29,6 +29,7 @@ import MenuList from '@material-ui/core/MenuList';
 import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
+import { toast } from 'react-toastify';
 const styles = {
   root: {
     width: '100%',
@@ -105,26 +106,10 @@ class ProjectList extends React.Component {
   deleteProject = n => {
     request({
       method: 'delete',
-      url: `/projects/${n.data.data.id}`,
+      url: `/projects/${n.data.id}`,
     })
       .then(response => {
-        this.notificationDOMRef.current.addNotification({
-          title: '',
-          message: 'Deleted Successfully',
-          type: 'success',
-          insert: 'top',
-          container: 'bottom-left',
-          animationIn: ['animated', 'fadeIn'],
-          animationOut: ['animated', 'ZoomOut'],
-          dismiss: { duration: 2000 },
-          dismissable: { click: true },
-          slidingEnter: {
-            duration: 100,
-          },
-          slidingExit: {
-            duration: 100,
-          },
-        });
+        toast.info(`The project '${n.data.name}' has been deleted successfully!`);
         this.fetchProjects();
       })
       .catch(error => {});

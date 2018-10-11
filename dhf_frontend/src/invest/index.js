@@ -48,7 +48,7 @@ const styles = theme => ({
   },
   button: {
     margin: 0,
-    minWidth: 125,
+    minWidth: 160,
     '& + button': {
       marginLeft: '10px',
       marginRight: 'auto',
