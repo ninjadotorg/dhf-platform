@@ -105,7 +105,7 @@ class ProjectList extends React.Component {
   deleteProject = n => {
     request({
       method: 'delete',
-      url: `/projects/${n.data.data.id}`,
+      url: `/projects/${n.data.id}`,
     })
       .then(response => {
         this.notificationDOMRef.current.addNotification({

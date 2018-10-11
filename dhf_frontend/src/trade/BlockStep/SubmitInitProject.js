@@ -74,7 +74,9 @@ class SubmitInitProject extends React.Component {
         }
     }
 
-    handleConfirmTransaction = () => {
+    handleConfirmTransaction = async () => {
+        const isValidated = await this.validateNetwork();
+        if (!isValidated) return;
         this.runTrx().on('transactionHash', (hash) => {
           console.log('txhash', hash);
           this.setState({ hash });
@@ -92,7 +94,7 @@ class SubmitInitProject extends React.Component {
         if (!this.state.estimateGasValue && this.state.isValidated) return (<div style={{ display: 'flex', justifyContent: 'center' }}><img src={LoadingSVG} style={{ width: '50px', height: '50px' }} /></div>)
         if (!this.state.estimateGasValue && !this.state.isValidated) return (
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                <label style={{ color: 'red', fontSize: '14px', margin: '10px' }}>Wrong current network in MetaMask</label>
+                <label style={{ color: 'red', fontSize: '16px', margin: '10px' }}>Wrong current network in MetaMask, Please choose Rinkeby</label>
             </div>
         )
         return (<div>
