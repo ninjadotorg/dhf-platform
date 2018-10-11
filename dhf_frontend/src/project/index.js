@@ -20,6 +20,7 @@ import history from '@/utils/history';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
+import { toast } from 'react-toastify';
 
 const styles = theme => ({
   layout: {
@@ -119,7 +120,6 @@ class createProject extends React.Component {
   }
 
   handleDateChange = (date) => {
-    console.log(date);
     this.setState({ deadline: date });
   }
 
@@ -147,6 +147,7 @@ class createProject extends React.Component {
       data,
     })
       .then(response => {
+        toast.success(`The project '${response.name}' has been created successfully!`);
         return history.push('/dashboard');
       })
       .catch(error => {
