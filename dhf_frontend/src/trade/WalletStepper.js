@@ -162,43 +162,10 @@ class WalletStepper extends React.Component {
       case 1:
         return (
           <div style={{ marginBottom: 10 }}>
-            <Table className={styles.table}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow button style={{ height: 60 }}>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Time</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            <h4>Terms and Conditions</h4>
-            <textarea rows="4" cols="50" readOnly style={{ width: '100%' }}>
-              At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.
-            </textarea>
-            <FormControlLabel
-              control={(
-                <Checkbox
-                  checked={this.state.checkedTandC}
-                  onChange={this.handleCheckBoxChange('checkedTandC')}
-                  value="checkedTandC"
-                />
-              )}
-              label="I agree to the Terms of Service."
+            <SubmitInitProject ref={'submitInitProject'}
+              walletType={this.state.walletType}
+              activeProject={this.props.activeProject.data}
+              onFinishedTrx={(hash) => this.setState({ isTrxCompleted: true })}
             />
           </div>
         );
@@ -228,18 +195,20 @@ class WalletStepper extends React.Component {
   handleNext = () => {
     console.log(this.state.activeStep);
     let activeStep;
-    if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
-    if (this.state.activeStep === 2) {
-      const result = this.refs.confirmPassword.decryptWallet();
-      if (!result) return;
+    if (this.state.walletType !== 'MetaMask') {
+      if (this.state.activeStep === 1 && !this.state.selectedWallet) return;
+      if (this.state.activeStep === 2) {
+        const result = this.refs.confirmPassword.decryptWallet();
+        if (!result) return;
+      }
+      if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     }
-    if (this.state.activeStep === 3 && !this.state.selectedConfirmWallet) return;
     if (this.isLastStep() && !this.allStepsCompleted()) {
-      if (this.state.walletType !== 'MetaMask') {
+      // if (this.state.walletType !== 'MetaMask') {
         this.setState({ isSubmitting: true });
         this.refs.submitInitProject.handleConfirmTransaction();
         return;
-      }
+      // }
       console.log('islaststep all NOT finished');
       // It's the last step, but not all steps have been completed find the first step
       // that has been completed

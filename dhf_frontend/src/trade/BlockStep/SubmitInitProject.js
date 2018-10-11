@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import HedgeFundAPI, { getCurrentGasPrice } from '../contracts/HedgeFundAPI';
+import HedgeFundAPI, { getCurrentGasPrice, NETWORK_TYPE } from '../contracts/HedgeFundAPI';
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const transformString = str => str.substring(0, 7) + '...'+ str.substring(str.length-5, str.length);
 import LoadingSVG from '../../assets/img/loading.svg';
 import axios from 'axios';
+const MetaMask = 'MetaMask';
 
 class SubmitInitProject extends React.Component {
     constructor(props) {
@@ -14,11 +15,26 @@ class SubmitInitProject extends React.Component {
             estimateGasValue: null,
             hash: null,
             status: null,
+            isValidated: true,
         }
-        this.hedgeFundApi = new  HedgeFundAPI('v1', false);
+        this.hedgeFundApi = new  HedgeFundAPI('v1', props.walletType === MetaMask);
         this.runTrx = null;
-        this.initProject();
+        // this.validateNetwork();
+        // this.initProject();
+        this.initValidatingProject();
     }
+
+    validateNetwork = async () => {
+        let isValidated = true;
+        if (this.props.walletType === MetaMask) {
+            const metaMaskNetwork = await this.hedgeFundApi.getMetamaskNetwork();
+            isValidated = metaMaskNetwork === NETWORK_TYPE.RINKEBY;
+            this.setState({ isValidated });
+            return isValidated;
+        }
+        return isValidated;
+    }
+
     initProject = async () => {
         try {
             const { 
@@ -31,8 +47,8 @@ class SubmitInitProject extends React.Component {
                     commission,
                     id
                 }
-            } = this.props;
-            const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey, Number(target), Number(max), Math.floor(new Date(deadline)/1000)-0, Number(lifeTime), Number(commission), '0x' + id);
+            } = this.props; 
+            const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey || null, Number(target), Number(max), Math.floor(new Date(deadline)/1000)-0, Number(lifeTime), Number(commission), '0x' + id);
             const estimateGasValue = (await estimateGas() * await getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
             console.log('estimateGasValue', estimateGasValue);
             this.setState({ estimateGasValue });
@@ -40,6 +56,12 @@ class SubmitInitProject extends React.Component {
         } catch (err) {
             console.log(err);
         }
+    }
+
+    initValidatingProject = async () => {
+        const isValidated = await this.validateNetwork();
+        if (!isValidated) return;
+        this.initProject();
     }
 
     updateStatusAPI = async () => {
@@ -67,7 +89,12 @@ class SubmitInitProject extends React.Component {
       }
 
     render() {
-        if (!this.state.estimateGasValue) return (<div style={{ display: 'flex', justifyContent: 'center' }}><img src={LoadingSVG} style={{ width: '50px', height: '50px' }} /></div>)
+        if (!this.state.estimateGasValue && this.state.isValidated) return (<div style={{ display: 'flex', justifyContent: 'center' }}><img src={LoadingSVG} style={{ width: '50px', height: '50px' }} /></div>)
+        if (!this.state.estimateGasValue && !this.state.isValidated) return (
+            <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                <label style={{ color: 'red', fontSize: '14px', margin: '10px' }}>Wrong current network in MetaMask</label>
+            </div>
+        )
         return (<div>
             <div style={{ textAlign: 'center', fontSize: '18px' }}> Your ETH Fee: {this.state.estimateGasValue}</div>
             {this.state.hash && 
@@ -87,6 +114,7 @@ class SubmitInitProject extends React.Component {
 }
 
 SubmitInitProject.propTypes = {
+    walletType: PropTypes.string,
     activeProject: PropTypes.object,
     onFinishedTrx: PropTypes.func
 }
