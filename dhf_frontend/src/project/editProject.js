@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -20,6 +20,7 @@ import history from '@/utils/history';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import { InlineDatePicker } from 'material-ui-pickers/DatePicker';
+import { toast } from 'react-toastify';
 
 
 const styles = theme => ({
@@ -171,6 +172,7 @@ class editProject extends React.Component {
       data,
     })
       .then(response => {
+        toast.success(`The project '${response.name}' has been updated successfully!`);
         return history.push('/dashboard');
       })
       .catch(error => {

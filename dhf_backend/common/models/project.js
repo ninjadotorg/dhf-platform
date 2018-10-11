@@ -85,7 +85,6 @@ module.exports = function(Project) {
         error.message = 'Project was not existed!';
         return callback(error);
       }
-      console.log(project);
       Object.keys(data).forEach(function(key, value) {
         if (project[key] === undefined) {
           error.status = 404;
