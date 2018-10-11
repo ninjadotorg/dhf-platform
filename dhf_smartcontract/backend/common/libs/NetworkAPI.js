@@ -1,6 +1,18 @@
 const Web3js = require('web3')
 
 class NetworkAPI {
+    static get NETWORK_TYPE() {
+        return {
+          NONE: 0,
+          MAIN: 1,
+          ROPSTEN: 2,
+          KOVAN: 3,
+          RINKEBY: 4,
+          LOCAL: 5,
+          CUSTOM: 6,
+        }
+      }
+      
     constructor(network){
         if (network) this.network = network
     }

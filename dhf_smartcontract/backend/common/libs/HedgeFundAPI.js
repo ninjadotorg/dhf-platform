@@ -25,18 +25,7 @@ function validatingPrivateKey (s) {
 }
 
 class HedgeFundAPI extends NetworkAPI {
-  static get NETWORK_TYPE() {
-    return {
-      NONE: 0,
-      MAIN: 1,
-      ROPSTEN: 2,
-      KOVAN: 3,
-      RINKEBY: 4,
-      LOCAL: 5,
-      CUSTOM: 6,
-    }
-  }
-
+  
   constructor (version = 'latest', useMetamask) {
     super()
     var self = this
