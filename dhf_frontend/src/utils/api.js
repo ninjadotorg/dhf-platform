@@ -1,13 +1,18 @@
 import axios from 'axios';
 import history from '@/utils/history';
 import API_ROOT from '@/utils/cons';
-/**
- * Create an Axios Client with defaults
- */
-export const client = axios.create({
-  baseURL: API_ROOT,
-});
-axios.defaults.headers.common.Authorization = localStorage.getItem('token');
+
+const clientApi = () => {
+  const options = { baseURL: API_ROOT };
+  const Authorization = localStorage.getItem('token');
+  if (Authorization) {
+    options.headers = {
+      Authorization
+    }
+  }
+  return axios.create(options);
+}
+
 /**
  * Request Wrapper with default success/error actions
  */
@@ -34,7 +39,7 @@ const request = options => {
     return Promise.reject(error.response || error.message);
   };
 
-  return client(options)
+  return clientApi()(options)
     .then(onSuccess)
     .catch(onError);
 };

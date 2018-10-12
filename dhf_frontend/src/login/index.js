@@ -118,7 +118,6 @@ class Login extends React.Component {
       .then(response => {
         localStorage.setItem('token', response.id);
         localStorage.setItem('userId', response.userId);
-        axios.defaults.headers.common.Authorization = response.id;
         this.setState({
           successMsg: 'Login Successful. Redirecting to dashboard..',
           success: true,

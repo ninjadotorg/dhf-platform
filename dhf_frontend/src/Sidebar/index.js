@@ -126,7 +126,6 @@ class Sidebar extends React.Component {
     })
       .then(response => {
         localStorage.clear();
-        axios.defaults.headers.common.Authorization = '';
         return history.push('/login');
       })
       .catch(error => {});
