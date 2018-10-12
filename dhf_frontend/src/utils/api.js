@@ -2,7 +2,7 @@ import axios from 'axios';
 import history from '@/utils/history';
 import API_ROOT from '@/utils/cons';
 
-const clientApi = () => {
+export const clientApi = () => {
   const options = { baseURL: API_ROOT };
   const Authorization = localStorage.getItem('token');
   if (Authorization) {

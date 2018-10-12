@@ -15,7 +15,7 @@ export default {
       // use async/await for async actions
       async getWallets() {
         try {
-            const { status , data } = await clientApi.get(LINK_WALLET_URL);
+            const { status , data } = await clientApi().get(LINK_WALLET_URL);
             if (status !== 200) return;
             dispatch.wallets.load(data)
         } catch (err) {

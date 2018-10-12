@@ -66,7 +66,7 @@ class SubmitInitProject extends React.Component {
 
     updateStatusAPI = async (owner, isProcessing) => {
         try {
-            const { status, data } = await clientApi.put(`${UPSERT_PROJECT_URL}?projectId=${this.props.activeProject.id}`, {
+            const { status, data } = await clientApi().put(`${UPSERT_PROJECT_URL}?projectId=${this.props.activeProject.id}`, {
                 isProcessing,
                 owner
             });
