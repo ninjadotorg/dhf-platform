@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { client } from '@/utils/api';
 import HedgeFundAPI from '../contracts/HedgeFundAPI';
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const transformString = str => str.substring(0, 7) + '...'+ str.substring(str.length-5, str.length);
 import LoadingSVG from '../../assets/img/loading.svg';
-import axios from 'axios';
 const MetaMask = 'MetaMask';
+const UPSERT_PROJECT_URL = '/projects/upsert';
 
 class SubmitInitProject extends React.Component {
     constructor(props) {
@@ -65,7 +66,7 @@ class SubmitInitProject extends React.Component {
 
     updateStatusAPI = async (owner, isProcessing) => {
         try {
-            const { status, data } = await axios.put(`http://35.198.235.226:9000/api/projects/upsert?projectId=${this.props.activeProject.id}`, {
+            const { status, data } = await client.put(`${UPSERT_PROJECT_URL}?projectId=${this.props.activeProject.id}`, {
                 isProcessing,
                 owner
             });

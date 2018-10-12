@@ -1,4 +1,6 @@
-import axios from 'axios';
+import { client } from '@/utils/api';
+const LINK_WALLET_URL = '/link-to-wallet/my-wallet';
+
 const initialState = []
 export default {
     state: initialState,
@@ -11,11 +13,10 @@ export default {
     effects: (dispatch) => ({
       // handle state changes with impure functions.
       // use async/await for async actions
-      async getWallets(payload, rootState) {
+      async getWallets() {
         try {
-            const { status , data } = await axios.get('http://35.198.235.226:9000/api/link-to-wallet/my-wallet');
+            const { status , data } = await client.get(LINK_WALLET_URL);
             if (status !== 200) return;
-            console.log('result==================', data);
             dispatch.wallets.load(data)
         } catch (err) {
             console.log('getWallets=>', err);

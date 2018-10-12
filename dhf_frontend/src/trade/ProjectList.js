@@ -181,7 +181,7 @@ class ProjectList extends React.Component {
                       Init
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW') && (
+                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing === 'SUSPENDING') && (
                       <MenuItem component={Link} to={`/project/${currentItem.data.id}`}>
                         <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
                       Edit
@@ -218,6 +218,7 @@ class ProjectList extends React.Component {
   };
 
   changeStateText = n => {
+    if(n.isProcessing) return n.isProcessing;
     switch (n.state) {
       case 'NEW':
         return 'JUST CREATED';

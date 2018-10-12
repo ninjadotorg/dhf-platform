@@ -4,7 +4,7 @@ import API_ROOT from '@/utils/cons';
 /**
  * Create an Axios Client with defaults
  */
-const client = axios.create({
+export const client = axios.create({
   baseURL: API_ROOT,
 });
 axios.defaults.headers.common.Authorization = localStorage.getItem('token');
