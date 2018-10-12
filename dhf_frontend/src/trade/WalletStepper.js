@@ -169,11 +169,17 @@ class WalletStepper extends React.Component {
       case 1:
         return (
           <div style={{ marginBottom: 10 }}>
-            <SubmitInitProject ref={'submitInitProject'}
+            {this.props.stepperAction !== 'STOP' ?(<SubmitInitProject ref={'submitInitProject'}
               walletType={this.state.walletType}
               activeProject={this.props.activeProject.data}
               onFinishedTrx={(hash) => this.setState({ isTrxCompleted: true })}
-            />
+            />) : (
+              <SubmitCancelProject ref={'submitCancelProject'}
+                walletType={this.state.walletType} 
+                activeProject={this.props.activeProject.data}
+                onFinishedTrx={hash => this.setState({ isTrxCompleted: true })}
+              />
+            )}
           </div>
         );
       default:

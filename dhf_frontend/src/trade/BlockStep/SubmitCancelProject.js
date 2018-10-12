@@ -44,9 +44,6 @@ class SubmitCancelProject extends React.Component {
             } = this.props;
             const currentAccount = await this.hedgeFundApi.getAccount(privateKey || null);
             const isValidated = currentAccount === owner;
-            console.log(currentAccount);
-            console.log(owner);
-            console.log(isValidated);
             this.setState({ isValidated, msg: 'You are not the owner of this project' });
             return isValidated;
         } catch (err) {
@@ -63,12 +60,12 @@ class SubmitCancelProject extends React.Component {
                     id
                 }
             } = this.props;
-            console.log('init project', this.props.activeProject);
             const { run, estimateGas } = await this.hedgeFundApi.stopProject(privateKey || null, '0x' + id);
             const estimateGasValue = (await estimateGas() * await HedgeFundAPI.getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
             this.setState({ estimateGasValue });
             this.runTrx = run;
         } catch (err) {
+            this.setState({ isValidated: false, msg: 'Can not send transaction at this time. Pls come back later or contact administrator' });
             console.log(err);
         }
     }

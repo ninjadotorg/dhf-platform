@@ -16,6 +16,7 @@ class SubmitInitProject extends React.Component {
             hash: null,
             status: null,
             isValidated: true,
+            msg: null,
         }
         this.hedgeFundApi = new  HedgeFundAPI('latest', props.walletType === MetaMask);
         this.runTrx = null;
@@ -27,7 +28,7 @@ class SubmitInitProject extends React.Component {
         if (this.props.walletType === MetaMask) {
             const metaMaskNetwork = await this.hedgeFundApi.getMetamaskNetwork();
             isValidated = metaMaskNetwork === HedgeFundAPI.NETWORK_TYPE.RINKEBY;
-            this.setState({ isValidated });
+            this.setState({ isValidated, msg: 'Wrong current network in MetaMask, Please choose Rinkeby' });
             return isValidated;
         }
         return isValidated;
@@ -51,6 +52,7 @@ class SubmitInitProject extends React.Component {
             this.setState({ estimateGasValue });
             this.runTrx = run;
         } catch (err) {
+            this.setState({ isValidated: false, msg: 'Can not send transaction at this time. Pls come back later or contact administrator' });
             console.log(err);
         }
     }
@@ -92,7 +94,7 @@ class SubmitInitProject extends React.Component {
         if (!this.state.estimateGasValue && this.state.isValidated) return (<div style={{ display: 'flex', justifyContent: 'center' }}><img src={LoadingSVG} style={{ width: '50px', height: '50px' }} /></div>)
         if (!this.state.estimateGasValue && !this.state.isValidated) return (
             <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                <label style={{ color: 'red', fontSize: '16px', margin: '10px' }}>Wrong current network in MetaMask, Please choose Rinkeby</label>
+                <label style={{ color: 'red', fontSize: '16px', margin: '10px' }}>{this.state.msg}</label>
             </div>
         )
         return (<div>
