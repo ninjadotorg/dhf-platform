@@ -49,7 +49,7 @@ class SubmitInitProject extends React.Component {
                 }
             } = this.props; 
             const { run, estimateGas } = await this.hedgeFundApi.initProject(privateKey || null, Number(target), Number(max), Math.floor(new Date(deadline)/1000)-0, Number(lifeTime), Number(commission), '0x' + id);
-            const estimateGasValue = (await estimateGas() * await HedgeFundAPI.getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
+            const estimateGasValue = (await estimateGas() * await this.hedgeFundApi.getCurrentGasPrice() * 1e-18).toFixed(6) + ' ETH';
             this.setState({ estimateGasValue });
             this.runTrx = run;
         } catch (err) {
