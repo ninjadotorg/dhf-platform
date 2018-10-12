@@ -1,4 +1,4 @@
-import { client } from '@/utils/api';
+import { clientApi } from '@/utils/api';
 const LINK_WALLET_URL = '/link-to-wallet/my-wallet';
 
 const initialState = []
@@ -15,7 +15,7 @@ export default {
       // use async/await for async actions
       async getWallets() {
         try {
-            const { status , data } = await client.get(LINK_WALLET_URL);
+            const { status , data } = await clientApi.get(LINK_WALLET_URL);
             if (status !== 200) return;
             dispatch.wallets.load(data)
         } catch (err) {

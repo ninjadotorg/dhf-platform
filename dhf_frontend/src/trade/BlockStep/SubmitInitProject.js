@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { client } from '@/utils/api';
+import { clientApi } from '@/utils/api';
 import HedgeFundAPI from '../contracts/HedgeFundAPI';
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
@@ -66,7 +66,7 @@ class SubmitInitProject extends React.Component {
 
     updateStatusAPI = async (owner, isProcessing) => {
         try {
-            const { status, data } = await client.put(`${UPSERT_PROJECT_URL}?projectId=${this.props.activeProject.id}`, {
+            const { status, data } = await clientApi.put(`${UPSERT_PROJECT_URL}?projectId=${this.props.activeProject.id}`, {
                 isProcessing,
                 owner
             });
