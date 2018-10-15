@@ -47,6 +47,7 @@ class SubmitCancelProject extends React.Component {
             this.setState({ isValidated, msg: 'You are not the owner of this project' });
             return isValidated;
         } catch (err) {
+            this.setState({ isValidated: false, msg: 'Not login metamask' });
             console.log(err);
             return false;
         }
@@ -95,11 +96,16 @@ class SubmitCancelProject extends React.Component {
           this.setState({ hash });
           this.props.onFinishedTrx(hash);
           this.hedgeFundApi.getAccount(this.props.privateKey || null).then(address => {
-            this.updateStatusAPI('SUSPENDING');
+            const isProcessing = {
+                hash,
+                status: 'STOPPING'
+            };
+            this.updateStatusAPI(JSON.stringify(isProcessing));
           }).catch(err => console.log(err))
         }).on('receipt', (receipt) => {
           const status = 'DONE';
           this.setState({ status });
+          this.updateStatusAPI('');
         //   this.onChangeStatusTrx(receipt.transactionHash);
         }).on('error', err => console.log('err', err));
       }
@@ -117,7 +123,7 @@ class SubmitCancelProject extends React.Component {
                 <div>
                     <div>
                         <label>{'Your Transaction Hash : '}</label>
-                        <a href={linkToEtherScan(this.state.hash)}>{this.state.hash}</a>
+                        <a target='_blank' href={linkToEtherScan(this.state.hash)}>{this.state.hash}</a>
                     </div>
                     <div>
                         <label>{'Status : '}</label>

@@ -30,6 +30,8 @@ import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
+const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
+const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
   root: {
     width: '100%',
@@ -141,6 +143,9 @@ class ProjectList extends React.Component {
 
   getActionButton = (n) => {
     const { anchorEl, open, placement, currentItem } = this.state;
+    const isProcessing = currentItem && currentItem.data && currentItem.data.isProcessing ? JSON.parse(currentItem.data.isProcessing) : { status: null } ;
+    const smartContractStatus = isProcessing.status;
+    console.log(n, currentItem, smartContractStatus);
     return (
       <div>
         <Button
@@ -153,7 +158,7 @@ class ProjectList extends React.Component {
         <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
           {({ TransitionProps }) => (
             <Grow
-              {...TransitionProps}
+              {...TransitionProps}JS
               id="menu-list-grow"
               style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
             >
@@ -175,19 +180,19 @@ class ProjectList extends React.Component {
                       Start
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing) && (
+                    {(currentItem.data.state === 'NEW') && (!smartContractStatus) && (
                       <MenuItem onClick={() => this.initFund(n)}>
                         <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                       Init
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing === 'SUSPENDING') && (
+                    {(currentItem.data.state === 'NEW') && (!smartContractStatus) && (
                       <MenuItem component={Link} to={`/project/${currentItem.data.id}`}>
                         <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
                       Edit
                       </MenuItem>
                     )}
-                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (!currentItem.data.isProcessing) && (
+                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (!smartContractStatus) && (
                       <MenuItem onClick={() => {
                         this.deleteProject(currentItem);
                       }}
@@ -197,7 +202,7 @@ class ProjectList extends React.Component {
                       Cancel
                       </MenuItem>
                     )}
-                    {currentItem.data.isProcessing === 'PENDING' && 
+                    {currentItem.data.state === 'INIT' && 
                       <MenuItem onClick={() => {
                         this.stopInitProject(currentItem);
                       }}
@@ -218,7 +223,9 @@ class ProjectList extends React.Component {
   };
 
   changeStateText = n => {
-    if(n.isProcessing) return n.isProcessing;
+    const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null } ;
+    const smartContractStatus = isProcessing.status;
+    if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
     switch (n.state) {
       case 'NEW':
         return 'JUST CREATED';
@@ -239,7 +246,9 @@ class ProjectList extends React.Component {
       case 'RELEASE':
         return 'RUNNING';
         break;
-
+      case 'INIT':
+        return 'INIT';
+        break;
       default:
         return '';
     }
