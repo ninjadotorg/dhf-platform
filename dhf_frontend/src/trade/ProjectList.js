@@ -91,6 +91,7 @@ class ProjectList extends React.Component {
       initFundModal: false,
       activeWallet: {},
     });
+    this.fetchProjects();
   };
 
   fetchProjects = () => {

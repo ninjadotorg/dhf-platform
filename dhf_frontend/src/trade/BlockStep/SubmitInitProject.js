@@ -82,6 +82,7 @@ class SubmitInitProject extends React.Component {
           this.setState({ hash });
           this.props.onFinishedTrx(hash);
           this.hedgeFundApi.getAccount(this.props.privateKey || null).then(address => {
+              console.log('address is', address);
             const isProcessing = {
                 hash,
                 status: 'INITING'
@@ -91,9 +92,11 @@ class SubmitInitProject extends React.Component {
         }).on('receipt', (receipt) => {
           const status = 'DONE';
           this.setState({ status });
-          this.updateStatusAPI('', '');
         //   this.onChangeStatusTrx(receipt.transactionHash);
-        }).on('error', err => console.log('err', err));
+        }).on('error', err => {
+            this.updateStatusAPI('', '');
+            console.log('err', err);
+        });
       }
 
     render() {

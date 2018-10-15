@@ -105,9 +105,11 @@ class SubmitCancelProject extends React.Component {
         }).on('receipt', (receipt) => {
           const status = 'DONE';
           this.setState({ status });
-          this.updateStatusAPI('');
         //   this.onChangeStatusTrx(receipt.transactionHash);
-        }).on('error', err => console.log('err', err));
+        }).on('error', err => {
+            this.updateStatusAPI('');
+            console.log('err', err);
+        });
       }
 
     render() {
