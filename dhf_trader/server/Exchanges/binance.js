@@ -116,7 +116,7 @@ module.exports = class Binance {
       project,
       status: { $in: ['CANCELED', 'FILLED'] },
       time: {
-        $lte: moment()
+        $gte: moment()
           .subtract(24, 'hours')
           .toDate()
       }
