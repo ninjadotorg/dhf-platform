@@ -1,12 +1,13 @@
 const PrivateKeyProvider = require('truffle-privatekey-provider')
 const Web3js = require('web3')
 const NetworkAPI = require('./NetworkAPI')
-
+const axios = require('axios')
 /*
   Note:
     reserved web3 for metamask
     web3js for web3 library
 */
+
 const hexEncode = function (str = '') {
   if (str.startsWith('0x')) return str
   var hex, i
@@ -24,17 +25,6 @@ function validatingPrivateKey (s) {
 }
 
 class HedgeFundAPI extends NetworkAPI {
-  
-  static getCurrentGasPrice() {
-    return fetch('https://www.etherchain.org/api/gasPriceOracle')
-      .then(res => {
-        return res.json()
-      })
-      .then(function (gasPrice) {
-        return Web3js.utils.toWei(gasPrice.standard + '', 'gwei')
-      })
-  }
-
   constructor (version = 'latest', useMetamask) {
     super()
     var self = this
@@ -42,24 +32,18 @@ class HedgeFundAPI extends NetworkAPI {
     self.contractInfo = 0
     this.useMetamask = useMetamask
 
-    this.contractUrl = `http://35.198.235.226/json/hedgefund_${this.version}.json`
-    fetch(this.contractUrl).then(r => r.json()).then(r => this.contractInfo = r).catch(err => this.contractInfo = -1);
-  }
-
-  async getMetamaskNetwork(){
-    await this._init();
-    if (!this.useMetamask) return HedgeFundAPI.NETWORK_TYPE.NONE;
+    this.contractUrl = `http://35.198.235.226/json/hedgefund_latest.json`
     try {
-      var web3js = new Web3js(web3.currentProvider);
-      return await web3js.eth.net.getId(); 
-    } catch (err) {
-      console.log('getMetamaskNetwork', err);
-      return HedgeFundAPI.NETWORK_TYPE.NONE;
+      new Promise(async (resolve)=>{
+        this.contractInfo = (await axios.get(this.contractUrl)).data
+        resolve()
+      })
+    } catch(err){
+      this.contractInfo = -1
     }
   }
-
+  
   async _init () {
-    
     return new Promise((resolve, reject) => {
       var checkContractInfo = () => {
         if (this.contractInfo == -1) {
@@ -77,6 +61,18 @@ class HedgeFundAPI extends NetworkAPI {
     })
   }
 
+  async getMetamaskNetwork () {
+    await this._init()
+    if (!this.useMetamask) return HedgeFundAPI.NETWORK_TYPE.NONE
+    try {
+      var web3js = new Web3js(web3.currentProvider)
+      return await web3js.eth.net.getId()
+    } catch (err) {
+      console.log('getMetamaskNetwork', err)
+      return HedgeFundAPI.NETWORK_TYPE.NONE
+    }
+  }
+
   async _call (method, ...params) {
     await this._init()
     // always using infura
@@ -87,8 +83,8 @@ class HedgeFundAPI extends NetworkAPI {
     return result
   }
 
-  async getAccount(privateKey){
-    await this._init();
+  async getAccount (privateKey) {
+    await this._init()
     if (this.useMetamask) {
       // use metamask
       var web3js = new Web3js(web3.currentProvider)
@@ -106,9 +102,7 @@ class HedgeFundAPI extends NetworkAPI {
         throw new Error('Can not get public address from private key')
       }
     }
-    return account
   }
-
 
   async _createTx (privateKey, value = '0', method, ...params) {
     await this._init()
@@ -129,7 +123,6 @@ class HedgeFundAPI extends NetworkAPI {
         throw new Error('Can not get public address from private key')
       }
     }
-
     let contract = new web3js.eth.Contract(this.ABI, this.contractAddress)
     let sendF = contract.methods[method](...params).send.bind(this, {
       from: account,
@@ -160,7 +153,9 @@ class HedgeFundAPI extends NetworkAPI {
     commission,
     pid
   ) {
-    if (commission < 0 || commission > 100) { throw new Error('Commission should be in range [0,100]') }
+    if (commission < 0 || commission > 100) {
+      throw new Error('Commission should be in range [0,100]')
+    }
 
     return this._createTx(
       privateKey,
