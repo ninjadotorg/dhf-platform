@@ -203,7 +203,7 @@ class ProjectList extends React.Component {
                       Cancel
                       </MenuItem>
                     )}
-                    {currentItem.data.state === 'INIT' && 
+                    {currentItem.data.state === 'INIT' && smartContractStatus !== 'STOPPING' && 
                       <MenuItem onClick={() => {
                         this.stopInitProject(currentItem);
                       }}
@@ -226,11 +226,13 @@ class ProjectList extends React.Component {
   changeStateText = n => {
     const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null } ;
     const smartContractStatus = isProcessing.status;
-    if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
+    // if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
     switch (n.state) {
-      case 'NEW':
+      case 'NEW': {
+        if (smartContractStatus) return smartContractStatus;
         return 'JUST CREATED';
         break;
+      }
 
       case 'INITFUND':
         return 'FUNDING';
@@ -247,9 +249,11 @@ class ProjectList extends React.Component {
       case 'RELEASE':
         return 'RUNNING';
         break;
-      case 'INIT':
+      case 'INIT': {
+        if (smartContractStatus) return smartContractStatus;
         return 'INIT';
-        break;
+        break; 
+      }
       default:
         return '';
     }
