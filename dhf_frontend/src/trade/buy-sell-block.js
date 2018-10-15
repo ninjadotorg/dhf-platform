@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import _ from 'lodash';
-import ReactNotification from 'react-notifications-component';
+import { toast } from 'react-toastify';
 import 'react-notifications-component/dist/theme.css';
 
 const styles = theme => ({
@@ -83,7 +83,6 @@ class BuySellBlock extends React.Component {
       buyError: '',
       sellError: '',
     };
-    this.notificationDOMRef = React.createRef();
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -108,28 +107,39 @@ class BuySellBlock extends React.Component {
   };
 
   addNotification=() => {
-    this.notificationDOMRef.current.addNotification({
-      title: 'Success',
-      message: 'Order Placed',
-      type: 'success',
-      insert: 'top',
-      container: 'bottom-left',
-      animationIn: ['animated', 'fadeIn'],
-      animationOut: ['animated', 'ZoomOut'],
-      dismiss: { duration: 2000 },
-      dismissable: { click: true },
-      slidingEnter: {
-        duration: 100,
-      },
-      slidingExit: {
-        duration: 100,
-      },
-    });
+    toast.success('Order placed.');
+  }
+
+  orderTypeApiQuery= (type) => {
+    const { orderType } = this.props;
+    switch (type) {
+      case 'buy':
+        if (orderType === 0) {
+          return 'buy-limit';
+        }
+        if (orderType === 1) {
+          return 'buy-market';
+        }
+        return 'buy-stop-limit';
+
+
+      case 'sell':
+        if (orderType === 0) {
+          return 'sell-limit';
+        }
+        if (orderType === 1) {
+          return 'sell-market';
+        }
+        return 'sell-stop-limit';
+
+      default:
+        return '';
+    }
   }
 
   handleBuySubmit= (event) => {
     event.preventDefault();
-    const orderType = this.props.orderType === 0 ? 'buy-limit' : 'buy-market';
+    const orderType = this.orderTypeApiQuery('buy');
     const data = {
       projectId: this.props.projectId,
       symbol: this.props.activeSymbol.symbol,
@@ -157,7 +167,7 @@ class BuySellBlock extends React.Component {
 
   handleSellSubmit=(event) => {
     event.preventDefault();
-    const orderType = this.props.orderType === 0 ? 'sell-limit' : 'sell-market';
+    const orderType = this.orderTypeApiQuery('sell');
     const data = {
       projectId: this.props.projectId,
       symbol: this.props.activeSymbol.symbol,
@@ -413,7 +423,6 @@ class BuySellBlock extends React.Component {
                 </IconButton>,
               ]}
             />
-            <ReactNotification ref={this.notificationDOMRef} />
           </Grid>
         </Grid>
       </div>

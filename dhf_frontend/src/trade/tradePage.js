@@ -17,10 +17,10 @@ import _ from 'lodash';
 import { compose } from 'recompose';
 import Tab from '@material-ui/core/Tab';
 import TradingViewWidget from 'react-tradingview-widget';
-import ReactNotification from 'react-notifications-component';
-import BuySellBlock from './buy-sell-block';
 import 'react-notifications-component/dist/theme.css';
 import moment from 'moment';
+import { toast } from 'react-toastify';
+import BuySellBlock from './buy-sell-block';
 import Binance from '../utils/exchanges/binance/utils';
 
 const styles = theme => ({
@@ -67,9 +67,16 @@ const styles = theme => ({
   },
   tabSelected: {},
   buttonItem: {
-    maxWidth: 40,
-    minWidth: 40,
+    maxWidth: 35,
+    minWidth: 35,
+    backgroundColor: 'transparent',
+    boxShadow: 'none',
+    color: '#000',
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
   },
+
   activeButton: {
     color: 'blue',
   },
@@ -161,7 +168,7 @@ class tradePage extends React.Component {
       activeList: [],
       quoteAsset: 'BTC',
       activeSymbol: {},
-      orderType: 0, // 0 limit , 1 market
+      orderType: 0, // 0 limit , 1 market , 2 stop-limit
       priceList: {},
       activePrice: 0,
       balancePair: [],
@@ -170,7 +177,6 @@ class tradePage extends React.Component {
       projectId: props.history.location.pathname.split('/')[2],
       isBinanceReady: false,
     };
-    this.notificationDOMRef = React.createRef();
     this.binance = new Binance(this.state.projectId, this.binanceCallback);
     // make sure everything is load sync
     this.loadBinanceAPI();
@@ -289,23 +295,7 @@ class tradePage extends React.Component {
   };
 
   showCancelNotification=() => {
-    this.notificationDOMRef.current.addNotification({
-      title: '',
-      message: 'Order Cancelled',
-      type: 'danger',
-      insert: 'top',
-      container: 'bottom-left',
-      animationIn: ['animated', 'fadeIn'],
-      animationOut: ['animated', 'ZoomOut'],
-      dismiss: { duration: 2000 },
-      dismissable: { click: true },
-      slidingEnter: {
-        duration: 100,
-      },
-      slidingExit: {
-        duration: 100,
-      },
-    });
+    toast.success(`The order '${response.orderId}' is cancelled.`);
   }
 
   cancelOrder = (orderData) => {
@@ -321,7 +311,7 @@ class tradePage extends React.Component {
     })
       .then(response => {
         if (response.orderId) {
-          this.showCancelNotification();
+          this.showCancelNotification(response);
         }
       })
       .catch(error => {});
@@ -329,7 +319,7 @@ class tradePage extends React.Component {
 
   render() {
     if (!this.state.isBinanceReady) {
-      return (<div>Loading....</div>)
+      return (<div>Loading....</div>);
     }
     const { classes } = this.props;
     const { orderType } = this.state;
@@ -358,6 +348,7 @@ class tradePage extends React.Component {
                               <div className={classes.buttonGroup}>
                                 <Button
                                   color="#333"
+                                  transparent
                                   className={[
                                     classes.buttonItem,
                                     this.state.quoteAsset == 'BTC' ? classes.activeButton : '',
@@ -368,6 +359,7 @@ class tradePage extends React.Component {
                                 </Button>
                                 <Button
                                   color="#333"
+                                  transparent
                                   className={[
                                     classes.buttonItem,
                                     this.state.quoteAsset == 'ETH' ? classes.activeButton : '',
@@ -378,6 +370,7 @@ class tradePage extends React.Component {
                                 </Button>
                                 <Button
                                   color="#333"
+                                  transparent
                                   className={[
                                     classes.buttonItem,
                                     this.state.quoteAsset == 'USDT' ? classes.activeButton : '',
@@ -388,6 +381,7 @@ class tradePage extends React.Component {
                                 </Button>
                                 <Button
                                   color="#333"
+                                  transparent
                                   className={[
                                     classes.buttonItem,
                                     this.state.quoteAsset == 'BNB' ? classes.activeButton : '',
@@ -460,6 +454,11 @@ class tradePage extends React.Component {
                       disableRipple
                       classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
                       label="Market"
+                    />
+                    <Tab
+                      disableRipple
+                      classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
+                      label="Stop Limit"
                     />
                   </Tabs>
 
@@ -575,7 +574,6 @@ class tradePage extends React.Component {
                 </Table>
               </Paper>
             </div>
-            <ReactNotification ref={this.notificationDOMRef} />
           </Paper>
         </div>
       </div>
