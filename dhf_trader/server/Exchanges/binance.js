@@ -140,6 +140,20 @@ module.exports = class Binance {
     return result
   }
 
+  async buyStopMarket (params) {
+    if (!params.quantity || !params.stopPrice) {
+      throw new Error('quantity and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'BUY',
+      type: 'STOP_LOSS',
+      quantity: params.quantity,
+      stopPrice: params.stopPrice
+    })
+  }
+
   async sellMarket (params) {
     let result = await this.client.order({
       symbol: params.symbol,
@@ -148,6 +162,20 @@ module.exports = class Binance {
       quantity: params.quantity
     })
     return result
+  }
+
+  async sellStopMarket (params) {
+    if (!params.quantity || !params.stopPrice) {
+      throw new Error('quantity and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'SELL',
+      type: 'STOP_LOSS',
+      quantity: params.quantity,
+      stopPrice: params.stopPrice
+    })
   }
 
   async tradeHistory (params) {
