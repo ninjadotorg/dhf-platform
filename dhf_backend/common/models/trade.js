@@ -3,6 +3,98 @@ let async = require('async');
 let {TRANSACTION_STATE, PROJECT_STATE} = require('../lib/constants');
 let errorHandler = require('../lib/error-handler');
 module.exports = function(Trade) {
+  Trade.buyStopLimit = function(projectId, symbol, quantity, price, stopPrice, callback) {
+    let currentProject = null;
+    let orderResult;
+    let error = new Error();
+    async.series([
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 405;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (!project.userId || project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 405;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASE) {
+            error.status = 405;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
+      },
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'buyStopLimit', symbol, quantity, price, null, null, stopPrice,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 405;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, orderResult);
+    });
+  };
+
+  Trade.sellStopLimit = function(projectId, symbol, quantity, price, stopPrice, callback) {
+    let orderResult;
+    let currentProject = null;
+    let error = new Error();
+    async.series([
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 405;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 405;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASE) {
+            error.status = 405;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
+      },
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'sellStopLimit', symbol, quantity, price, null, null, stopPrice,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 405;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, orderResult);
+    });
+  };
+
   Trade.buyLimit = function(projectId, symbol, quantity, price, callback) {
     let currentProject = null;
     let totalAmount = 0;
@@ -209,6 +301,99 @@ module.exports = function(Trade) {
     });
   };
 
+  Trade.buyStopMarket = function(projectId, symbol, quantity, price, stopPrice, callback) {
+    let currentProject = null;
+    let orderResult;
+    let error = new Error();
+    async.series([
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 405;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 405;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASE) {
+            error.status = 405;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
+      },
+      function callTrade(callback) {
+      // "action": ["projectId", "action", "symbol", "quantity", "price", "currencies", "orderId", "stopPrice"]
+        Trade.action(currentProject.id, 'buyStopMarket', symbol, quantity, price, null, null, stopPrice,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 405;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, orderResult);
+    });
+  };
+
+  Trade.sellStopMarket = function(projectId, symbol, quantity, price, stopPrice, callback) {
+    let orderResult;
+    let currentProject = null;
+    let error = new Error();
+    async.series([
+      function validateProject(callback) {
+        Trade.app.models.project.findById(projectId, function(err, project) {
+          if (err) return callback(err);
+          if (!project) {
+            error.status = 405;
+            error.message = 'Project was not existed!';
+            return callback(error);
+          }
+          if (project.userId.toString() !== Trade.app.currentUserId.toString()) {
+            error.status = 405;
+            error.message = 'You don\'t have permission on this project';
+            return callback(error);
+          }
+          if (project.state !== PROJECT_STATE.RELEASE) {
+            error.status = 405;
+            error.message = 'Project not ready or finished';
+            return callback(error);
+          }
+          currentProject = project;
+          callback();
+        });
+      },
+      function callTrade(callback) {
+        Trade.action(currentProject.id, 'sellStopMarket', symbol, quantity, price, null, null, stopPrice,
+          function(err, resp) {
+            if (err) {
+              error.message = errorHandler.filler(err);
+              error.status = 405;
+              return callback(error);
+            }
+            orderResult = resp;
+            callback();
+          });
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, orderResult);
+    });
+  };
+
   Trade.cancel = function(projectId, symbol, orderId, callback) {
     let orderResult;
     let currentProject = null;
@@ -345,6 +530,70 @@ module.exports = function(Trade) {
         callback(null, resp);
       });
   };
+
+  Trade.remoteMethod(
+    'buyStopLimit',
+    {
+      description: 'Placing a STOP Market order',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'stopPrice', type: 'number', required: true, http: {source: 'form'}},
+      ],
+      http: {verb: 'POST', path: '/buy-stop-limit'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'sellStopLimit',
+    {
+      description: 'Placing a STOP Market order',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'stopPrice', type: 'number', required: true, http: {source: 'form'}},
+      ],
+      http: {verb: 'POST', path: '/sell-stop-limit'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'buyStopMarket',
+    {
+      description: 'Placing a STOP Market order',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'stopPrice', type: 'number', required: true, http: {source: 'form'}},
+      ],
+      http: {verb: 'POST', path: '/buy-stop-market'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Trade.remoteMethod(
+    'sellStopMarket',
+    {
+      description: 'Placing a STOP Market order',
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'symbol', type: 'string', required: true, http: {source: 'form'}},
+        {arg: 'quantity', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'price', type: 'number', required: true, http: {source: 'form'}},
+        {arg: 'stopPrice', type: 'number', required: true, http: {source: 'form'}},
+      ],
+      http: {verb: 'POST', path: '/sell-stop-market'},
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
 
   Trade.remoteMethod(
     'buyLimit',

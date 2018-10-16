@@ -38,6 +38,10 @@
       "expose": [
         "buyLimit",
         "sellLimit",
+        "buyStopLimit",
+        "sellStopLimit",
+        "buyStopMarket",
+        "sellStopMarket",
         "buyMarket",
         "sellMarket",
         "myTrades",

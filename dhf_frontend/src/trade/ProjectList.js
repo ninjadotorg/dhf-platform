@@ -30,6 +30,7 @@ import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
+import ActionButton from './ProjectList/ActionButton';
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
@@ -72,6 +73,8 @@ class ProjectList extends React.Component {
     };
     this.notificationDOMRef = React.createRef();
   }
+
+  // shouldComponentUpdate = (_, state) => state.currentItem === null ||  state.currentItem !== this.state.currentItem;
 
   componentWillMount = () => {
     this.fetchProjects();
@@ -142,95 +145,16 @@ class ProjectList extends React.Component {
     })
   }
 
-  getActionButton = (n) => {
-    const { anchorEl, open, placement, currentItem } = this.state;
-    const isProcessing = currentItem && currentItem.data && currentItem.data.isProcessing ? JSON.parse(currentItem.data.isProcessing) : { status: null } ;
-    const smartContractStatus = isProcessing.status;
-    console.log(n, currentItem, smartContractStatus);
-    return (
-      <div>
-        <Button
-          aria-owns={open ? 'menu-list-grow' : null}
-          aria-haspopup="true"
-          onClick={this.handleClick('bottom', n)}
-        >
-          <MoreHoriz />
-        </Button>
-        <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
-          {({ TransitionProps }) => (
-            <Grow
-              {...TransitionProps}JS
-              id="menu-list-grow"
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    {(currentItem.data.state === 'RELEASE') && (
-                      <MenuItem component={Link} to={`/trade/${currentItem.data.id}`}>
-                        <BarChart style={{ fontSize: 15, marginRight: 5 }} />
-                      Trade
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'APPROVED') && (
-                      <MenuItem onClick={() => {
-                        // this.initFund(currentItem.data);
-                      }}
-                      >
-                        <Publish style={{ fontSize: 15, marginRight: 10 }} />
-                      Start
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW') && (!smartContractStatus) && (
-                      <MenuItem onClick={() => this.initFund(n)}>
-                        <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
-                      Init
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW') && (!smartContractStatus) && (
-                      <MenuItem component={Link} to={`/project/${currentItem.data.id}`}>
-                        <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Edit
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (!smartContractStatus) && (
-                      <MenuItem onClick={() => {
-                        this.deleteProject(currentItem);
-                      }}
-                      style={{ color: red }}
-                      >
-                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Cancel
-                      </MenuItem>
-                    )}
-                    {currentItem.data.state === 'INIT' && 
-                      <MenuItem onClick={() => {
-                        this.stopInitProject(currentItem);
-                      }}
-                      style={{ color: red }}
-                      >
-                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Stop
-                      </MenuItem>
-                    }
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </div>
-    );
-  };
-
   changeStateText = n => {
     const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null } ;
     const smartContractStatus = isProcessing.status;
-    if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
+    // if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
     switch (n.state) {
-      case 'NEW':
+      case 'NEW': {
+        if (smartContractStatus) return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'JUST CREATED';
         break;
+      }
 
       case 'INITFUND':
         return 'FUNDING';
@@ -247,9 +171,11 @@ class ProjectList extends React.Component {
       case 'RELEASE':
         return 'RUNNING';
         break;
-      case 'INIT':
+      case 'INIT': {
+        if (smartContractStatus === 'STOPPING') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'INIT';
-        break;
+        break; 
+      }
       default:
         return '';
     }
@@ -288,7 +214,11 @@ class ProjectList extends React.Component {
                   </TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
-                    <this.getActionButton data={n} />
+                    <ActionButton currentItem={n}
+                      onClickInit={()=> this.initFund({ data: n})}
+                      onClickDelete={()=>this.deleteProject({ data: n })}
+                      onClickStop={()=>this.stopInitProject({ data: n })}
+                    />
                   </TableCell>
                 </TableRow>
               );
