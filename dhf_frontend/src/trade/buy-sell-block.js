@@ -34,9 +34,6 @@ const styles = theme => ({
     color: 'blue',
   },
   paper3: {
-    minHeight: 345,
-    height: 345,
-    maxHeight: 345,
     width: '100%',
     padding: 20,
     paddingBottom: 50,
@@ -77,11 +74,16 @@ class BuySellBlock extends React.Component {
     this.state = {
       buyQuantity: 0,
       sellQuantity: 0,
+      buyStop: 0,
+      buyLimit: 0,
+      sellStop: 0,
+      sellLimit: 0,
       buyPrice: props.activePrice,
       sellPrice: props.activePrice,
       baseAsset: props.activeSymbol.baseAsset,
       buyError: '',
       sellError: '',
+      orderType: props.orderType,
     };
   }
 
@@ -90,6 +92,10 @@ class BuySellBlock extends React.Component {
       return {
         buyQuantity: 0,
         sellQuantity: 0,
+        buyStop: 0,
+        buyLimit: 0,
+        sellStop: 0,
+        sellLimit: 0,
         buyPrice: props.activePrice,
         sellPrice: props.activePrice,
         baseAsset: props.activeSymbol.baseAsset,
@@ -115,37 +121,77 @@ class BuySellBlock extends React.Component {
     switch (type) {
       case 'buy':
         if (orderType === 0) {
-          return 'buy-limit';
+          return {
+            orderType: 'buy-limit',
+            data:
+            { projectId: this.props.projectId,
+              symbol: this.props.activeSymbol.symbol,
+              quantity: parseFloat(this.state.buyQuantity),
+              price: parseFloat(this.state.buyPrice) },
+          };
         }
         if (orderType === 1) {
-          return 'buy-market';
+          return {
+            orderType: 'buy-market',
+            data:
+            { projectId: this.props.projectId,
+              symbol: this.props.activeSymbol.symbol,
+              quantity: parseFloat(this.state.buyQuantity),
+              price: parseFloat(this.state.buyPrice) },
+          };
         }
-        return 'buy-stop-limit';
+        return {
+          orderType: 'buy-stop-limit',
+          data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.buyQuantity),
+            price: parseFloat(this.state.buyLimit),
+            stopPrice: parseFloat(this.state.buyStop) },
+        };
 
 
       case 'sell':
         if (orderType === 0) {
-          return 'sell-limit';
+          return {
+            orderType: 'sell-limit',
+            data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.sellQuantity),
+            price: parseFloat(this.state.sellPrice) },
+          };
         }
         if (orderType === 1) {
-          return 'sell-market';
+          return {
+            orderType: 'sell-market',
+            data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.sellQuantity),
+            price: parseFloat(this.state.sellPrice) },
+          };
         }
-        return 'sell-stop-limit';
+        return {
+          orderType: 'sell-stop-limit',
+          data:
+        { projectId: this.props.projectId,
+          symbol: this.props.activeSymbol.symbol,
+          quantity: parseFloat(this.state.sellQuantity),
+          price: parseFloat(this.state.sellLimit),
+          stopPrice: parseFloat(this.state.sellStop) },
+        };
 
       default:
-        return '';
+        return { orderType: '', data: {} };
     }
   }
 
   handleBuySubmit= (event) => {
     event.preventDefault();
-    const orderType = this.orderTypeApiQuery('buy');
-    const data = {
-      projectId: this.props.projectId,
-      symbol: this.props.activeSymbol.symbol,
-      quantity: parseFloat(this.state.buyQuantity),
-      price: parseFloat(this.state.buyPrice),
-    };
+    const orderData = this.orderTypeApiQuery('buy');
+    const orderType = orderData.orderType;
+    const data = orderData.data;
 
     request({
       method: 'post',
@@ -167,13 +213,11 @@ class BuySellBlock extends React.Component {
 
   handleSellSubmit=(event) => {
     event.preventDefault();
-    const orderType = this.orderTypeApiQuery('sell');
-    const data = {
-      projectId: this.props.projectId,
-      symbol: this.props.activeSymbol.symbol,
-      quantity: parseFloat(this.state.sellQuantity),
-      price: parseFloat(this.state.sellPrice),
-    };
+
+    const orderData = this.orderTypeApiQuery('sell');
+    const orderType = orderData.orderType;
+    const data = orderData.data;
+
     request({
       method: 'post',
       url: `/trades/${orderType}`,
@@ -224,7 +268,7 @@ class BuySellBlock extends React.Component {
                   </Typography>
                 )}
               </FormControl>
-              {this.props.orderType == 0 ? (
+              {this.props.orderType == 0 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
                   <TextField
                     label="Price"
@@ -240,7 +284,9 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
-              ) : (
+              )}
+              {' '}
+              {this.props.orderType == 1 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
@@ -256,6 +302,37 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
+              )}
+              {this.props.orderType == 2 && (
+                <div>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Stop"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.buyStop}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('buyStop')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Limit"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.buyLimit}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('buyLimit')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+
+                </div>
               )}
               <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
                 <TextField
@@ -278,6 +355,23 @@ class BuySellBlock extends React.Component {
                     className={classNames(classes.margin, classes.textField)}
                     InputLabelProps={{ shrink: true }}
                     value={this.state.buyQuantity * Number(this.state.buyPrice)}
+                    InputProps={{
+                      type: 'number',
+                      readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              ) }
+              {this.props.orderType == 2 && (
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                  <TextField
+                    label="Total"
+                    className={classNames(classes.margin, classes.textField)}
+                    InputLabelProps={{ shrink: true }}
+                    value={this.state.buyQuantity * Number(this.state.buyLimit)}
                     InputProps={{
                       type: 'number',
                       readOnly: true,
@@ -327,7 +421,7 @@ class BuySellBlock extends React.Component {
                   </Typography>
                 )}
               </FormControl>
-              {this.props.orderType == 0 ? (
+              {this.props.orderType == 0 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
                   <TextField
                     label="Price"
@@ -343,7 +437,9 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
-              ) : (
+              )}
+              {' '}
+              {this.props.orderType == 1 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
@@ -359,6 +455,37 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
+              )}
+              {this.props.orderType == 2 && (
+                <div>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Stop"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.sellStop}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('sellStop')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Limit"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.sellLimit}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('sellLimit')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+
+                </div>
               )}
               <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
                 <TextField
@@ -381,6 +508,24 @@ class BuySellBlock extends React.Component {
                     className={classNames(classes.margin, classes.textField)}
                     InputLabelProps={{ shrink: true }}
                     value={this.state.sellQuantity * this.state.sellPrice}
+                    InputProps={{
+                      type: 'number',
+                      readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              )}
+
+              {this.props.orderType == 2 && (
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                  <TextField
+                    label="Total"
+                    className={classNames(classes.margin, classes.textField)}
+                    InputLabelProps={{ shrink: true }}
+                    value={this.state.sellQuantity * this.state.sellLimit}
                     InputProps={{
                       type: 'number',
                       readOnly: true,
