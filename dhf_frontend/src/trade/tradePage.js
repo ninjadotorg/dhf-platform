@@ -93,8 +93,8 @@ const styles = theme => ({
   table2: {},
   tableDiv: {
     overflow: 'scroll',
-    maxHeight: 345,
-    height: 345,
+    maxHeight: 386,
+    height: 386,
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -563,7 +563,7 @@ class tradePage extends React.Component {
                           <TableCell>{n.orderId}</TableCell>
                           <TableCell>{n.executedQty}</TableCell>
                           <TableCell>{n.price}</TableCell>
-                          <TableCell style={n.side === 'BUY' ? { color: 'green' } : { color: 'red' }}>
+                          <TableCell style={n.side == 'BUY' ? { color: 'green' } : { color: 'red' }}>
                             {n.side}
                           </TableCell>
                           <TableCell>{n.status}</TableCell>

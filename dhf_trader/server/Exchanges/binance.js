@@ -140,6 +140,37 @@ module.exports = class Binance {
     return result
   }
 
+  async buyStopMarket (params) {
+    if (!params.price || !params.quantity || !params.stopPrice) {
+      throw new Error('price, quantity and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'BUY',
+      type: 'STOP_LOSS',
+      price: params.price,
+      quantity: params.quantity,
+      stopPrice: params.stopPrice
+    })
+  }
+
+  async buyStopLimit (params) {
+    if (!params.price || !params.quantity || !params.stopPrice) {
+      throw new Error('price, quantity, timeInForce and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'BUY',
+      type: 'STOP_LOSS_LIMIT',
+      price: params.price,
+      quantity: params.quantity,
+      stopPrice: params.stopPrice,
+      timeInForce: 'GTC'
+    })
+  }
+
   async sellMarket (params) {
     let result = await this.client.order({
       symbol: params.symbol,
@@ -148,6 +179,37 @@ module.exports = class Binance {
       quantity: params.quantity
     })
     return result
+  }
+
+  async sellStopMarket (params) {
+    if (!params.price || !params.quantity || !params.stopPrice) {
+      throw new Error('price, quantity and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'SELL',
+      type: 'STOP_LOSS',
+      price: params.price,
+      quantity: params.quantity,
+      stopPrice: params.stopPrice
+    })
+  }
+
+  async sellStopLimit (params) {
+    if (!params.price || !params.quantity || !params.stopPrice) {
+      throw new Error('price, quantity, timeInForce and stopPrice are required')
+    }
+
+    return await this.client.order({
+      symbol: params.symbol,
+      side: 'SELL',
+      type: 'STOP_LOSS_LIMIT',
+      price: params.price,
+      quantity: params.quantity,
+      stopPrice: params.stopPrice,
+      timeInForce: 'GTC'
+    })
   }
 
   async tradeHistory (params) {
