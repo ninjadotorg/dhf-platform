@@ -155,11 +155,7 @@ class ProjectList extends React.Component {
         return 'JUST CREATED';
         break;
       }
-
-      case 'INITFUND':
-        return 'FUNDING';
-        break;
-
+      
       case 'STOP':
         return 'SUSPENDING';
         break;
@@ -171,7 +167,7 @@ class ProjectList extends React.Component {
       case 'RELEASE':
         return 'RUNNING';
         break;
-      case 'INIT': {
+      case 'INITFUND': {
         if (smartContractStatus === 'STOPPING') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'INIT';
         break; 
