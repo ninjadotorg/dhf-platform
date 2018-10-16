@@ -91,12 +91,13 @@
             "quantity": "{quantity}",
             "price": "{price}",
             "currencies": "{currencies}",
-            "orderId": "{orderId}"
+            "orderId": "{orderId}",
+            "stopPrice": "{stopPrice}"
           },
           "responsePath": ""
         },
         "functions": {
-          "action": ["projectId", "action", "symbol", "quantity", "price", "currencies", "orderId"]
+          "action": ["projectId", "action", "symbol", "quantity", "price", "currencies", "orderId", "stopPrice"]
         }
       },
       {
