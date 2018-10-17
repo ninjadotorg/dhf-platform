@@ -19,6 +19,7 @@ import headerLinksStyle from 'assets/jss/material-kit-react/components/headerLin
 
 function HeaderLinks({ ...props }) {
   const { classes } = props;
+  console.log('headerlink', props);
   return (
     <List className={classes.list}>
       <ListItem className={classes.listItem}>
@@ -45,7 +46,7 @@ function HeaderLinks({ ...props }) {
         /> */}
       </ListItem>
       <ListItem className={classes.listItem}>
-        {!localStorage.getItem('token') && (
+        {!localStorage.getItem('token') && window.location.href.indexOf('register') < 0 && (
           <Link to="/register"  className={classes.navLink}>
             {' '}
             Register
@@ -58,7 +59,7 @@ function HeaderLinks({ ...props }) {
             {' '}
             Dashboard
           </Link>
-        ) : (
+        ) : window.location.href.indexOf('login') < 0 && (
           <Link to="/login"  className={classes.navLink}>
             {' '}
             Login
