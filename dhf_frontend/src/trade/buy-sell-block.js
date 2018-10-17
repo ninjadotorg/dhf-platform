@@ -45,6 +45,7 @@ const styles = theme => ({
   sell: {
     color: '#000',
     borderColor: '#f44336',
+    backgroundColor: '#ffabab',
     marginTop: 6,
     '&:hover': {
       backgroundColor: '#fffafa',
@@ -548,26 +549,6 @@ class BuySellBlock extends React.Component {
                 Sell
               </Button>
             </ValidatorForm>
-            <Snackbar
-              anchorOrigin={{ vertical, horizontal }}
-              open={open}
-              onClose={this.handleClose}
-              ContentProps={{
-                'aria-describedby': 'message-id',
-              }}
-              message={<span id="message-id">Order placed</span>}
-              action={[
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  className={classes.close}
-                  onClick={this.handleClose}
-                >
-                  <CloseIcon className={classes.icon} />
-                </IconButton>,
-              ]}
-            />
           </Grid>
         </Grid>
       </div>
