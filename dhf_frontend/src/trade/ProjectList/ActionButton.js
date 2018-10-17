@@ -131,7 +131,7 @@ class ActionButton extends React.Component {
                               Cancel
                               </MenuItem>
                             )}
-                            {currentItem.state === 'INIT' && smartContractStatus !== 'STOPPING' && 
+                            {currentItem.state === 'INITFUND' && smartContractStatus !== 'STOPPING' && 
                               <MenuItem onClick={onClickStop}
                               style={{ color: red }}
                               >
