@@ -24,7 +24,11 @@
       "default": "binance"
     },
     "max": {
-      "type": "string",
+      "type": "number",
+      "default": "0"
+    },
+    "min": {
+      "type": "number",
       "default": "0"
     },
     "commission": {
@@ -96,6 +100,10 @@
       "type": "string"
     },
     "isProcessing": {
+      "type": "string",
+      "default": ""
+    },
+    "description": {
       "type": "string",
       "default": ""
     },
