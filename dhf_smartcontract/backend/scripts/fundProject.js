@@ -3,18 +3,10 @@ const HedgeFundAPI = require("../common/libs/HedgeFundAPI")
 const Web3js = require("web3")
 
 async function start(){
-
-
-    
-    var client  = new HedgeFundAPI("v2", false)
-    await client._init()
-    var web3js = new Web3js()
-    let target = 1
-    let max = 10
-
-    
-
-    let tx = await client.initProject(__Config.PrivateKey, target, max, Math.floor((new Date()-0)/1000)+24*60*60, 10, 5, "123" )
+    var client  = new HedgeFundAPI("latest", false)
+    let r = await client.getProjectInfo("0x5bc5645722c175002005d5d3")
+    console.log(r)
+    let tx = await client.fundProject(__Config.PrivateKey, 0.001, "0x5bc5645722c175002005d5d3")
     try {
         await tx.estimateGas()
         tx.run()
@@ -28,9 +20,8 @@ async function start(){
         })
     } catch(err){
         console.log(err)
-    } finally{
-
     }
+
 }
 
 start()
