@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import _ from 'lodash';
-import ReactNotification from 'react-notifications-component';
+import { toast } from 'react-toastify';
 import 'react-notifications-component/dist/theme.css';
 
 const styles = theme => ({
@@ -34,9 +34,6 @@ const styles = theme => ({
     color: 'blue',
   },
   paper3: {
-    minHeight: 345,
-    height: 345,
-    maxHeight: 345,
     width: '100%',
     padding: 20,
     paddingBottom: 50,
@@ -48,6 +45,7 @@ const styles = theme => ({
   sell: {
     color: '#000',
     borderColor: '#f44336',
+    backgroundColor: '#ffabab',
     marginTop: 6,
     '&:hover': {
       backgroundColor: '#fffafa',
@@ -77,13 +75,17 @@ class BuySellBlock extends React.Component {
     this.state = {
       buyQuantity: 0,
       sellQuantity: 0,
+      buyStop: 0,
+      buyLimit: 0,
+      sellStop: 0,
+      sellLimit: 0,
       buyPrice: props.activePrice,
       sellPrice: props.activePrice,
       baseAsset: props.activeSymbol.baseAsset,
       buyError: '',
       sellError: '',
+      orderType: props.orderType,
     };
-    this.notificationDOMRef = React.createRef();
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -91,6 +93,10 @@ class BuySellBlock extends React.Component {
       return {
         buyQuantity: 0,
         sellQuantity: 0,
+        buyStop: 0,
+        buyLimit: 0,
+        sellStop: 0,
+        sellLimit: 0,
         buyPrice: props.activePrice,
         sellPrice: props.activePrice,
         baseAsset: props.activeSymbol.baseAsset,
@@ -108,34 +114,85 @@ class BuySellBlock extends React.Component {
   };
 
   addNotification=() => {
-    this.notificationDOMRef.current.addNotification({
-      title: 'Success',
-      message: 'Order Placed',
-      type: 'success',
-      insert: 'top',
-      container: 'bottom-left',
-      animationIn: ['animated', 'fadeIn'],
-      animationOut: ['animated', 'ZoomOut'],
-      dismiss: { duration: 2000 },
-      dismissable: { click: true },
-      slidingEnter: {
-        duration: 100,
-      },
-      slidingExit: {
-        duration: 100,
-      },
-    });
+    toast.success('Order placed.');
+  }
+
+  orderTypeApiQuery= (type) => {
+    const { orderType } = this.props;
+    switch (type) {
+      case 'buy':
+        if (orderType === 0) {
+          return {
+            orderType: 'buy-limit',
+            data:
+            { projectId: this.props.projectId,
+              symbol: this.props.activeSymbol.symbol,
+              quantity: parseFloat(this.state.buyQuantity),
+              price: parseFloat(this.state.buyPrice) },
+          };
+        }
+        if (orderType === 1) {
+          return {
+            orderType: 'buy-market',
+            data:
+            { projectId: this.props.projectId,
+              symbol: this.props.activeSymbol.symbol,
+              quantity: parseFloat(this.state.buyQuantity),
+              price: parseFloat(this.state.buyPrice) },
+          };
+        }
+        return {
+          orderType: 'buy-stop-limit',
+          data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.buyQuantity),
+            price: parseFloat(this.state.buyLimit),
+            stopPrice: parseFloat(this.state.buyStop) },
+        };
+
+
+      case 'sell':
+        if (orderType === 0) {
+          return {
+            orderType: 'sell-limit',
+            data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.sellQuantity),
+            price: parseFloat(this.state.sellPrice) },
+          };
+        }
+        if (orderType === 1) {
+          return {
+            orderType: 'sell-market',
+            data:
+          { projectId: this.props.projectId,
+            symbol: this.props.activeSymbol.symbol,
+            quantity: parseFloat(this.state.sellQuantity),
+            price: parseFloat(this.state.sellPrice) },
+          };
+        }
+        return {
+          orderType: 'sell-stop-limit',
+          data:
+        { projectId: this.props.projectId,
+          symbol: this.props.activeSymbol.symbol,
+          quantity: parseFloat(this.state.sellQuantity),
+          price: parseFloat(this.state.sellLimit),
+          stopPrice: parseFloat(this.state.sellStop) },
+        };
+
+      default:
+        return { orderType: '', data: {} };
+    }
   }
 
   handleBuySubmit= (event) => {
     event.preventDefault();
-    const orderType = this.props.orderType === 0 ? 'buy-limit' : 'buy-market';
-    const data = {
-      projectId: this.props.projectId,
-      symbol: this.props.activeSymbol.symbol,
-      quantity: parseFloat(this.state.buyQuantity),
-      price: parseFloat(this.state.buyPrice),
-    };
+    const orderData = this.orderTypeApiQuery('buy');
+    const orderType = orderData.orderType;
+    const data = orderData.data;
 
     request({
       method: 'post',
@@ -157,13 +214,11 @@ class BuySellBlock extends React.Component {
 
   handleSellSubmit=(event) => {
     event.preventDefault();
-    const orderType = this.props.orderType === 0 ? 'sell-limit' : 'sell-market';
-    const data = {
-      projectId: this.props.projectId,
-      symbol: this.props.activeSymbol.symbol,
-      quantity: parseFloat(this.state.sellQuantity),
-      price: parseFloat(this.state.sellPrice),
-    };
+
+    const orderData = this.orderTypeApiQuery('sell');
+    const orderType = orderData.orderType;
+    const data = orderData.data;
+
     request({
       method: 'post',
       url: `/trades/${orderType}`,
@@ -214,7 +269,7 @@ class BuySellBlock extends React.Component {
                   </Typography>
                 )}
               </FormControl>
-              {this.props.orderType == 0 ? (
+              {this.props.orderType == 0 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
                   <TextField
                     label="Price"
@@ -230,7 +285,9 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
-              ) : (
+              )}
+              {' '}
+              {this.props.orderType == 1 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
@@ -246,6 +303,37 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
+              )}
+              {this.props.orderType == 2 && (
+                <div>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Stop"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.buyStop}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('buyStop')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Limit"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.buyLimit}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('buyLimit')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+
+                </div>
               )}
               <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
                 <TextField
@@ -268,6 +356,23 @@ class BuySellBlock extends React.Component {
                     className={classNames(classes.margin, classes.textField)}
                     InputLabelProps={{ shrink: true }}
                     value={this.state.buyQuantity * Number(this.state.buyPrice)}
+                    InputProps={{
+                      type: 'number',
+                      readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              ) }
+              {this.props.orderType == 2 && (
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                  <TextField
+                    label="Total"
+                    className={classNames(classes.margin, classes.textField)}
+                    InputLabelProps={{ shrink: true }}
+                    value={this.state.buyQuantity * Number(this.state.buyLimit)}
                     InputProps={{
                       type: 'number',
                       readOnly: true,
@@ -317,7 +422,7 @@ class BuySellBlock extends React.Component {
                   </Typography>
                 )}
               </FormControl>
-              {this.props.orderType == 0 ? (
+              {this.props.orderType == 0 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3 }}>
                   <TextField
                     label="Price"
@@ -333,7 +438,9 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
-              ) : (
+              )}
+              {' '}
+              {this.props.orderType == 1 && (
                 <FormControl margin="normal" required fullWidth style={{ marginTop: 3, pointerEvents: 'none' }}>
                   <TextField
                     label="Price"
@@ -349,6 +456,37 @@ class BuySellBlock extends React.Component {
                     }}
                   />
                 </FormControl>
+              )}
+              {this.props.orderType == 2 && (
+                <div>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Stop"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.sellStop}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('sellStop')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                    <TextField
+                      label="Limit"
+                      className={classNames(classes.margin, classes.textField)}
+                      value={this.state.sellLimit}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={this.handleAmountChange('sellLimit')}
+                      InputProps={{
+                        type: 'number',
+                        endAdornment: <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+
+                </div>
               )}
               <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
                 <TextField
@@ -381,6 +519,24 @@ class BuySellBlock extends React.Component {
                   />
                 </FormControl>
               )}
+
+              {this.props.orderType == 2 && (
+                <FormControl margin="normal" required fullWidth style={{ marginTop: 7 }}>
+                  <TextField
+                    label="Total"
+                    className={classNames(classes.margin, classes.textField)}
+                    InputLabelProps={{ shrink: true }}
+                    value={this.state.sellQuantity * this.state.sellLimit}
+                    InputProps={{
+                      type: 'number',
+                      readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="start">{this.props.activeSymbol.quoteAsset}</InputAdornment>
+                      ),
+                    }}
+                  />
+                </FormControl>
+              )}
               <Typography
                 color="error"
                 style={{
@@ -393,27 +549,6 @@ class BuySellBlock extends React.Component {
                 Sell
               </Button>
             </ValidatorForm>
-            <Snackbar
-              anchorOrigin={{ vertical, horizontal }}
-              open={open}
-              onClose={this.handleClose}
-              ContentProps={{
-                'aria-describedby': 'message-id',
-              }}
-              message={<span id="message-id">Order placed</span>}
-              action={[
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  className={classes.close}
-                  onClick={this.handleClose}
-                >
-                  <CloseIcon className={classes.icon} />
-                </IconButton>,
-              ]}
-            />
-            <ReactNotification ref={this.notificationDOMRef} />
           </Grid>
         </Grid>
       </div>

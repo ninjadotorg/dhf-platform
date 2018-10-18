@@ -102,6 +102,7 @@ class HedgeFundAPI extends NetworkAPI {
         throw new Error('Can not get public address from private key')
       }
     }
+    return account;
   }
 
   async _createTx (privateKey, value = '0', method, ...params) {

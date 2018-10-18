@@ -30,6 +30,10 @@ import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
+import ActionButton from './ProjectList/ActionButton';
+
+const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
+const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
   root: {
     width: '100%',
@@ -71,6 +75,8 @@ class ProjectList extends React.Component {
     this.notificationDOMRef = React.createRef();
   }
 
+  // shouldComponentUpdate = (_, state) => state.currentItem === null ||  state.currentItem !== this.state.currentItem;
+
   componentWillMount = () => {
     this.fetchProjects();
   };
@@ -89,6 +95,7 @@ class ProjectList extends React.Component {
       initFundModal: false,
       activeWallet: {},
     });
+    this.fetchProjects();
   };
 
   fetchProjects = () => {
@@ -135,103 +142,26 @@ class ProjectList extends React.Component {
     this.setState({
       initFundModal: true,
       activeProject: n,
-      stepperAction: 'STOP'
-    })
+      stepperAction: 'STOP',
+    });
   }
 
-  getActionButton = (n) => {
-    const { anchorEl, open, placement, currentItem } = this.state;
-    return (
-      <div>
-        <Button
-          aria-owns={open ? 'menu-list-grow' : null}
-          aria-haspopup="true"
-          onClick={this.handleClick('bottom', n)}
-        >
-          <MoreHoriz />
-        </Button>
-        <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
-          {({ TransitionProps }) => (
-            <Grow
-              {...TransitionProps}
-              id="menu-list-grow"
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    {(currentItem.data.state === 'RELEASE') && (
-                      <MenuItem component={Link} to={`/trade/${currentItem.data.id}`}>
-                        <BarChart style={{ fontSize: 15, marginRight: 5 }} />
-                      Trade
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'APPROVED') && (
-                      <MenuItem onClick={() => {
-                        // this.initFund(currentItem.data);
-                      }}
-                      >
-                        <Publish style={{ fontSize: 15, marginRight: 10 }} />
-                      Start
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing) && (
-                      <MenuItem onClick={() => this.initFund(n)}>
-                        <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
-                      Init
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW') && (!currentItem.data.isProcessing === 'SUSPENDING') && (
-                      <MenuItem component={Link} to={`/project/${currentItem.data.id}`}>
-                        <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Edit
-                      </MenuItem>
-                    )}
-                    {(currentItem.data.state === 'NEW' || currentItem.data.state === 'RELEASE') && (!currentItem.data.isProcessing) && (
-                      <MenuItem onClick={() => {
-                        this.deleteProject(currentItem);
-                      }}
-                      style={{ color: red }}
-                      >
-                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Cancel
-                      </MenuItem>
-                    )}
-                    {currentItem.data.isProcessing === 'PENDING' && 
-                      <MenuItem onClick={() => {
-                        this.stopInitProject(currentItem);
-                      }}
-                      style={{ color: red }}
-                      >
-                        <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
-                      Stop
-                      </MenuItem>
-                    }
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </div>
-    );
-  };
-
   changeStateText = n => {
-    if(n.isProcessing) return n.isProcessing;
+    const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null };
+    const smartContractStatus = isProcessing.status;
+    // if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
     switch (n.state) {
-      case 'NEW':
+      case 'NEW': {
+        if (smartContractStatus) return (<a target="_blank" href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'JUST CREATED';
         break;
-
-      case 'INITFUND':
-        return 'FUNDING';
-        break;
+      }
 
       case 'STOP':
         return 'SUSPENDING';
         break;
-
+      case 'READY':
+        return 'READY';
       case 'WITHDRAW':
         return 'CLOSED';
         break;
@@ -239,7 +169,11 @@ class ProjectList extends React.Component {
       case 'RELEASE':
         return 'RUNNING';
         break;
-
+      case 'INITFUND': {
+        if (smartContractStatus === 'STOPPING') return (<a target="_blank" href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
+        return 'INIT';
+        break;
+      }
       default:
         return '';
     }
@@ -253,10 +187,11 @@ class ProjectList extends React.Component {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Time</TableCell>
+              <TableCell>Project Name</TableCell>
+              <TableCell>Date & Time</TableCell>
               <TableCell>Exchange</TableCell>
-              <TableCell>Funding Amount</TableCell>
+              <TableCell>Amount of Funds raised</TableCell>
+              <TableCell>Progress</TableCell>
               <TableCell>State</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
@@ -269,16 +204,21 @@ class ProjectList extends React.Component {
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
-                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY')}</TableCell>
+                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell>{n.exchange}</TableCell>
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    Funders : 20
+                    Investors {n.numberOfFunder || 0}
                   </TableCell>
+                  <TableCell>{`${n.fundingAmount}/${n.target}`}</TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
-                    <this.getActionButton data={n} />
+                    <ActionButton currentItem={n}
+                      onClickInit={() => this.initFund({ data: n })}
+                      onClickDelete={() => this.deleteProject({ data: n })}
+                      onClickStop={() => this.stopInitProject({ data: n })}
+                    />
                   </TableCell>
                 </TableRow>
               );

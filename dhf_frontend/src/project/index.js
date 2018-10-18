@@ -14,6 +14,7 @@ import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import moment from 'moment';
 import history from '@/utils/history';
@@ -86,7 +87,9 @@ class createProject extends React.Component {
       currency: '',
       target: 0,
       max: 0,
+      min: 0,
       commission: 0,
+      description: '',
       currencyList: [],
       deadline: new Date(),
       lifeTime: 0,
@@ -175,16 +178,18 @@ class createProject extends React.Component {
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="name">Name of project</InputLabel>
-                      <Input id="name" name="name" autoComplete="name" autoFocus onChange={this.handleTextChange} />
+                      <TextField id="name" name="name" label="Name of project" required autoComplete="name" autoFocus onChange={this.handleTextChange} />
                     </FormControl>
                   </Grid>
                   <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="target">Target</InputLabel>
-                      <Input
+                    <FormControl margin="normal"
+                      fullWidth
+                    >
+                      <TextField
                         id="target"
+                        helperText="This is an optional field to indicate your expected returns"
                         name="target"
+                        label="Target earnings (%)"
                         autoComplete="target"
                         type="number"
                         autoFocus
@@ -198,6 +203,7 @@ class createProject extends React.Component {
                     <FormControl margin="normal" required fullWidth>
                       <Select
                         value={this.state.exchange}
+                        required
                         onChange={this.handleExchangeChange('exchange')}
                         displayEmpty
                         name="exchange"
@@ -208,6 +214,10 @@ class createProject extends React.Component {
                           return <MenuItem value={item}>{item}</MenuItem>;
                         })}
                       </Select>
+                      <FormHelperText>
+                        Currently we only support tradings on Binance
+                      </FormHelperText>
+
                     </FormControl>
                   </Grid>
                   <Grid item xs>
@@ -216,6 +226,7 @@ class createProject extends React.Component {
                         value={this.state.currency}
                         onChange={this.handleExchangeChange('currency')}
                         displayEmpty
+                        required
                         name="currency"
                         className={classes.selectEmpty}
                       >
@@ -228,17 +239,37 @@ class createProject extends React.Component {
                           );
                         })}
                       </Select>
+                      <FormHelperText>
+                      Please select the type of crypto you want to crowdfund from investors. Currently supports ETH only.
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                 </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="max">Max</InputLabel>
-                      <Input
+                      <TextField
+                        id="min"
+                        name="min"
+                        helperText="Please indicate the minimum amount of funds you are happy to start with. When the condition is fulfilled, traders can either launch the project immediately or wait until the deadline."
+                        autoComplete="min"
+                        required
+                        autoFocus
+                        label="Minimum amount"
+                        onChange={this.handleTextChange}
+                        type="number"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs>
+                    <FormControl margin="normal" required fullWidth>
+                      <TextField
                         id="max"
                         name="max"
+                        required
                         autoComplete="max"
+                        label="Maximum amount"
+                        helperText="Please indicate the maximum amount of funds you are capable of management."
                         autoFocus
                         onChange={this.handleTextChange}
                         type="number"
@@ -247,10 +278,11 @@ class createProject extends React.Component {
                   </Grid>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
-                      <InputLabel htmlFor="commission">Commission</InputLabel>
-                      <Input
+                      <TextField
                         id="commission"
+                        label="Commission"
                         name="commission"
+                        helperText="Please indicate the percent of profit you want to share with investors."
                         autoComplete="commission"
                         autoFocus
                         onChange={this.handleTextChange}
@@ -266,10 +298,14 @@ class createProject extends React.Component {
                         <InlineDatePicker
                           label="Deadline"
                           disablePast
+                          required
                           value={this.state.deadline}
                           format="DD MMMM YYYY"
                           onChange={this.handleDateChange}
                         />
+                        <FormHelperText>
+                      The latest date to launch the project.
+                        </FormHelperText>
                       </MuiPickersUtilsProvider>
                     </FormControl>
                   </Grid>
@@ -280,8 +316,27 @@ class createProject extends React.Component {
                         id="lifeTime"
                         name="lifeTime"
                         type="number"
+                        value={this.state.lifeTime}
                         onChange={this.handleTextChange}
-                        endAdornment={<InputAdornment position="end">Number of Days</InputAdornment>}
+                        endAdornment={<InputAdornment position="end" style={{ width: '100%' }}>Number of Days</InputAdornment>}
+                      />
+                      <FormHelperText>
+                      How long does your project run?
+                      </FormHelperText>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={24}>
+                  <Grid item xs>
+                    <FormControl fullWidth margin="normal" className={classes.margin}>
+                      <TextField
+                        id="description"
+                        required
+                        label="Description of your trading strategy"
+                        name="description"
+                        helperText="For example: day trading / swing trading / scalping / position trading etc."
+                        type="text"
+                        onChange={this.handleTextChange}
                       />
                     </FormControl>
                   </Grid>
