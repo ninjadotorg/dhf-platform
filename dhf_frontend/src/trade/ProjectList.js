@@ -159,7 +159,8 @@ class ProjectList extends React.Component {
       case 'STOP':
         return 'SUSPENDING';
         break;
-
+      case 'READY':
+        return 'READY';
       case 'WITHDRAW':
         return 'CLOSED';
         break;
@@ -206,7 +207,7 @@ class ProjectList extends React.Component {
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    Funders : 20
+                    {n.numberOfFunder || 0}
                   </TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>

@@ -109,7 +109,7 @@ class Register extends React.Component {
       lastName: this.state.lastName,
       username: this.state.username,
       password: this.state.password,
-      userType: 'trader',
+      userType: 'user',
       emailVerified: false,
     };
     this.setState({
