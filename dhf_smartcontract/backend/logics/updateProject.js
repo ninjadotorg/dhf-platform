@@ -23,12 +23,10 @@ async function start () {
   let newEvent = await EventLog.model
     .findOne({ getTransaction: false })
     .sort({ blockNumber: -1 })
-  // console.log(newEvent)
+  if (!newEvent) return setTimeout(start, 1000)
 
-  let id = newEvent.projectID.replace(/^0x/, '')
-
+  let id = newEvent.projectID.replace(/^0x/, '').substring(0,24)
   let r = await client.getProjectInfo(newEvent.projectID)
-
   let {
     owner,
     target,
@@ -40,9 +38,9 @@ async function start () {
     startTime,
     deadline,
     lifeTime,
-    state
+    state,
+    numFunder
   } = r
-
   target = web3js.utils.fromWei(target, 'ether')
   max = web3js.utils.fromWei(max, 'ether')
   fundingAmount = web3js.utils.fromWei(fundingAmount, 'ether')
@@ -53,11 +51,7 @@ async function start () {
   deadline = new Date(deadline * 1000)
   lifeTime = lifeTime / (24 * 60 * 60)
   state = getState(state)
-
-  // console.log(newEvent.projectID, {owner, target, max, fundingAmount, availableAmount,
-  // releasedAmount, retractAmount, startTime, deadline ,lifeTime, state})
-
-  let project = await Project.update(id, {
+  let project = await Project.update({_id: id}, {
     owner,
     target,
     max,
@@ -68,9 +62,10 @@ async function start () {
     startTime,
     deadline,
     lifeTime,
-    state
+    state,
+    numberOfFunder: numFunder
   })
-  console.log(project)
-
+  console.log("update ", id, project.state)
   await EventLog.update({ _id: newEvent._id }, { getTransaction: true })
+  start()
 }

@@ -16,58 +16,10 @@ contract('HedgeFund', accounts => {
   console.log('investor1: ', investor1)
   console.log('investor2: ', investor2)
   console.log('PID1: ', PID1)
-
-  async function getProjectInfo (pid) {
-    let r = await hf.getProjectInfo(pid)
-    var owner = r[0].toString()
-    var target = web3.fromWei(r[1].toString(), 'ether')
-    var max = web3.fromWei(r[2].toString(), 'ether')
-    var fundingAmount = web3.fromWei(r[3].toString(), 'ether')
-    var updatedAmmount = web3.fromWei(r[4].toString(), 'ether')
-    var releasedAmount = web3.fromWei(r[5].toString(), 'ether')
-    var startTime = r[6].toString()
-    var deadline = r[7].toString()
-    var lifeTime = r[8].toString()
-    var state = r[9].toString()
-    console.log({
-      owner,
-      target,
-      max,
-      fundingAmount,
-      updatedAmmount,
-      releasedAmount,
-      startTime,
-      deadline,
-      lifeTime,
-      state
-    })
-  }
-
-  async function getFunder (pid) {
-    let _a = await hf.getFunders(PID1)
-    let _t = {}
-    for (var i in _a) {
-      if (!_t[_a[i]]) {
-        _t[_a[i]] = 1
-        let f = web3.fromWei(
-          (await hf.getFundAmount(PID1, _a[i])).toString(),
-          'ether'
-        )
-        let w = web3.fromWei(
-          (await hf.getWithdrawAmount(PID1, _a[i])).toString(),
-          'ether'
-        )
-        console.log(_a[i], f, w)
-      }
-    }
-  }
+  
   before(async () => {
     hf = await HedgeFund.deployed()
-    console.log(
-      Utils.b2s(
-        '0x5f00000000000000000000000000000000000000000000000000000000000000,'
-      )
-    )
+    console.log("Smart contract: " + hf.address)
   })
 
   describe('Voting at APPROVE state', () => {
@@ -77,11 +29,12 @@ contract('HedgeFund', accounts => {
       let deadline = Math.floor(new Date().getTime() / 1000) + 60 * 60
       let lifeTime = 3
       let owner = trader
-      let tx1 = await hf.initProject(target, max, deadline, lifeTime, PID1, {
+      let commission = 5;
+      let tx1 = await hf.initProject(target, max, deadline, lifeTime, commission, PID1, {
         from: owner
       })
       assert.equal(PID1, Utils.b2s(Utils.oc(tx1, '__init', 'pid')))
-      assert.equal('INITFUND', Utils.b2s(Utils.oc(tx1, '__changeState', 'to')))
+      assert.equal(1, Utils.oc(tx1, '__changeState', 'to'))
     })
 
     it('should allow investor to invest fund to an exist project (within deadline)', async () => {
@@ -103,7 +56,7 @@ contract('HedgeFund', accounts => {
         from: investor1,
         value: web3.toWei(0.5)
       })
-      assert.equal('READY', Utils.b2s(Utils.oc(tx1, '__changeState', 'to')))
+      assert.equal(2, Utils.oc(tx1, '__changeState', 'to'))
       let tx2 = await hf.fundProject(PID1, {
         from: investor2,
         value: web3.toWei(0.02)
@@ -113,9 +66,9 @@ contract('HedgeFund', accounts => {
 
     it('should allow to vote in READY state', async () => {
       let tx1 = await hf.voteStop(PID1, 1, { from: investor1 })
-      assert.equal(Utils.b2s(Utils.oc(tx1, '__changeState', 'to')), 'WITHDRAW')
-      await getFunder(PID1)
-      await getProjectInfo(PID1)
+      assert.equal(5, Utils.oc(tx1, '__changeState', 'to'))
+      await Utils.getFunder(hf, PID1)
+      await Utils.getProjectInfo(hf, PID1)
     })
   })
 })
