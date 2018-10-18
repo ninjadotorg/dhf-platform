@@ -8,12 +8,14 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Tooltip from '@material-ui/core/Tooltip';
+import { withRouter } from 'react-router-dom';
 // @material-ui/icons
 import { Apps, CloudDownload } from '@material-ui/icons';
+import { compose } from 'recompose';
 
 // core components
 import CustomDropdown from 'components/CustomDropdown/CustomDropdown.jsx';
-import Button from 'components/CustomButtons/Button.jsx';
+import Button from '@material-ui/core/Button';
 
 import headerLinksStyle from 'assets/jss/material-kit-react/components/headerLinksStyle.jsx';
 
@@ -46,7 +48,7 @@ function HeaderLinks({ ...props }) {
         /> */}
       </ListItem>
       <ListItem className={classes.listItem}>
-        {!localStorage.getItem('token') && window.location.href.indexOf('register') < 0 && (
+        {!localStorage.getItem('token') && props.location.pathname != "/register" && (
           <Link to="/register"  className={classes.navLink}>
             {' '}
             Register
@@ -59,15 +61,18 @@ function HeaderLinks({ ...props }) {
             {' '}
             Dashboard
           </Link>
-        ) : window.location.href.indexOf('login') < 0 && (
-          <Link to="/login"  className={classes.navLink}>
-            {' '}
+        ) : (
+          props.location.pathname != "/login" &&
+            <Button type="submit" variant="raised" color="primary" component={Link} to='/login'>
             Login
-          </Link>
+          </Button>
         )}
       </ListItem>
     </List>
   );
 }
 
-export default withStyles(headerLinksStyle)(HeaderLinks);
+export default compose(
+  withRouter,
+  withStyles(headerLinksStyle),
+)(HeaderLinks);

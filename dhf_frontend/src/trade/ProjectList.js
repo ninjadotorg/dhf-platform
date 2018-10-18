@@ -31,6 +31,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
 import ActionButton from './ProjectList/ActionButton';
+
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
@@ -141,21 +142,21 @@ class ProjectList extends React.Component {
     this.setState({
       initFundModal: true,
       activeProject: n,
-      stepperAction: 'STOP'
-    })
+      stepperAction: 'STOP',
+    });
   }
 
   changeStateText = n => {
-    const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null } ;
+    const isProcessing = n.isProcessing ? JSON.parse(n.isProcessing) : { status: null };
     const smartContractStatus = isProcessing.status;
     // if (smartContractStatus && n.state !== 'INIT' && n.state !== 'STOP') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
     switch (n.state) {
       case 'NEW': {
-        if (smartContractStatus) return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
+        if (smartContractStatus) return (<a target="_blank" href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'JUST CREATED';
         break;
       }
-      
+
       case 'STOP':
         return 'SUSPENDING';
         break;
@@ -169,9 +170,9 @@ class ProjectList extends React.Component {
         return 'RUNNING';
         break;
       case 'INITFUND': {
-        if (smartContractStatus === 'STOPPING') return (<a target='_blank' href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
+        if (smartContractStatus === 'STOPPING') return (<a target="_blank" href={linkToEtherScan(isProcessing.hash)}>{smartContractStatus}</a>);
         return 'INIT';
-        break; 
+        break;
       }
       default:
         return '';
@@ -186,10 +187,11 @@ class ProjectList extends React.Component {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Time</TableCell>
+              <TableCell>Project Name</TableCell>
+              <TableCell>Date & Time</TableCell>
               <TableCell>Exchange</TableCell>
-              <TableCell>Funding Amount</TableCell>
+              <TableCell>Amount of Funds raised</TableCell>
+              <TableCell>Progress</TableCell>
               <TableCell>State</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
@@ -202,19 +204,20 @@ class ProjectList extends React.Component {
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
-                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY')}</TableCell>
+                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell>{n.exchange}</TableCell>
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    {n.numberOfFunder || 0}
+                    Investors {n.numberOfFunder || 0}
                   </TableCell>
+                  <TableCell>{`${n.fundingAmount}/${n.target}`}</TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
                     <ActionButton currentItem={n}
-                      onClickInit={()=> this.initFund({ data: n})}
-                      onClickDelete={()=>this.deleteProject({ data: n })}
-                      onClickStop={()=>this.stopInitProject({ data: n })}
+                      onClickInit={() => this.initFund({ data: n })}
+                      onClickDelete={() => this.deleteProject({ data: n })}
+                      onClickStop={() => this.stopInitProject({ data: n })}
                     />
                   </TableCell>
                 </TableRow>
