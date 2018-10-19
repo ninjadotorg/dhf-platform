@@ -126,6 +126,7 @@ services:
        - ./dhf_smartcontract/backend/logics:/app/logics
        - ./dhf_smartcontract/backend/common:/app/common
        - ./dhf_smartcontract/backend/scripts:/app/scripts
+       - ./dhf_smartcontract/backend/.env.js:/app/.env.js
        - ./dhf_smartcontract/backend/config.js:/app/config.js
        - ./dhf_smartcontract/backend/router.js:/app/router.js
        - ./dhf_smartcontract/backend/server.js:/app/server.js
