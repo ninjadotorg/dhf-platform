@@ -379,7 +379,7 @@ module.exports = function(Project) {
   Project.remoteMethod('release', {
     description: 'release project',
     accepts: [
-      {arg: 'projectId', type: 'string', required: true},
+      {arg: 'projectId', type: 'string', required: true, http: {source: 'body'}},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/release', verb: 'post'},
