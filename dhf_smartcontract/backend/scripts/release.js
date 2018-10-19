@@ -1,13 +1,24 @@
 require("../config")
 const HedgeFundAPI = require("../common/libs/HedgeFundAPI")
-const Web3js = require("web3")
 
 async function start(){
     var client  = new HedgeFundAPI("latest", false)
-    let r = await client.getProjectInfo("0x5bc71984c6182f0055044878")
+
+    let r = await client.getProjectInfo("0x5bc83bd747cefc0064cf9eab")
     console.log(r)
-    let tx = await client.fundProject(__Config.PrivateKey, 0.001, "0x5bc71984c6182f0055044878")
+
+    let project = "0x5bc83bd747cefc0064cf9eab";
+    let depositAddress = "0x77470AC27Bdff497e0116067b0b00214c16592E4";
+    let amount = 0.11;
+    let stage = "0x5bc97a030c5bbd00b4688483";
+
     try {
+    let tx = await client.release(__Config.PrivateKey,
+        project,
+        depositAddress,
+        amount,
+        stage)
+    
         await tx.estimateGas()
         tx.run()
         .on('transactionHash', function(hash){
@@ -15,11 +26,10 @@ async function start(){
         })
         .on('receipt', async function(receipt){
             console.log("receipt:" , receipt)
-            let r = await client.getFundAmount("0x5bc71984c6182f0055044878", 0xe1F42CA59Bb2809cecCDD6f747B08ea757aDa3DA)
-            console.log(r)
         })
     } catch(err){
         console.log(err)
     }
 }
+
 start()

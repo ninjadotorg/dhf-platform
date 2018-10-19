@@ -47,6 +47,14 @@
       "type": "string",
       "default": "0"
     },
+    "availableAmount": {
+      "type": "string",
+      "default": "0"
+    },
+    "retractAmount": {
+      "type": "string",
+      "default": "0"
+    },
     "numberOfFunder": {
       "type": "number"
     },

@@ -13,6 +13,7 @@ import request from '@/utils/api';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import WalletList from '@/wallet/walletList';
+import { toast } from 'react-toastify';
 
 const styles = theme => ({
   layout: {
@@ -111,7 +112,9 @@ class wallet extends React.Component {
         console.log('submitForm', response);
         this.setState({
           success: response.success,
+          verifyCode: ''
         });
+        toast.success('The Wallet has been added successfully!');
       })
       .catch(error => {
         error.data

@@ -123,6 +123,18 @@ class ProjectList extends React.Component {
       .catch(error => {});
   };
 
+  startProject = n => {
+    request({
+      method: 'post',
+      url: `/projects/release?projectId=${n.data.id}`,
+    })
+      .then(response => {
+        toast.info(`The project '${n.data.name}' has been started successfully!`);
+        this.fetchProjects();
+      })
+      .catch(error => {});
+  };
+
   handleClose = event => {
     this.setState({ open: false });
   };
@@ -221,6 +233,7 @@ class ProjectList extends React.Component {
                       onClickInit={() => this.initFund({ data: n })}
                       onClickDelete={() => this.deleteProject({ data: n })}
                       onClickStop={() => this.stopInitProject({ data: n })}
+                      onClickStart={() => this.startProject({ data: n })}
                     />
                   </TableCell>
                 </TableRow>

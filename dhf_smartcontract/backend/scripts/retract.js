@@ -1,12 +1,14 @@
 require("../config")
 const HedgeFundAPI = require("../common/libs/HedgeFundAPI")
-const Web3js = require("web3")
 
 async function start(){
     var client  = new HedgeFundAPI("latest", false)
-    let r = await client.getProjectInfo("0x5bc71984c6182f0055044878")
+
+    let r = await client.getProjectInfo("0x5bc70639c6182f0055044877")
     console.log(r)
-    let tx = await client.fundProject(__Config.PrivateKey, 0.001, "0x5bc71984c6182f0055044878")
+
+    let amount = 0.99;
+    let tx = await client.retract(__Config.PrivateKey, "0x5bc70639c6182f0055044877", amount)
     try {
         await tx.estimateGas()
         tx.run()
@@ -15,11 +17,10 @@ async function start(){
         })
         .on('receipt', async function(receipt){
             console.log("receipt:" , receipt)
-            let r = await client.getFundAmount("0x5bc71984c6182f0055044878", 0xe1F42CA59Bb2809cecCDD6f747B08ea757aDa3DA)
-            console.log(r)
         })
     } catch(err){
         console.log(err)
     }
 }
+
 start()

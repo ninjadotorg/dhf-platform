@@ -25,6 +25,12 @@ async function start () {
     .sort({ blockNumber: -1 })
   if (!newEvent) return setTimeout(start, 1000)
 
+  if (!newEvent.projectID) {
+    await EventLog.update({ _id: newEvent._id }, { getTransaction: true })
+    return start()
+  }
+
+
   let id = newEvent.projectID.replace(/^0x/, '').substring(0,24)
   let r = await client.getProjectInfo(newEvent.projectID)
   let {

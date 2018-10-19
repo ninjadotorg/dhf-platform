@@ -130,6 +130,8 @@ class HedgeFundAPI extends NetworkAPI {
         throw new Error('Can not get public address from private key')
       }
     }
+
+    console.log(account)
     let contract = new web3js.eth.Contract(this.ABI, this.contractAddress)
     let sendF = contract.methods[method](...params).send.bind(this, {
       from: account,
@@ -249,12 +251,12 @@ class HedgeFundAPI extends NetworkAPI {
     return this._call('getFunders', hexEncode(pid))
   }
 
-  getFundAmount (pid = '') {
-    return this._call('getFundAmount', hexEncode(pid))
+  getFundAmount (pid = '', address) {
+    return this._call('getFundAmount', hexEncode(pid), address)
   }
 
-  getWithdrawAmount (pid = '') {
-    return this._call('getWithdrawAmount', hexEncode(pid))
+  getWithdrawAmount (pid = '', address) {
+    return this._call('getWithdrawAmount', hexEncode(pid), address)
   }
 }
 
