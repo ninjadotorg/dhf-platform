@@ -74,7 +74,7 @@ class ActionButton extends React.Component {
     render() {
         console.log('render action button');
         const { open, placement, anchorEl } = this.state;
-        const { currentItem, onClickInit, onClickDelete, onClickStop } = this.props;
+        const { currentItem, onClickInit, onClickDelete, onClickStop, onClickStart } = this.props;
         const isProcessing = currentItem && currentItem.isProcessing ? JSON.parse(currentItem.isProcessing) : { status: null } ;
         const smartContractStatus = isProcessing.status;
         return (
@@ -129,6 +129,14 @@ class ActionButton extends React.Component {
                               >
                                 <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                               Cancel
+                              </MenuItem>
+                            )}
+                            {(currentItem.state === 'READY') && (
+                              <MenuItem onClick={onClickStart}
+                              style={{ color: red }}
+                              >
+                                <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                              Start
                               </MenuItem>
                             )}
                             {currentItem.state === 'INITFUND' && smartContractStatus !== 'STOPPING' && 
