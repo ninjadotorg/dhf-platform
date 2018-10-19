@@ -34,12 +34,7 @@ class WalletList extends React.Component {
     open: false,
   };
 
-  componentWillReceiveProps(props) {
-    if(this.props.success !== props.success) {
-      this.state.projects.push(props.success);
-    }
-  }
-  componentDidMount = () => {
+  getWallets = () => {
     request({
       method: 'get',
       url: '/link-to-wallet/my-wallet',
@@ -53,6 +48,15 @@ class WalletList extends React.Component {
         console.log(error);
         return null;
       });
+  }
+  componentWillReceiveProps(props) {
+    if(this.props.success !== props.success) {
+      this.getWallets();
+    }
+  }
+
+  componentDidMount = () => {
+    this.getWallets();
   };
 
   // componentWillUpdate = () => {};
