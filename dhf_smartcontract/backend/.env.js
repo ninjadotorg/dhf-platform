@@ -1,5 +1,5 @@
 exports = module.exports = {
-    "PrivateKey": "C8D80705A3FD2C74A9BB865C8F3A98FF80D354DBF16FC7DFD8A19481636475F3",
+    "PrivateKey": "ce86692b0431aa9f28d39da59f7e09a4789f2a42913bf067389dc7a4436404fc",
     // "SmartContractDB": "mongodb://dhf-mongodb:27018/SmartContractDB",
     // "ProjectDB": "mongodb://dhf-mongodb:27018/dhf-platform"
 }

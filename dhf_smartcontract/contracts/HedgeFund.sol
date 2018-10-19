@@ -14,11 +14,9 @@
 */
 
 pragma solidity ^0.4.2;
-
 //100: State Error
 //101: Unauthorization
 //102: release wrong amount
-
 library SafeMath {
     function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
@@ -258,9 +256,9 @@ contract HedgeFund {
             if ( isReachMax(p.max, p.fundingAmount) ){
                 if (p.fundingAmount.sub(p.max) > 0.1 ether) { 
                     uint returnAmount = p.fundingAmount.sub(p.max).sub(0.1 ether);
-                    msg.sender.transfer(returnAmount);
                     p.funds[msg.sender] = p.funds[msg.sender].sub(returnAmount);
                     p.fundingAmount = p.fundingAmount.sub(returnAmount);
+                    msg.sender.transfer(returnAmount);
                 }
             }
             p.availableAmount = p.fundingAmount;
@@ -274,19 +272,21 @@ contract HedgeFund {
         if (p.state == S.INITFUND && p.funds[msg.sender] > 0) {
             p.fundingAmount = p.fundingAmount.sub(p.funds[msg.sender]);
             p.availableAmount = p.fundingAmount;
-            msg.sender.transfer(p.funds[msg.sender]);
+            
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], p.funds[msg.sender]);
+            uint256 withdrawAmount = p.funds[msg.sender];
             p.funds[msg.sender] = 0;
+            msg.sender.transfer(p.funds[msg.sender]);
         }
         else if (p.state == S.WITHDRAW && (p.funds[msg.sender] > 0 || (msg.sender == p.owner && p.commisionAmount != 0) ) ) {
-            uint256 withdrawAmount = Percent.mul(p.plScale, p.funds[msg.sender]);
+            withdrawAmount = Percent.mul(p.plScale, p.funds[msg.sender]);
 
             //if owner, add commssion
             if (msg.sender == p.owner) withdrawAmount = withdrawAmount + p.commisionAmount;
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], withdrawAmount);
             p.availableAmount = p.availableAmount.sub(withdrawAmount);
-            msg.sender.transfer(withdrawAmount);
             p.funds[msg.sender] = 0;
+            msg.sender.transfer(withdrawAmount);
         } else {
             if (p.funds[msg.sender] == 0) revert("No money to withdraw");
             revert("Cannot withdraw");
@@ -299,7 +299,7 @@ contract HedgeFund {
         require(p.releasedAmount + amount <= p.fundingAmount, "102"); //should not release fund larger than funding amount
         if (p.releasePeriod[stage]!=0) revert("Already transfer for this period");
         if (p.state == S.READY) p.startTime = block.timestamp; //release signal in ready state (means first release), update start time to now
-        exchange.transfer(amount);
+        
         
         p.releasedAmount = p.releasedAmount.add(amount);
         p.availableAmount = p.availableAmount.sub(amount);
@@ -308,11 +308,12 @@ contract HedgeFund {
         emit __changeState(pid, p.state, S.RELEASED);
         p.state = S.RELEASED;
         emit __release(pid, exchange, amount, stage);
+        exchange.transfer(amount);
     }
 
     function retract(bytes32 pid, uint retractAmount) public onlyContractOwner() { //0.017 => scale=17 
         Project storage p = projects[pid];
-        require(p.state == S.STOP, "100");
+        require(p.state == S.STOP || p.state == S.RELEASED, "100");
         
         p.availableAmount = p.availableAmount.add(retractAmount);
         if (p.availableAmount > p.fundingAmount) {

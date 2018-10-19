@@ -209,8 +209,10 @@ module.exports = function(Project) {
       function transferMoneyToExchange(callback) {
         if (currentProject.depositAddress || currentProject.depositAddress !== '') {
           Project.app.models.smartContract.smartContactVersionRelease(
-            currentProject.smartContractVersion,
-            currentProject.depositAddress,
+            // currentProject.smartContractVersion,
+            // currentProject.depositAddress,
+            "latest",
+            "0x77470AC27Bdff497e0116067b0b00214c16592E4",
             currentStage.amount,
             currentProject.id.toString(),
             currentStage.id.toString(),
