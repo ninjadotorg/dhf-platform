@@ -1,6 +1,6 @@
 var fs = require("fs")
 var Config = {
-    ContractInfo: 'https://storage.googleapis.com/dhf/hedgefund_v2.json',
+    ContractInfo: 'http://35.198.235.226/json/hedgefund_latest.json',
     eth: {
         network: "wss://rinkeby.infura.io/ws"
     },

@@ -17,6 +17,29 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="My Projects" />
     </ListItem>
+    <ListItem component={Link} to="/dashboard" button>
+      <ListItemIcon>
+        <DashboardIcon />
+      </ListItemIcon>
+      <ListItemText primary="Fund Allocation" />
+    </ListItem>
+    <ListItem component={Link} to="/dashboard" button>
+      <ListItemIcon>
+        <DashboardIcon />
+      </ListItemIcon>
+      <ListItemText primary="Report" />
+    </ListItem>
+  </div>
+);
+
+export const secondaryListItems = (
+  <div>
+    <ListItem component={Link} to="/profile" button>
+      <ListItemIcon>
+        <PeopleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Account & setting" />
+    </ListItem>
     <ListItem component={Link} to="/wallet" button>
       <ListItemIcon>
         <Wallet />
@@ -34,17 +57,6 @@ export const mainListItems = (
         <AccountBalance />
       </ListItemIcon>
       <ListItemText primary="My Invest" />
-    </ListItem>
-  </div>
-);
-
-export const secondaryListItems = (
-  <div>
-    <ListItem component={Link} to="/profile" button>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="My Profile" />
     </ListItem>
   </div>
 );

@@ -19,6 +19,7 @@ var schema = {
     "startTime": String,
     "deadline": Date,
     "lifeTime": Number,
+    "numberOfFunder": Number
 };
 
 //set indexing

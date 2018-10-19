@@ -1,4 +1,5 @@
 require('../config')
+require('./updateProject')
 const Web3 = require('web3')
 const axios = require('axios')
 const EventLog = require('../common/models/event')
@@ -55,10 +56,9 @@ async function start () {
 
     data.params = objs
     data.projectID = objs.pid
-    console.log(data)
     EventLog.updateUpsert({ blockNumber, logIndex }, data)
   }
-
+  
   try {
     contract
       .getPastEvents('allEvents', {
