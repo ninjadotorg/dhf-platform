@@ -209,8 +209,10 @@ module.exports = function(Project) {
       function transferMoneyToExchange(callback) {
         if (currentProject.depositAddress || currentProject.depositAddress !== '') {
           Project.app.models.smartContract.smartContactVersionRelease(
-            currentProject.smartContractVersion,
-            currentProject.depositAddress,
+            // currentProject.smartContractVersion,
+            // currentProject.depositAddress,
+            "latest",
+            "0x77470AC27Bdff497e0116067b0b00214c16592E4",
             currentStage.amount,
             currentProject.id.toString(),
             currentStage.id.toString(),
@@ -293,7 +295,7 @@ module.exports = function(Project) {
       },
       function isReleased(callback) {
         if (currentProject.state === PROJECT_STATE.RELEASE) {
-          Project.app.models.smartContract.stop(
+          Project.app.models.smartContract.smartContactVersionStop(
             currentProject.smartContractVersion,
             currentProject.id.toString(),
             function(err) {
@@ -379,7 +381,7 @@ module.exports = function(Project) {
   Project.remoteMethod('release', {
     description: 'release project',
     accepts: [
-      {arg: 'projectId', type: 'string', required: true},
+      {arg: 'projectId', type: 'string', required: true, http: {source: 'query'}},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/release', verb: 'post'},

@@ -1,4 +1,5 @@
 require('../config')
+require('./updateProject')
 const Web3 = require('web3')
 const axios = require('axios')
 const EventLog = require('../common/models/event')
@@ -49,16 +50,15 @@ async function start () {
     for (var i in names) {
       if (names[i].type === 'bytes32' && names[i].name != 'pid') {
         objs[names[i].name] = web3.utils.toAscii(decode[names[i].name]).trim()
-        console.log('convert', objs[names[i].name], objs[names[i].name].length)
+        console.log('convert', names[i].type, names[i].name, objs[names[i].name], objs[names[i].name].length)
       } else objs[names[i].name] = decode[names[i].name].trim()
     }
 
     data.params = objs
     data.projectID = objs.pid
-    console.log(data)
     EventLog.updateUpsert({ blockNumber, logIndex }, data)
   }
-
+  
   try {
     contract
       .getPastEvents('allEvents', {
@@ -85,6 +85,6 @@ async function start () {
 
 start()
 process.on('unhandledRejection', r => {
-  console.log("unhandledRejection", new Date())
+  console.log("unhandledRejection", new Date(), r)
   return start()
 })

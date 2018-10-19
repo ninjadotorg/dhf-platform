@@ -14,11 +14,9 @@
 */
 
 pragma solidity ^0.4.2;
-
 //100: State Error
 //101: Unauthorization
 //102: release wrong amount
-
 library SafeMath {
     function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
@@ -98,7 +96,7 @@ contract HedgeFund {
     using SafeMath for uint;
 
     //Parameters
-    enum S { INITFUND, READY, RELEASED, STOP, WITHDRAW }
+    enum S { NULL, INITFUND, READY, RELEASED, STOP, WITHDRAW }
     
 
     struct CancelData { // userWithdrawFund = (userFund * scale)/denominator
@@ -130,6 +128,8 @@ contract HedgeFund {
 
         S state;
         Percent.percent plScale;
+        Percent.percent commission;
+        uint commisionAmount;
     }
 
     address contractOwner;
@@ -150,7 +150,8 @@ contract HedgeFund {
     event __voteStop(address sender, bytes32 pid, uint stop);
     event __stop(address sender, bytes32 pid);
     event __verifyWithdraw(bytes32 pid);
-    event __changeState(bytes32 pid, bytes32 from, bytes32 to);
+
+    event __changeState(bytes32 pid, S from, S to);
     event __log(uint time1, uint time2);
 
     modifier onlyContractOwner() {
@@ -163,24 +164,37 @@ contract HedgeFund {
         _;
     }
 
+    function isReachMax(uint max,uint  balance) public pure returns (bool r) {
+        if (max > 0 && balance >= max) return true;
+        else return false;
+    }
+    
+    function isReachTime(uint time) public view returns (bool) {
+        if (block.timestamp > time) return true; //Using timestamp in eth blockchain???
+        else return false;
+    }
+
     //Constructor
     constructor() public {
         contractOwner = msg.sender;
     }
 
     //POST function
-    function initProject(uint target, uint max, uint deadline, uint lifeTime, bytes32 pid) public {
+    function initProject(uint target, uint max, uint deadline, uint lifeTime, uint8 commission, bytes32 pid) public {
+        require(projects[pid].owner == 0, "PID Already created") ;
+
         Project memory p;
         
         p.owner = msg.sender;
         p.state = S.INITFUND;
         p.releasedAmount = 0;
         p.retractAmount = 0;
-
+        p.commission = Percent.percent(commission,100);
         
 
         p.deadline = deadline;
         p.lifeTime = lifeTime * 1 days;
+
         p.max = max;
         p.target = target;
 
@@ -192,7 +206,7 @@ contract HedgeFund {
         projects[pid] = p;
         PIDs.push(pid);
         emit __init(msg.sender, pid);
-        emit __changeState(pid, "NULL", "INITFUND");
+        emit __changeState(pid, S.NULL, p.state);
     }
     
     function stopProject(bytes32 pid) public onlyProjectOwner(pid) {
@@ -200,22 +214,12 @@ contract HedgeFund {
         if (p.state == S.WITHDRAW) revert ("Already stop");
         emit __stop(msg.sender, pid);
         if (p.state == S.INITFUND || p.state == S.READY){
-            emit __changeState(pid, "_", "WITHDRAW");
+            emit __changeState(pid, p.state, S.WITHDRAW);
             p.state = S.WITHDRAW;
         }else {
-            emit __changeState(pid, "RELEASE|STOP", "STOP");
+            emit __changeState(pid, p.state, S.STOP);
             p.state = S.STOP;
         }
-    }
-
-    function isReachMax(uint max,uint  balance) public pure returns (bool r) {
-        if (max > 0 && balance >= max) return true;
-        else return false;
-    }
-    
-    function isReachTime(uint time) public view returns (bool) {
-        if (block.timestamp > time) return true; //Using timestamp in eth blockchain???
-        else return false;
     }
 
     function fundProject(bytes32 pid) public payable {
@@ -232,8 +236,8 @@ contract HedgeFund {
 
         if (p.state == S.INITFUND){
             if (p.fundingAmount.add(msg.value) >= p.target) {
+                emit __changeState(pid, p.state, S.READY);
                 p.state = S.READY;
-                emit __changeState(pid, "INITFUND", "READY");
             }
         } 
         
@@ -252,9 +256,9 @@ contract HedgeFund {
             if ( isReachMax(p.max, p.fundingAmount) ){
                 if (p.fundingAmount.sub(p.max) > 0.1 ether) { 
                     uint returnAmount = p.fundingAmount.sub(p.max).sub(0.1 ether);
-                    msg.sender.transfer(returnAmount);
                     p.funds[msg.sender] = p.funds[msg.sender].sub(returnAmount);
                     p.fundingAmount = p.fundingAmount.sub(returnAmount);
+                    msg.sender.transfer(returnAmount);
                 }
             }
             p.availableAmount = p.fundingAmount;
@@ -268,52 +272,63 @@ contract HedgeFund {
         if (p.state == S.INITFUND && p.funds[msg.sender] > 0) {
             p.fundingAmount = p.fundingAmount.sub(p.funds[msg.sender]);
             p.availableAmount = p.fundingAmount;
-            msg.sender.transfer(p.funds[msg.sender]);
+            
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], p.funds[msg.sender]);
+            uint256 withdrawAmount = p.funds[msg.sender];
             p.funds[msg.sender] = 0;
+            msg.sender.transfer(p.funds[msg.sender]);
         }
-        else if (p.state == S.WITHDRAW && p.funds[msg.sender] > 0) {
-            uint256 withdrawAmount = Percent.mul(p.plScale, p.funds[msg.sender]);
+        else if (p.state == S.WITHDRAW && (p.funds[msg.sender] > 0 || (msg.sender == p.owner && p.commisionAmount != 0) ) ) {
+            withdrawAmount = Percent.mul(p.plScale, p.funds[msg.sender]);
+
+            //if owner, add commssion
+            if (msg.sender == p.owner) withdrawAmount = withdrawAmount + p.commisionAmount;
             emit __withdraw(pid, msg.sender, p.funds[msg.sender], withdrawAmount);
             p.availableAmount = p.availableAmount.sub(withdrawAmount);
-            msg.sender.transfer(withdrawAmount);
             p.funds[msg.sender] = 0;
+            msg.sender.transfer(withdrawAmount);
         } else {
             if (p.funds[msg.sender] == 0) revert("No money to withdraw");
             revert("Cannot withdraw");
         }
     } 
 
-    function release(bytes32 pid, address exchange, uint amount, bytes32 stage) public {
+    function release(bytes32 pid, address exchange, uint amount, bytes32 stage) public onlyContractOwner() {
         Project storage p = projects[pid];
         require(p.state == S.READY || p.state == S.RELEASED, "100"); //should be in ready or release state
         require(p.releasedAmount + amount <= p.fundingAmount, "102"); //should not release fund larger than funding amount
         if (p.releasePeriod[stage]!=0) revert("Already transfer for this period");
         if (p.state == S.READY) p.startTime = block.timestamp; //release signal in ready state (means first release), update start time to now
-        exchange.transfer(amount);
+        
+        
         p.releasedAmount = p.releasedAmount.add(amount);
         p.availableAmount = p.availableAmount.sub(amount);
         p.releasePeriod[stage] = amount;
-        p.state = S.RELEASED;
 
-        emit __changeState(pid, "READY|RELEASE", "RELEASE");
+        emit __changeState(pid, p.state, S.RELEASED);
+        p.state = S.RELEASED;
         emit __release(pid, exchange, amount, stage);
+        exchange.transfer(amount);
     }
 
     function retract(bytes32 pid, uint retractAmount) public onlyContractOwner() { //0.017 => scale=17 
         Project storage p = projects[pid];
-        require(p.state == S.STOP, "100");
-        p.state = S.WITHDRAW;
+        require(p.state == S.STOP || p.state == S.RELEASED, "100");
+        
         p.availableAmount = p.availableAmount.add(retractAmount);
-        p.plScale = Percent.percent(p.availableAmount, p.fundingAmount);
+        if (p.availableAmount > p.fundingAmount) {
+            uint commissionAmount = Percent.mul(p.commission, p.availableAmount.sub(p.fundingAmount));
+            p.plScale = Percent.percent(p.availableAmount - commissionAmount, p.fundingAmount);
+            p.commisionAmount = commissionAmount;
+        } else {
+            p.plScale = Percent.percent(p.availableAmount, p.fundingAmount);
+        }
         p.retractAmount = retractAmount;
-        emit __changeState(pid, "STOP", "WITHDRAW");
+        emit __changeState(pid, p.state, S.WITHDRAW);
+        p.state = S.WITHDRAW;
         emit __retract(pid, p.plScale.num, p.plScale.den, p.availableAmount);
     }
 
-
-
-    
 
     function voteStop(bytes32 pid, uint8 stop) public { //vote stop and check if larger than half of the fund
         Project storage p = projects[pid];
@@ -336,10 +351,10 @@ contract HedgeFund {
         }
         if (sum > (p.fundingAmount/2)) {
             if (p.state == S.READY ){
-                emit __changeState(pid, "READY", "WITHDRAW");
+                emit __changeState(pid, p.state, S.WITHDRAW);
                 p.state = S.WITHDRAW;
             } else {
-                emit __changeState(pid, "RELEASED", "STOP");
+                emit __changeState(pid, p.state, S.STOP);
                 p.state = S.STOP;
             }
         }       
@@ -353,23 +368,23 @@ contract HedgeFund {
         Project storage p = projects[pid];
         if (p.state == S.INITFUND){
             if (isReachTime(p.deadline)) {
-                emit __changeState(pid, "INITFUND", "WITHDRAW");
+                emit __changeState(pid, p.state, S.WITHDRAW);
                 p.state = S.WITHDRAW;
             }
         } else if (p.state == S.READY){
             if (isReachTime(p.deadline + 7 days)) {
-                emit __changeState(pid, "READY", "WITHDRAW");
+                emit __changeState(pid, p.state, S.WITHDRAW);
                 p.state = S.WITHDRAW;
             }
         } else if (p.state == S.RELEASED){
             if (isReachTime(p.deadline + p.lifeTime)) {
-                emit __changeState(pid, "RELEASED", "STOP");
+                emit __changeState(pid, p.state, S.STOP);
                 p.state = S.STOP;
             }
         } 
     }
     
-    function () public payable{
+    function () external payable{
         emit __receive(msg.sender, msg.value);
     }
 
@@ -392,14 +407,19 @@ contract HedgeFund {
     }
 
     function getProjectInfo(bytes32 pid) public view returns (address owner, uint target, uint max,uint fundingAmount, uint availableAmount, uint releasedAmount, uint retractAmount,
-        uint startTime, uint deadline, uint lifeTime, S state) {
+        uint startTime, uint deadline, uint lifeTime, S state, uint numFunder) {
         Project storage p = projects[pid];
-        return (p.owner, p.target, p.max, p.fundingAmount, p.availableAmount, p.releasedAmount, p.retractAmount, p.startTime, p.deadline, p.lifeTime,p.state);
+        return (p.owner, p.target, p.max, p.fundingAmount, p.availableAmount, p.releasedAmount, p.retractAmount, p.startTime, p.deadline, p.lifeTime,p.state, p.funder.length);
     }
 
-    function getFunders(bytes32 pid) public view returns (address[]){
-        Project storage p = projects[pid];
+    function getFunders(bytes32 pid) public view returns (address[] memory){
+        Project memory p = projects[pid];
         return p.funder;
+    }
+
+    function getNumberOfFunder(bytes32 pid) public view returns (uint){
+        Project storage p = projects[pid];
+        return p.funder.length;
     }
 
     function getFundAmount(bytes32 pid, address funder) public view returns (uint){
