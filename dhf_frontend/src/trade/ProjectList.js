@@ -31,7 +31,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
 import ActionButton from './ProjectList/ActionButton';
-
+import project from '../project';
+import LoadingSVG from '../assets/img/loading.svg';
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
@@ -55,7 +56,55 @@ const styles = {
   group: {
     margin: 10,
   },
+  projectModel: {
+    display: 'block', /* Hidden by default */
+    position: 'fixed', /* Stay in place */
+    zIndex: 1, /* Sit on top */
+    paddingTop: '100px', /* Location of the box */
+    left: 0,
+    top: 0,
+    width: '100%', /* Full width */
+    height: '100%', /* Full height */
+    overflow: 'auto', /* Enable scroll if needed */
+    backgroundColor: 'rgb(0,0,0)', /* Fallback color */
+    backgroundColor: 'rgba(0,0,0,0.4)', /* Black w/ opacity */
+  },
+  projectModelContent: {
+    backgroundColor: '#fefefe',
+    margin: 'auto',
+    padding: '20px',
+    border: '1px solid #888',
+    width: '80%',
+  }
 };
+
+const ModalBlock = (props) => (
+  <div style={{
+    display: 'block',
+    position: 'fixed',
+    zIndex: 1,
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgb(0,0,0)',
+    backgroundColor: 'rgba(0,0,0,0.4)'
+  }}>
+    <div style={{
+      margin: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+    }}>
+    <div style={{ backgroundColor: 'white', paddingLeft: '10px', paddingRight: '10px' }}>
+      <img src={LoadingSVG} style={{ width: '50px', height: '50px' }} />
+    </div>
+    </div>
+  </div>
+);
+
 const red = '#FF3D00';
 const green = '#388E3C';
 const editIcon = '#333';
@@ -71,6 +120,7 @@ class ProjectList extends React.Component {
       placement: null,
       currentItem: null,
       stepperAction: null,
+      isLoading: false,
     };
     this.notificationDOMRef = React.createRef();
   }
@@ -124,12 +174,14 @@ class ProjectList extends React.Component {
   };
 
   startProject = n => {
+    this.setState({ isLoading: true });
     request({
       method: 'post',
       url: `/projects/release?projectId=${n.data.id}`,
     })
       .then(response => {
         toast.info(`The project '${n.data.name}' has been started successfully!`);
+        this.setState({ isLoading: false });
         this.fetchProjects();
       })
       .catch(error => {});
@@ -254,6 +306,7 @@ class ProjectList extends React.Component {
           </DialogContent>
         </Dialog>
         <ReactNotification ref={this.notificationDOMRef} />
+        {this.state.isLoading && <ModalBlock>fasdfasd</ModalBlock>}
       </Paper>
     );
   }
