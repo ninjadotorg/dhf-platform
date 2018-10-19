@@ -18,6 +18,11 @@
       "required": true,
       "default": "0"
     },
+    "targetEarning": {
+      "type": "string",
+      "required": true,
+      "default": "0"
+    },
     "exchange": {
       "type": "string",
       "required": true,
