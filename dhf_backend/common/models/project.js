@@ -295,7 +295,7 @@ module.exports = function(Project) {
       },
       function isReleased(callback) {
         if (currentProject.state === PROJECT_STATE.RELEASE) {
-          Project.app.models.smartContract.stop(
+          Project.app.models.smartContract.smartContactVersionStop(
             currentProject.smartContractVersion,
             currentProject.id.toString(),
             function(err) {

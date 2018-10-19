@@ -1,6 +1,6 @@
 {
   "mongodb": {
-    "host": "dhf-mongodb",
+    "host": "35.198.235.226",
     "port": 27018,
     "url": "",
     "database": "dhf-platform",
@@ -219,7 +219,7 @@
           "responsePath": ""
         },
         "functions": {
-          "smartContactVersionRelease": ["version", "projectId"]
+          "smartContactVersionStop": ["version", "projectId"]
         }
       },
       {
