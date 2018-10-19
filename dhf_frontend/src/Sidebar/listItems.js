@@ -17,13 +17,13 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="My Projects" />
     </ListItem>
-    <ListItem component={Link} to="/dashboard" button>
+    <ListItem component={Link} to="/fund-allocation" button>
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
       <ListItemText primary="Fund Allocation" />
     </ListItem>
-    <ListItem component={Link} to="/dashboard" button>
+    <ListItem component={Link} to="/fund-allocation" button>
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>

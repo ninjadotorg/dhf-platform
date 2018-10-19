@@ -199,6 +199,7 @@ class ProjectList extends React.Component {
           <TableBody>
             {/* name, owner, exchange, target, max, startTime , deadline ,lifeTime, state , id */}
             {this.state.projects.map(n => {
+              const progressAmount = parseInt(n.target) === 0 ? 0 : Math.floor((n.fundingAmount * 100) / n.target);
               return (
                 <TableRow key={n.id} button style={{ height: 60 }}>
                   <TableCell component="th" scope="row">
@@ -209,9 +210,11 @@ class ProjectList extends React.Component {
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    Investors {n.numberOfFunder || 0}
+                    Investors
+                    {' '}
+                    {n.numberOfFunder || 0}
                   </TableCell>
-                  <TableCell>{`${n.fundingAmount}/${n.target}`}</TableCell>
+                  <TableCell>{`${progressAmount}%`}</TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
                   <TableCell>
                     <ActionButton currentItem={n}
