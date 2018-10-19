@@ -87,6 +87,7 @@ class createProject extends React.Component {
       currency: '',
       target: 0,
       max: 0,
+      targetEarning: 0,
       min: 0,
       commission: 0,
       description: '',
@@ -186,11 +187,11 @@ class createProject extends React.Component {
                       fullWidth
                     >
                       <TextField
-                        id="target"
+                        id="targetEarning"
                         helperText="This is an optional field to indicate your expected returns"
-                        name="target"
-                        label="Target earnings (%)"
-                        autoComplete="target"
+                        name="targetEarning"
+                        label="Target earning (%)"
+                        autoComplete="targetEarning"
                         type="number"
                         autoFocus
                         onChange={this.handleTextChange}
@@ -249,10 +250,10 @@ class createProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <TextField
-                        id="min"
-                        name="min"
+                        id="target"
+                        name="target"
                         helperText="Please indicate the minimum amount of funds you are happy to start with. When the condition is fulfilled, traders can either launch the project immediately or wait until the deadline."
-                        autoComplete="min"
+                        autoComplete="target"
                         required
                         autoFocus
                         label="Minimum amount"

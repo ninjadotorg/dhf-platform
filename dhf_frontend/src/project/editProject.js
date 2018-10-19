@@ -84,6 +84,7 @@ class editProject extends React.Component {
       exchange: '',
       currency: '',
       target: 0,
+      targetEarning: 0,
       max: 0,
       min: 0,
       commission: 0,
@@ -134,7 +135,8 @@ class editProject extends React.Component {
           currency: response.currency,
           target: response.target,
           max: response.max,
-          min: response.min,
+          min: response.target,
+          targetEarning: response.targetEarning,
           description: response.description,
           deadline: response.deadline,
           commission: response.commission,
@@ -213,14 +215,14 @@ class editProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <TextField
-                        id="target"
+                        id="targetEarning"
                         helperText="This is an optional field to indicate your expected returns"
-                        name="target"
-                        label="Target earnings (%)"
-                        autoComplete="target"
+                        name="targetEarning"
+                        label="Target earning (%)"
+                        autoComplete="targetEarning"
                         type="number"
                         autoFocus
-                        value={this.state.target}
+                        value={this.state.targetEarning}
                         onChange={this.handleTextChange}
                       />
                     </FormControl>
@@ -275,14 +277,14 @@ class editProject extends React.Component {
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
                       <TextField
-                        id="min"
-                        name="min"
+                        id="target"
+                        name="target"
                         helperText="Please indicate the minimum amount of funds you are happy to start with. When the condition is fulfilled, traders can either launch the project immediately or wait until the deadline."
-                        autoComplete="min"
+                        autoComplete="target"
                         required
                         autoFocus
                         label="Minimum amount"
-                        value={this.state.min}
+                        value={this.state.target}
                         onChange={this.handleTextChange}
                         type="number"
                       />
