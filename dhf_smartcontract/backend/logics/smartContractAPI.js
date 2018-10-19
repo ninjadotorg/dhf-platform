@@ -12,16 +12,15 @@ module.exports = {
     console.log({ version, project, depositAddress, stage, amount })
 
     var smAPI = new HedgeFundAPI(version, false)
-
-    let tx = await smAPI.release(
-      __Config.PrivateKey,
-      project,
-      depositAddress,
-      amount,
-      stage
-    )
-
     try {
+      let tx = await smAPI.release(
+        __Config.PrivateKey,
+        '0x'+project,
+        depositAddress,
+        amount,
+        '0x'+stage
+      )
+
       await tx.estimateGas()
       tx
         .run()
