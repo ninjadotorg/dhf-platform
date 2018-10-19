@@ -295,7 +295,7 @@ module.exports = function(Project) {
       },
       function isReleased(callback) {
         if (currentProject.state === PROJECT_STATE.RELEASE) {
-          Project.app.models.smartContract.stop(
+          Project.app.models.smartContract.smartContactVersionStop(
             currentProject.smartContractVersion,
             currentProject.id.toString(),
             function(err) {
@@ -381,7 +381,7 @@ module.exports = function(Project) {
   Project.remoteMethod('release', {
     description: 'release project',
     accepts: [
-      {arg: 'projectId', type: 'string', required: true, http: {source: 'body'}},
+      {arg: 'projectId', type: 'string', required: true, http: {source: 'query'}},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/release', verb: 'post'},
