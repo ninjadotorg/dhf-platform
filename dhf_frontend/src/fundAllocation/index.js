@@ -77,6 +77,9 @@ class FundAllocation extends React.Component {
     request({
       method: 'get',
       url: '/projects/list/my',
+      params: {
+        isTrading: true,
+      },
     })
       .then(response => {
         this.setState({
