@@ -99,7 +99,14 @@ module.exports = function(Funding) {
           include: 'User',
         },
       },
-    }, callback);
+    }, function(err, data) {
+      if (err) {
+        callback(err);
+      }
+      data.map(function(item) {
+        return item.Project;
+      });
+    });
   };
 
   Funding.remoteMethod('listFunding', {
