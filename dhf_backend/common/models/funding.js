@@ -92,7 +92,13 @@ module.exports = function(Funding) {
     Funding.find({where: {
       funder: funderAddress,
     },
-      include: 'Project',
+      include: {
+        relation: 'Project',
+        scope: {
+          fields: ['name', 'target', 'fundingAmount', 'deadline', 'lifeTime', 'currency'],
+          include: 'User',
+        },
+      },
     }, callback);
   };
 
