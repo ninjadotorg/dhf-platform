@@ -103,10 +103,10 @@ module.exports = function(Funding) {
       if (err) {
         callback(err);
       }
-      data.map(function(item) {
-        return item.Project;
+      let project = data.map(function(item) {
+        return item.Project();
       });
-      callback(null, data);
+      callback(null, project);
     });
   };
 
