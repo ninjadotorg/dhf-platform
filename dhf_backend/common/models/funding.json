@@ -54,6 +54,13 @@
       "principalType": "ROLE",
       "principalId": "$authenticated",
       "permission": "ALLOW"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "listFundingByOwner"
     }
   ],
   "methods": {},
@@ -64,7 +71,9 @@
         "findById",
         "deleteById",
         "replaceById",
-        "listFunding"
+        "listFunding",
+        "listFundingByOwner",
+        "myFunding"
       ]
     }
   }

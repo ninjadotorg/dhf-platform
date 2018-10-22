@@ -81,12 +81,41 @@ module.exports = function(Funding) {
       callback(null, fundings);
     });
   };
+
+  Funding.myFunding = function(callback) {
+    Funding.find({where: {
+      userId: Funding.app.currentUserId,
+    }}, callback);
+  };
+
+  Funding.listFundingByOwner = function(ownerAddress, callback) {
+    Funding.find({where: {
+      owner: ownerAddress,
+    }}, callback);
+  };
+
   Funding.remoteMethod('listFunding', {
-    description: 'Get all exchange',
+    description: 'Get all Funding of project',
     accepts: [
       {arg: 'projectId', type: 'string', required: true},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
     http: {path: '/list', verb: 'get'},
+  });
+
+  Funding.remoteMethod('myFunding', {
+    description: 'Get all Funding of current user',
+    accepts: [],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/my-fund', verb: 'get'},
+  });
+
+  Funding.remoteMethod('listFundingByOwner', {
+    description: 'Get all Funding of current by owner address',
+    accepts: [
+      {arg: 'ownerAddress', type: 'string', required: true},
+    ],
+    returns: {arg: 'data', root: true, type: 'Object'},
+    http: {path: '/list/:ownerAddress', verb: 'get'},
   });
 };
