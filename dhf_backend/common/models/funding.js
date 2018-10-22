@@ -106,6 +106,7 @@ module.exports = function(Funding) {
       data.map(function(item) {
         return item.Project;
       });
+      callback(null, data);
     });
   };
 
