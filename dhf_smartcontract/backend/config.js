@@ -5,7 +5,7 @@ var Config = {
         network: "wss://rinkeby.infura.io/ws"
     },
     SmartContractDB: "mongodb://35.198.235.226:27018/SmartContractDB",
-    ProjectDB: "mongodb://35.198.235.226:27018/dhf-platform"
+    PlatformDB: "mongodb://35.198.235.226:27018/dhf-platform"
 }
 
 

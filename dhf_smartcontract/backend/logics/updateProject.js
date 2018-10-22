@@ -3,6 +3,8 @@ const web3js = require('web3')
 const HedgeFundAPI = require('../common/libs/HedgeFundAPI')
 const EventLog = require('../common/models/event')
 const Project = require('../common/models/project')
+const User = require('../common/models/user')
+const Funding = require('../common/models/funding')
 const client = new HedgeFundAPI('v2', false)
 
 !(async function () {
@@ -30,7 +32,7 @@ async function start () {
     return start()
   }
 
-
+  //update project ingormation
   let id = newEvent.projectID.replace(/^0x/, '').substring(0,24)
   let r = await client.getProjectInfo(newEvent.projectID)
   let {
@@ -57,8 +59,9 @@ async function start () {
   deadline = new Date(deadline * 1000)
   lifeTime = lifeTime / (24 * 60 * 60)
   state = getState(state)
+
   let project = await Project.update({_id: id}, {
-    owner,
+    owner, //adress
     target,
     max,
     fundingAmount,
@@ -71,7 +74,19 @@ async function start () {
     state,
     numberOfFunder: numFunder
   })
-  console.log("update ", id, project.state)
+  if (project)
+    console.log("update ", id, project.state)
+  
+  //update funder
+  let funders = await client.getFunders("0x" + id);
+  funders.forEach(i => {
+    Funding.updateUpsert({funder: i, projectId: id}, {funder: i, projectId: id})
+  })
+
+
+  //update isTrader
+  User.update({_id: owner}, {isTrader: true})
+
   await EventLog.update({ _id: newEvent._id }, { getTransaction: true })
   start()
 }

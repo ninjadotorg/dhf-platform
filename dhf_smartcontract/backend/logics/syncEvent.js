@@ -48,7 +48,7 @@ async function start () {
     )
     var objs = {}
     for (var i in names) {
-      if (names[i].type === 'bytes32' && names[i].name != 'pid') {
+      if (names[i].type === 'bytes32' && names[i].name != 'pid' && names[i].name != 'stage') {
         objs[names[i].name] = web3.utils.toAscii(decode[names[i].name]).trim()
         console.log('convert', names[i].type, names[i].name, objs[names[i].name], objs[names[i].name].length)
       } else objs[names[i].name] = decode[names[i].name].trim()
