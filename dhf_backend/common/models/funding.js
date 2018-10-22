@@ -88,9 +88,9 @@ module.exports = function(Funding) {
     }}, callback);
   };
 
-  Funding.listFundingByOwner = function(ownerAddress, callback) {
+  Funding.listFundingByFunder = function(funderAddress, callback) {
     Funding.find({where: {
-      owner: ownerAddress,
+      funder: funderAddress,
     }}, callback);
   };
 
@@ -110,12 +110,12 @@ module.exports = function(Funding) {
     http: {path: '/my-fund', verb: 'get'},
   });
 
-  Funding.remoteMethod('listFundingByOwner', {
-    description: 'Get all Funding of current by owner address',
+  Funding.remoteMethod('listFundingByFunder', {
+    description: 'Get all Funding of current by funder address',
     accepts: [
-      {arg: 'ownerAddress', type: 'string', required: true},
+      {arg: 'funderAddress', type: 'string', required: true},
     ],
     returns: {arg: 'data', root: true, type: 'Object'},
-    http: {path: '/list/:ownerAddress', verb: 'get'},
+    http: {path: '/list/:funderAddress', verb: 'get'},
   });
 };

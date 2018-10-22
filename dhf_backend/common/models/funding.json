@@ -12,20 +12,13 @@
       "type": "string",
       "required": true
     },
-    "owner": {
+    "funder": {
       "type": "string",
       "required": true
     },
     "amount": {
       "type": "number",
       "required": true
-    },
-    "state": {
-      "type": "string",
-      "enum": [
-        "INITFUND",
-        "WITHDRAW"
-      ]
     }
   },
   "validations": [],
