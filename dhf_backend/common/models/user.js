@@ -8,26 +8,34 @@ module.exports = function(User) {
   });
 
   User.updateProfile = function(firstName, lastName, username, email, avatar, callback) {
-      this.findOne({where: {id:  User.app.currentUserId.toString(), email: email, username: username}}, function (err, user) {
-        if (err) {
-         callback(err);
-        }  else if (!user) {
-        let mess = "No match between provided current logged user and email or username";
+    this.findOne({where: {
+      id: User.app.currentUserId.toString(),
+      email: email,
+      username: username},
+    }, function(err, user) {
+      if (err) {
+        callback(err);
+      }  else if (!user) {
+        let mess = 'No match between provided current logged user and email or username';
         let newErr = new Error(mess);
         newErr.statusCode = 405;
         newErr.code = 'LOGIN_FAILED_EMAIL';
         callback(newErr);
       } else {
-        user.updateAttributes({'firstName': firstName, 'lastName': lastName, 'avatar': avatar}, function (err, instance) {
-          if (err) {
-                callback(err);
-              } else {
-                callback(null, user);
-              }
-        });
+        user.updateAttributes({
+          'firstName': firstName,
+          'lastName': lastName,
+          'avatar': avatar},
+          function(err, instance) {
+            if (err) {
+              callback(err);
+            } else {
+              callback(null, user);
+            }
+          });
       }
     });
-  }
+  };
 
   User.remoteMethod(
     'updateProfile',
@@ -45,49 +53,49 @@ module.exports = function(User) {
     }
   );
 
-  User.updatePassword = function (oldPassword, newPassword, callback) {
-  let newErrMsg, newErr;
-  try {
-    this.findOne({where: {id:  User.app.currentUserId.toString()}}, function (err, user) {
-      if (err) {
-        callback(err);
-      } else {
-        user.hasPassword(oldPassword, function (err, isMatch) {
-          if (isMatch) {
-            user.updateAttributes({'password': newPassword}, function (err, instance) {
-              if (err) {
-                callback(err);
-              } else {
-                callback(null, true);
-              }
-            });
-          } else {
-            newErrMsg = 'User specified wrong current password !';
-            newErr = new Error(newErrMsg);
-            newErr.statusCode = 405;
-            newErr.code = 'LOGIN_FAILED_PWD';
-            return callback(newErr);
-          }
-        });
-      }
-    });
-  } catch (err) {
-    logger.error(err);
-    callback(err);
-  }
-};
+  User.updatePassword = function(oldPassword, newPassword, callback) {
+    let newErrMsg, newErr;
+    try {
+      this.findOne({where: {id: User.app.currentUserId.toString()}}, function(err, user) {
+        if (err) {
+          callback(err);
+        } else {
+          user.hasPassword(oldPassword, function(err, isMatch) {
+            if (isMatch) {
+              user.updateAttributes({'password': newPassword}, function(err, instance) {
+                if (err) {
+                  callback(err);
+                } else {
+                  callback(null, true);
+                }
+              });
+            } else {
+              newErrMsg = 'User specified wrong current password !';
+              newErr = new Error(newErrMsg);
+              newErr.statusCode = 405;
+              newErr.code = 'LOGIN_FAILED_PWD';
+              return callback(newErr);
+            }
+          });
+        }
+      });
+    } catch (err) {
+      logger.error(err);
+      callback(err);
+    }
+  };
 
-User.remoteMethod(
+  User.remoteMethod(
   'updatePassword',
-  {
-    description: "Allows a logged user to change his/her password.",
-    http: {path: '/update-password', verb: 'put'},
-    accepts: [
-      {arg: 'oldPassword', type: 'string', required: true, description: "The user old password"},
-      {arg: 'newPassword', type: 'string', required: true, description: "The user NEW password"}
-    ],
-    returns: {arg: 'passwordChange', type: 'boolean'}
-  }
+    {
+      description: 'Allows a logged user to change his/her password.',
+      http: {path: '/update-password', verb: 'put'},
+      accepts: [
+      {arg: 'oldPassword', type: 'string', required: true, description: 'The user old password'},
+      {arg: 'newPassword', type: 'string', required: true, description: 'The user NEW password'},
+      ],
+      returns: {arg: 'passwordChange', type: 'boolean'},
+    }
 );
 
   User.listTrader = function(next) {

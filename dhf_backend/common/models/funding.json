@@ -32,7 +32,7 @@
     "Project": {
       "type": "belongsTo",
       "model": "project",
-      "foreignKey": "",
+      "foreignKey": "projectId",
       "required": true
     }
   },

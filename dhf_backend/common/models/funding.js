@@ -91,8 +91,9 @@ module.exports = function(Funding) {
   Funding.listFundingByFunder = function(funderAddress, callback) {
     Funding.find({where: {
       funder: funderAddress,
+    },
       include: 'Project',
-    }}, callback);
+    }, callback);
   };
 
   Funding.remoteMethod('listFunding', {
