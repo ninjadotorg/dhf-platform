@@ -20,6 +20,7 @@ import tradePage from '@/trade/tradePage';
 import profile from '@/profile';
 import changePassword from '@/changePassword';
 import fundAllocation from '@/fundAllocation';
+import Report from '@/Report';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -162,7 +163,8 @@ class App extends React.Component {
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
                   <Route path="/dashboard" exact component={HomePage} />
-                  <Route path="/fund-allocation" component={fundAllocation} />
+                  <Route path="/fund-allocation" exact component={fundAllocation} />
+                  <Route path="/report" exact component={Report} />
                   <Route path="/profile" exact component={profile} />
                   <Route path="/change-password" exact component={changePassword} />
                 </main>

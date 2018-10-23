@@ -23,7 +23,7 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Fund Allocation" />
     </ListItem>
-    <ListItem component={Link} to="/fund-allocation" button>
+    <ListItem component={Link} to="/report" button>
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
