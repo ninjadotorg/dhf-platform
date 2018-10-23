@@ -277,9 +277,9 @@ class ProjectList extends React.Component {
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    {n.numberOfFunder > 0 ? 'Investors' : 'Investor'}
-                    {' '}
                     {n.numberOfFunder || 0}
+                    {' '}
+                    {n.numberOfFunder > 0 ? 'Investors' : 'Investor'}
                   </TableCell>
                   <TableCell>{`${progressAmount}%`}</TableCell>
                   <TableCell>{this.changeStateText(n)}</TableCell>
