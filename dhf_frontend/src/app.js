@@ -162,7 +162,7 @@ class App extends React.Component {
                   <Route path="/my-project" exact component={trade} />
                   <Route path="/trade/:id" exact component={tradePage} />
                   <Route path="/dashboard" exact component={HomePage} />
-                  <Route path="/fund-allocation" exact component={fundAllocation} />
+                  <Route path="/fund-allocation" component={fundAllocation} />
                   <Route path="/profile" exact component={profile} />
                   <Route path="/change-password" exact component={changePassword} />
                 </main>

@@ -307,21 +307,6 @@ class editProject extends React.Component {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="commission"
-                        label="Commission"
-                        name="commission"
-                        helperText="Please indicate the percent of profit you want to share with investors."
-                        autoComplete="commission"
-                        autoFocus
-                        value={this.state.commission}
-                        onChange={this.handleTextChange}
-                        type="number"
-                      />
-                    </FormControl>
-                  </Grid>
                 </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>
@@ -357,7 +342,24 @@ class editProject extends React.Component {
                     </FormControl>
                   </Grid>
                 </Grid>
-
+                <Grid container spacing={24}>
+                  <Grid item xs>
+                    <FormControl margin="normal" required fullWidth>
+                      <TextField
+                        id="commission"
+                        label="Commission"
+                        name="commission"
+                        helperText="Please indicate the percent of profit you want to share with investors."
+                        autoComplete="commission"
+                        autoFocus
+                        value={this.state.commission}
+                        onChange={this.handleTextChange}
+                        type="number"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs />
+                </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl fullWidth margin="normal" className={classes.margin}>

@@ -20,6 +20,7 @@ import Publish from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
 import 'react-notifications-component/dist/theme.css';
 import ReactNotification from 'react-notifications-component';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import moment from 'moment';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -30,6 +31,7 @@ import Grow from '@material-ui/core/Grow';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import WalletStepper from '@/trade/WalletStepper';
 import { toast } from 'react-toastify';
+
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
@@ -60,109 +62,122 @@ const editIcon = '#333';
 
 
 class ActionButton extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-            anchorEl: null,
-            placement: 'bottom'
-        }
-    }
-    
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      anchorEl: null,
+      placement: 'bottom',
+    };
+  }
+
     toggleActions = (e) => this.setState({ open: !this.state.open, anchorEl: e.currentTarget })
 
     render() {
-        console.log('render action button');
-        const { open, placement, anchorEl } = this.state;
-        const { currentItem, onClickInit, onClickDelete, onClickStop, onClickStart } = this.props;
-        const isProcessing = currentItem && currentItem.isProcessing ? JSON.parse(currentItem.isProcessing) : { status: null } ;
-        const smartContractStatus = isProcessing.status;
-        return (
-            <div>
-                <Button
-                  aria-owns={open ? 'menu-list-grow' : null}
-                  aria-haspopup="true"
-                  onClick={this.toggleActions}
-                >
-                  <MoreHoriz />
-                </Button>
-                <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
-                  {({ TransitionProps }) => (
-                    <Grow
-                      {...TransitionProps}JS
-                      id="menu-list-grow"
-                      style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-                    >
-                      <Paper>
-                        <ClickAwayListener onClickAway={() => this.setState({ open: false })}>
-                          <MenuList>
-                            {(currentItem.state === 'RELEASE') && (
-                              <MenuItem component={Link} to={`/trade/${currentItem.id}`}>
-                                <BarChart style={{ fontSize: 15, marginRight: 5 }} />
+      console.log('render action button');
+      const { open, placement, anchorEl } = this.state;
+      const { currentItem, onClickInit, onClickDelete, onClickStop, onClickStart } = this.props;
+      const isProcessing = currentItem && currentItem.isProcessing ? JSON.parse(currentItem.isProcessing) : { status: null };
+      const smartContractStatus = isProcessing.status;
+      return (
+        <div>
+          <Button
+            aria-owns={open ? 'menu-list-grow' : null}
+            aria-haspopup="true"
+            onClick={this.toggleActions}
+          >
+            <MoreHoriz />
+          </Button>
+          <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
+            {({ TransitionProps }) => (
+              <Grow
+                {...TransitionProps}
+                JS
+                id="menu-list-grow"
+                style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+              >
+                <Paper>
+                  <ClickAwayListener onClickAway={() => this.setState({ open: false })}>
+                    <MenuList>
+                      {(currentItem.state === 'NEW') && (!smartContractStatus) && (
+                        <MenuItem component={Link}
+                          to={{ pathname: `/fund-allocation/${currentItem.id}}`,
+                            state: { projectId: currentItem.id },
+                          }}
+                        >
+                          <AttachMoneyIcon style={{ fontSize: 15, marginRight: 10 }} />
+                          View Balance
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'RELEASE') && (
+                        <MenuItem component={Link} to={`/trade/${currentItem.id}`}>
+                          <BarChart style={{ fontSize: 15, marginRight: 5 }} />
                               Trade
-                              </MenuItem>
-                            )}
-                            {(currentItem.state === 'APPROVED') && (
-                              <MenuItem onClick={() => {
-                                // this.initFund(currentItem);
-                              }}
-                              >
-                                <Publish style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'APPROVED') && (
+                        <MenuItem onClick={() => {
+                          // this.initFund(currentItem);
+                        }}
+                        >
+                          <Publish style={{ fontSize: 15, marginRight: 10 }} />
                               Start
-                              </MenuItem>
-                            )}
-                            {(currentItem.state === 'NEW') && (!smartContractStatus) && (
-                              <MenuItem onClick={onClickInit}>
-                                <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'NEW') && (!smartContractStatus) && (
+                        <MenuItem onClick={onClickInit}>
+                          <AccountBalanceWallet style={{ fontSize: 15, marginRight: 10 }} />
                               Init
-                              </MenuItem>
-                            )}
-                            {(currentItem.state === 'NEW') && (!smartContractStatus) && (
-                              <MenuItem component={Link} to={`/project/${currentItem.id}`}>
-                                <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'NEW') && (!smartContractStatus) && (
+                        <MenuItem component={Link} to={`/project/${currentItem.id}`}>
+                          <EditIcon style={{ fontSize: 15, marginRight: 10 }} />
                               Edit
-                              </MenuItem>
-                            )}
-                            {(currentItem.state === 'NEW' || currentItem.state === 'RELEASE') && (!smartContractStatus) && (
-                              <MenuItem onClick={onClickDelete}
-                              style={{ color: red }}
-                              >
-                                <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'NEW' || currentItem.state === 'RELEASE') && (!smartContractStatus) && (
+                        <MenuItem onClick={onClickDelete}
+                          style={{ color: red }}
+                        >
+                          <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                               Cancel
-                              </MenuItem>
-                            )}
-                            {(currentItem.state === 'READY') && (
-                              <MenuItem onClick={onClickStart}
-                              style={{ color: red }}
-                              >
-                                <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {(currentItem.state === 'READY') && (
+                        <MenuItem onClick={onClickStart}
+                          style={{ color: red }}
+                        >
+                          <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                               Start
-                              </MenuItem>
-                            )}
-                            {currentItem.state === 'INITFUND' && smartContractStatus !== 'STOPPING' && 
-                              <MenuItem onClick={onClickStop}
-                              style={{ color: red }}
-                              >
-                                <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                        </MenuItem>
+                      )}
+                      {currentItem.state === 'INITFUND' && smartContractStatus !== 'STOPPING'
+                              && (
+                                <MenuItem onClick={onClickStop}
+                                  style={{ color: red }}
+                                >
+                                  <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
                               Stop
-                              </MenuItem>
-                            }
-                          </MenuList>
-                        </ClickAwayListener>
-                      </Paper>
-                    </Grow>
-                  )}
-                </Popper>
-            </div>
-        )
+                                </MenuItem>
+                              )
+                      }
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              </Grow>
+            )}
+          </Popper>
+        </div>
+      );
     }
 }
 
 ActionButton.propTypes = {
-    currentItem: PropTypes.object,
-    onClickInit: PropTypes.func,
-    onClickDelete: PropTypes.func,
-    onClickStop: PropTypes.func,
-}
+  currentItem: PropTypes.object,
+  onClickInit: PropTypes.func,
+  onClickDelete: PropTypes.func,
+  onClickStop: PropTypes.func,
+};
 
 export default ActionButton;
