@@ -33,6 +33,7 @@ import { toast } from 'react-toastify';
 import ActionButton from './ProjectList/ActionButton';
 import project from '../project';
 import LoadingSVG from '../assets/img/loading.svg';
+
 const etherScanTxUrl = 'https://rinkeby.etherscan.io/tx';
 const linkToEtherScan = (tx) => `${etherScanTxUrl}/${tx}`;
 const styles = {
@@ -75,7 +76,7 @@ const styles = {
     padding: '20px',
     border: '1px solid #888',
     width: '80%',
-  }
+  },
 };
 
 const ModalBlock = (props) => (
@@ -88,8 +89,9 @@ const ModalBlock = (props) => (
     width: '100%',
     height: '100%',
     backgroundColor: 'rgb(0,0,0)',
-    backgroundColor: 'rgba(0,0,0,0.4)'
-  }}>
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  }}
+  >
     <div style={{
       margin: 'auto',
       display: 'flex',
@@ -97,10 +99,11 @@ const ModalBlock = (props) => (
       justifyContent: 'center',
       alignItems: 'center',
       height: '100%',
-    }}>
-    <div style={{ backgroundColor: 'white', paddingLeft: '10px', paddingRight: '10px' }}>
-      <img src={LoadingSVG} style={{ width: '50px', height: '50px' }} />
-    </div>
+    }}
+    >
+      <div style={{ backgroundColor: 'white', paddingLeft: '10px', paddingRight: '10px' }}>
+        <img src={LoadingSVG} style={{ width: '50px', height: '50px' }} />
+      </div>
     </div>
   </div>
 );
@@ -270,11 +273,11 @@ class ProjectList extends React.Component {
                     {n.name}
                   </TableCell>
                   <TableCell>{moment(n.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
-                  <TableCell>{n.exchange}</TableCell>
+                  <TableCell style={{ textTransform: 'capitalize' }}>{n.exchange}</TableCell>
                   <TableCell>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
-                    Investors
+                    {n.numberOfFunder > 0 ? 'Investors' : 'Investor'}
                     {' '}
                     {n.numberOfFunder || 0}
                   </TableCell>

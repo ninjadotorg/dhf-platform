@@ -277,21 +277,8 @@ class createProject extends React.Component {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item xs>
-                    <FormControl margin="normal" required fullWidth>
-                      <TextField
-                        id="commission"
-                        label="Commission"
-                        name="commission"
-                        helperText="Please indicate the percent of profit you want to share with investors."
-                        autoComplete="commission"
-                        autoFocus
-                        onChange={this.handleTextChange}
-                        type="number"
-                      />
-                    </FormControl>
-                  </Grid>
                 </Grid>
+
                 <Grid container spacing={24}>
                   <Grid item xs>
                     <FormControl margin="normal" required fullWidth>
@@ -326,6 +313,23 @@ class createProject extends React.Component {
                       </FormHelperText>
                     </FormControl>
                   </Grid>
+                </Grid>
+                <Grid container spacing={24}>
+                  <Grid item xs>
+                    <FormControl margin="normal" required fullWidth>
+                      <TextField
+                        id="commission"
+                        label="Commission"
+                        name="commission"
+                        helperText="Please indicate the percent of profit you want to share with investors."
+                        autoComplete="commission"
+                        autoFocus
+                        onChange={this.handleTextChange}
+                        type="number"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs />
                 </Grid>
                 <Grid container spacing={24}>
                   <Grid item xs>

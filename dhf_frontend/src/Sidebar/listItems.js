@@ -46,7 +46,7 @@ export const secondaryListItems = (
       </ListItemIcon>
       <ListItemText primary="Wallet" />
     </ListItem>
-    <ListItem component={Link} to="/invest" button>
+    {/* <ListItem component={Link} to="/invest" button>
       <ListItemIcon>
         <LocalAtm />
       </ListItemIcon>
@@ -57,6 +57,6 @@ export const secondaryListItems = (
         <AccountBalance />
       </ListItemIcon>
       <ListItemText primary="My Invest" />
-    </ListItem>
+    </ListItem> */}
   </div>
 );

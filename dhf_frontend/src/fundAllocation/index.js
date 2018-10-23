@@ -69,6 +69,9 @@ class FundAllocation extends React.Component {
   // shouldComponentUpdate = (_, state) => state.currentItem === null ||  state.currentItem !== this.state.currentItem;
 
   componentWillMount = () => {
+    this.props.location.state && this.props.location.state.projectId && this.setState({
+      projectId: this.props.location.state.projectId,
+    });
     this.fetchProjects();
   };
 
