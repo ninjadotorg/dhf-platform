@@ -42,6 +42,7 @@ exports = module.exports = function (app, router) {
   // /trade/project/:project/sellStopMarket?symbol=...&quantity=...&price=...&stopPrice=...
   // /trade/project/:project/buyStopLimit?symbol=...&quantity=...&price=...&stopPrice=...
   // /trade/project/:project/sellStopLimit?symbol=...&quantity=...&price=...&stopPrice=...
+  // /trade/project/:project/getBalanceInCurrency?currency=...
 
   router.all('*', function (req, res) {
     console.error('Not found: %s %s', req.method, req.url)
@@ -138,6 +139,6 @@ async function action (req, res) {
     res.json(await gateway.action(req.params.action || params.action, params))
   } catch (err) {
     console.error(err)
-    res.status(500).send(err.message)
+    res.status(500).send({ error: err.message })
   }
 }
