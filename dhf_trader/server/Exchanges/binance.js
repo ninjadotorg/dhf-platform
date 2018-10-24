@@ -349,6 +349,48 @@ module.exports = class Binance {
     }
   }
 
+  async getBalanceInCurrency (params) {
+    if (!params.currency) {
+      throw new Error('currency is required')
+    }
+
+    try {
+      const { balances } = await this.client.accountInfo()
+      const prices = await this.client.prices()
+      const currency = params.currency
+      let sum = 0
+
+      for (let i = 0; i < balances.length; i++) {
+        let { asset, free, locked } = balances[i]
+
+        free = Number(free)
+        locked = Number(locked)
+
+        if (asset === currency) {
+          sum += free + locked
+        }
+
+        const price = Number(prices[`${asset}${currency}`])
+        if (!price) {
+          continue
+        }
+
+        if (free > 0) {
+          sum += price * free
+        }
+
+        if (locked > 0) {
+          sum += price * locked
+        }
+      }
+
+      return { currency, balance: sum }
+    } catch (e) {
+      console.log('could not get balance in currency', params, e)
+      throw e
+    }
+  }
+
   transformToOrder (result) {
     return {
       orderKey: result.clientOrderId,
