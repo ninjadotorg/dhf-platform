@@ -55,15 +55,19 @@ module.exports = function(Report) {
           if (err) {
             return callback(err);
           } else {
-            project.currentBalance = currentBalance;
-            project.returnPercent = returnPercent;
-            project.growthPercent = growthPercent;
-            project.yourEarnings = yourEarnings;
             result.cumulativeEarnings += yourEarnings;
             result.cumulativeReturn += returnPercent;
             result.numberOfProjects += 1;
             result.totalFundRaised += project.fundingAmount;
-            result.projects.push(project);
+            result.projects.push({
+              name: project.name,
+              createdDate: project.createdDate,
+              deadline: project.deadline,
+              currentBalance: currentBalance,
+              returnPercent: returnPercent,
+              growthPercent: growthPercent,
+              yourEarnings: yourEarnings,
+            });
             callback();
           }
         });
