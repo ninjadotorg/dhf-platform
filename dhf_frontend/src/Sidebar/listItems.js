@@ -6,45 +6,48 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import Wallet from '@material-ui/icons/AccountBalanceWallet';
 import LocalAtm from '@material-ui/icons/LocalAtm';
 import AccountBalance from '@material-ui/icons/AccountBalance';
+import Assignment from '@material-ui/icons/Assignment';
+import BarChart from '@material-ui/icons/BarChart';
+import Person from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/PermIdentity';
 import { Link } from 'react-router-dom';
 
-export const mainListItems = (
+export const mainListItems = (pathName, activeMenuItem) => (
   <div>
     <ListItem component={Link} to="/dashboard" button>
-      <ListItemIcon>
-        <DashboardIcon />
+      <ListItemIcon style={pathName === '/dashboard' ? { color: '#35C37D' } : {}}>
+        <Assignment />
       </ListItemIcon>
-      <ListItemText primary="My Projects" />
+      <ListItemText primary="My Projects" classes={{ primary: (pathName === '/dashboard' || pathName.indexOf('trade') == 1) ? activeMenuItem : '' }} />
     </ListItem>
     <ListItem component={Link} to="/fund-allocation" button>
-      <ListItemIcon>
-        <DashboardIcon />
+      <ListItemIcon style={pathName === '/fund-allocation' ? { color: '#35C37D' } : {}}>
+        <AccountBalance />
       </ListItemIcon>
-      <ListItemText primary="Fund Allocation" />
+      <ListItemText primary="Fund Allocation" classes={{ primary: pathName === '/fund-allocation' ? activeMenuItem : '' }} />
     </ListItem>
     <ListItem component={Link} to="/report" button>
-      <ListItemIcon>
-        <DashboardIcon />
+      <ListItemIcon style={pathName === '/report' ? { color: '#35C37D' } : {}}>
+        <BarChart />
       </ListItemIcon>
-      <ListItemText primary="Report" />
+      <ListItemText primary="Report" classes={{ primary: pathName === '/report' ? activeMenuItem : '' }} />
     </ListItem>
   </div>
 );
 
-export const secondaryListItems = (
+export const secondaryListItems = (pathName, activeMenuItem) => (
   <div>
     <ListItem component={Link} to="/profile" button>
-      <ListItemIcon>
+      <ListItemIcon style={pathName === '/profile' ? { color: '#35C37D' } : {}}>
         <PeopleIcon />
       </ListItemIcon>
-      <ListItemText primary="Account & setting" />
+      <ListItemText primary="Account & setting" classes={{ primary: pathName === '/profile' ? activeMenuItem : '' }} />
     </ListItem>
     <ListItem component={Link} to="/wallet" button>
-      <ListItemIcon>
+      <ListItemIcon style={pathName === '/wallet' ? { color: '#35C37D' } : {}}>
         <Wallet />
       </ListItemIcon>
-      <ListItemText primary="Wallet" />
+      <ListItemText primary="Wallet" classes={{ primary: pathName === '/wallet' ? activeMenuItem : '' }} />
     </ListItem>
     {/* <ListItem component={Link} to="/invest" button>
       <ListItemIcon>

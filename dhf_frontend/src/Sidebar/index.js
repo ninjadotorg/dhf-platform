@@ -13,10 +13,13 @@ import request from '@/utils/api';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Button from '@material-ui/core/Button';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import { withRouter } from 'react-router-dom';
 import history from '@/utils/history';
 import { compose } from 'recompose';
 import axios from 'axios';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 import { mainListItems, secondaryListItems } from './listItems';
 
 const drawerWidth = 240;
@@ -90,6 +93,9 @@ const styles = theme => ({
       width: theme.spacing.unit * 9,
     },
   },
+  activeMenuItem: {
+    color: '#35C37D',
+  },
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
@@ -108,6 +114,7 @@ const styles = theme => ({
 class Sidebar extends React.Component {
   state = {
     open: true,
+    auth: true,
     anchorEl: null,
   };
 
@@ -131,8 +138,18 @@ class Sidebar extends React.Component {
       .catch(error => {});
   };
 
+  handleMenu = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
   render() {
-    const { classes } = this.props;
+    const { classes, location } = this.props;
+    const { auth, anchorEl } = this.state;
+    const open = Boolean(anchorEl);
     return (
       <div className={classes.root}>
         <AppBar position="absolute" className={classNames(classes.appBar, this.state.open && classes.appBarShift)}>
@@ -148,9 +165,35 @@ class Sidebar extends React.Component {
             <Typography variant="title" color="inherit" noWrap className={classes.title}>
               Dashboard
             </Typography>
-            <Button variant="outline" color="inherit" onClick={this.handleLogout}>
-              LOGOUT
-            </Button>
+            {auth && (
+              <div>
+                <IconButton
+                  aria-owns={open ? 'menu-appbar' : null}
+                  aria-haspopup="true"
+                  onClick={this.handleMenu}
+                  style={{ color: '#fff' }}
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={() => { this.props.history.push('/profile'); this.handleClose(); }}>{JSON.parse(localStorage.getItem('user')).email}</MenuItem>
+                  <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
+                </Menu>
+              </div>
+            )}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -169,9 +212,9 @@ class Sidebar extends React.Component {
             </IconButton>
           </div>
           <Divider />
-          <List>{mainListItems}</List>
+          <List>{mainListItems(location.pathname, classes.activeMenuItem)}</List>
           <Divider />
-          <List>{secondaryListItems}</List>
+          <List>{secondaryListItems(location.pathname, classes.activeMenuItem)}</List>
         </Drawer>
       </div>
     );

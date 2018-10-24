@@ -98,6 +98,31 @@ class Login extends React.Component {
     this.setState({ email });
   };
 
+  fetchUserDetails =(userId) => {
+    request({
+      method: 'get',
+      url: `users/${userId}`,
+      data: {
+        id: userId,
+      },
+    })
+      .then(response => {
+        localStorage.setItem('user', JSON.stringify(response));
+        this.setState({
+          successMsg: 'Login Successful. Redirecting to dashboard..',
+          success: true,
+        });
+      })
+      .catch(error => {
+        console.log(error.data.error.message);
+        error.data
+          && error.data.error
+          && error.data.error.message
+          && this.setState({ error: error.data.error.message });
+        return null;
+      });
+  }
+
   handleSubmit = () => {
     const data = {
       email: this.state.email,
@@ -116,12 +141,9 @@ class Login extends React.Component {
       data,
     })
       .then(response => {
+        this.fetchUserDetails(response.userId);
         localStorage.setItem('token', response.id);
         localStorage.setItem('userId', response.userId);
-        this.setState({
-          successMsg: 'Login Successful. Redirecting to dashboard..',
-          success: true,
-        });
       })
       .catch(error => {
         console.log(error.data.error.message);
