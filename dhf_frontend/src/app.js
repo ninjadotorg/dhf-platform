@@ -12,6 +12,8 @@ import wallet from '@/wallet';
 import invest from '@/invest';
 import myInvest from '@/myInvest';
 import Login from '@/login';
+import Verify from '@/verify';
+import Verified from '@/verified';
 import './style/index.scss';
 import history from '@/utils/history';
 import trade from '@/trade';
@@ -192,6 +194,8 @@ class App extends React.Component {
             <Switch>
               <Route path="/register" component={Register} />
               <Route path="/login" component={Login} />
+              <Route path="/verify" component={Verify} />
+              <Route path="/verified" component={Verified} />
               <Route path="/" exact component={LandingPage} />
               <Route path="/test" component={Test} />
               <this.PrivateRoute path="/" />

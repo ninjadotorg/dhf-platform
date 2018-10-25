@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import { Link } from 'react-router-dom';
-import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from '@/utils/api';
+import { Redirect, Link } from 'react-router-dom';
+import axios from 'axios';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { compose } from 'recompose';
 import Header from 'components/Header/Header.jsx';
 import HeaderLinks from 'components/Header/HeaderLinks.jsx';
 import image from 'assets/img/bg7.jpg';
@@ -72,16 +72,18 @@ const styles = theme => ({
 });
 
 
-class Register extends React.Component {
+class Verify extends React.Component {
   constructor(props) {
     super(props);
+    const email = this.props.history.location.state && this.props.history.location.state.email
+      ? this.props.history.location.state.email
+      : '';
     this.state = {
-      email: '',
-      firstName: '',
-      lastName: '',
-      username: '',
+      email,
       password: '',
       error: '',
+      success: false,
+      successMsg: '',
     };
   }
 
@@ -96,41 +98,60 @@ class Register extends React.Component {
     this.setState({ email });
   };
 
-  handleTextChange = event => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  handleSubmit = () => {
-    const data = {
-      firstName: this.state.firstName,
-      email: this.state.email,
-      lastName: this.state.lastName,
-      username: this.state.username,
-      password: this.state.password,
-      userType: 'user',
-      emailVerified: true,
-    };
-    this.setState({
-      error: '',
-    });
+  fetchUserDetails =(userId) => {
     request({
-      method: 'post',
-      url: 'users',
-      data,
+      method: 'get',
+      url: `users/${userId}`,
+      data: {
+        id: userId,
+      },
     })
       .then(response => {
-        return this.props.history.push({
-          pathname: '/verify',
-          state: { email: response.email },
+        localStorage.setItem('user', JSON.stringify(response));
+        this.setState({
+          successMsg: 'Login Successful. Redirecting to dashboard..',
+          success: true,
         });
       })
       .catch(error => {
+        console.log(error.data.error.message);
         error.data
           && error.data.error
           && error.data.error.message
           && this.setState({ error: error.data.error.message });
+        return null;
+      });
+  }
+
+  handleSubmit = () => {
+    const data = {
+      email: this.state.email,
+      password: this.state.password,
+      userType: 'user',
+      emailVerified: false,
+    };
+    this.setState({
+      error: '',
+      success: false,
+      successMsg: '',
+    });
+    request({
+      method: 'post',
+      url: 'users/login',
+      data,
+    })
+      .then(response => {
+        this.fetchUserDetails(response.userId);
+        localStorage.setItem('token', response.id);
+        localStorage.setItem('userId', response.userId);
+      })
+      .catch(error => {
+        console.log(error.data.error.message);
+        error.data
+          && error.data.error
+          && error.data.error.message
+          && this.setState({ error: error.data.error.message });
+        return null;
       });
   };
 
@@ -140,92 +161,42 @@ class Register extends React.Component {
       <React.Fragment>
         <div style={{ backgroundColor: '#fff' }}>
           <CssBaseline />
-          <Header
+          {/* <Header
             brand="Ninja Fund"
             rightLinks={<HeaderLinks />}
-          />
+          /> */}
           <div
             className={classes.pageHeader}
             style={{
-              backgroundImage: `url(${image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'top center',
+              backgroundImage: `url(${image})`,
             }}
           />
           <main className={classes.layout}>
+
             <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
-              <Typography variant="headline">Register</Typography>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="firstname">First Name</InputLabel>
-                <Input
-                  id="firstname"
-                  name="firstName"
-                  autoComplete="firstname"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="lastName">Last Name</InputLabel>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  autoComplete="lastName"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  onChange={this.handleTextChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Email *"
-                  onChange={this.handleChangeEmail}
-                  name="email"
-                  value={this.state.email}
-                  validators={['required', 'isEmail']}
-                  errorMessages={['this field is required', 'email is not valid']}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Create new password *"
-                  onChange={this.handleChange}
-                  name="password"
-                  type="password"
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  value={this.state.password}
-                />
-              </FormControl>
+              <Typography variant="h5" bold>Verify your account</Typography>
+
+              <Typography variant="subheading" style={{ marginTop: 10, marginBottom: 10 }}>Thank you for your registration. Please check your inbox to verify your account.</Typography>
               <FormHelperText id="name-helper-text" error>
                 {this.state.error}
               </FormHelperText>
-              <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
-                  Register
+              <Button type="submit" fullWidth variant="raised" color="primary" component={Link} to="/login">
+                Login
               </Button>
-
-              <Typography color="primary" style={{ marginTop: 30, textAlign: 'center' }}>
-                <Link to="/login">Already registered, Click here to Login</Link>
-              </Typography>
             </ValidatorForm>
+            <div />
           </main>
+
         </div>
       </React.Fragment>
     );
   }
 }
 
-Register.propTypes = {
+Verify.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Register);
+export default compose(withStyles(styles))(Verify);

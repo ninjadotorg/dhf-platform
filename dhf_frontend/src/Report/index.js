@@ -66,6 +66,7 @@ class Report extends React.Component {
     super(props);
     this.state = {
       projects: [],
+      runningProjects: {},
       balance: {},
       projectId: 0,
       value: 0,
@@ -75,7 +76,7 @@ class Report extends React.Component {
   // shouldComponentUpdate = (_, state) => state.currentItem === null ||  state.currentItem !== this.state.currentItem;
 
   componentWillMount = () => {
-    // this.fetchProjects();
+    this.fetchProjects();
   };
 
   handleTabChange = (event, value) => {
@@ -85,14 +86,11 @@ class Report extends React.Component {
   fetchProjects = () => {
     request({
       method: 'get',
-      url: '/projects/list/my',
-      params: {
-        isTrading: true,
-      },
+      url: '/reports/running-project',
     })
       .then(response => {
         this.setState({
-          projects: response,
+          runningProjects: response,
         });
       })
       .catch(error => {});
@@ -135,22 +133,27 @@ class Report extends React.Component {
 
   TabContainer = (props) => {
     return (
-      <Table style={{ padding: 8 * 3 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Coin Name</TableCell>
-            <TableCell>Balance</TableCell>
-            <TableCell>Available for trading</TableCell>
-            <TableCell>In order</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {props.value}
-          {Object.keys(this.state.balance).length > 0
-            ? this.balanceTable()
-            : (<div style={{ margin: 20 }}>No data</div>)}
-        </TableBody>
-      </Table>
+      <div>
+        {JSON.stringify(this.state.runningProjects)}
+        {this.state.runningProjects.cumulativeEarnings}
+        <Table style={{ padding: 8 * 3 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Coin Name</TableCell>
+              <TableCell>Balance</TableCell>
+              <TableCell>Available for trading</TableCell>
+              <TableCell>In order</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {props.value}
+            {Object.keys(this.state.balance).length > 0
+              ? this.balanceTable()
+              : (<div style={{ margin: 20 }}>No data</div>)}
+          </TableBody>
+        </Table>
+
+      </div>
     );
   }
 

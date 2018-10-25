@@ -189,7 +189,7 @@ class Sidebar extends React.Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={() => { this.props.history.push('/profile'); this.handleClose(); }}>{JSON.parse(localStorage.getItem('user')).email}</MenuItem>
+                  {localStorage.getItem('user') && <MenuItem onClick={() => { this.props.history.push('/profile'); this.handleClose(); }}>{JSON.parse(localStorage.getItem('user')).email}</MenuItem>}
                   <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
                 </Menu>
               </div>
