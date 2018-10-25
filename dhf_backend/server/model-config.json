@@ -47,7 +47,13 @@
   },
   "user": {
     "dataSource": "mongodb",
-    "public": true
+    "public": true,
+    "options": {
+      "emailVerificationRequired": true
+    }
+  },
+  "Email": {
+    "dataSource": "emailDs"
   },
   "link-to-contract": {
     "dataSource": "mongodb",
