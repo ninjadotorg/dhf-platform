@@ -12,6 +12,25 @@
   "db": {
     "connector": "memory"
   },
+  "emailDs": {
+    "name": "emailDs",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "smtp",
+        "host": "smtp.sendgrid.net",
+        "secure": true,
+        "port": 465,
+        "tls": {
+          "rejectUnauthorized": false
+        },
+        "auth": {
+          "user": "apikey",
+          "pass": "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"
+        }
+      }
+    ]
+  },
   "rest": {
     "connector": "rest",
     "debug": true,
