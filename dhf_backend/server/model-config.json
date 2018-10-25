@@ -102,6 +102,10 @@
     "public": true,
     "options": {}
   },
+  "report": {
+    "dataSource": "db",
+    "public": true
+  },
   "wallet-profile": {
     "dataSource": "rest",
     "public": false,

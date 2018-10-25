@@ -1,0 +1,29 @@
+{
+  "name": "report",
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "READ",
+      "principalType": "ROLE",
+      "principalId": "user",
+      "permission": "ALLOW",
+      "property": "running"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+        "running"
+      ]
+    }
+  }
+}

@@ -68,6 +68,22 @@
       },
       {
         "template": {
+          "method": "GET",
+          "url": "http://trader-api:9001/trade/project/{projectId}/getBalanceInCurrency",
+          "options": {
+            "strictSSL": false
+          },
+          "query": {
+            "currency": "{currency}"
+          },
+          "responsePath": ""
+        },
+        "functions": {
+          "getBalanceInCurrency": ["projectId", "currency"]
+        }
+      },
+      {
+        "template": {
           "method": "POST",
           "url": "http://trader-api:9001/trade/project/{projectId}/unLockAccount",
           "options": {
