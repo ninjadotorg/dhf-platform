@@ -15,14 +15,15 @@
       "principalType": "ROLE",
       "principalId": "user",
       "permission": "ALLOW",
-      "property": "running"
+      "property": "*"
     }
   ],
   "methods": {},
   "mixins": {
     "DisableMethods": {
       "expose": [
-        "running"
+        "running",
+        "completed"
       ]
     }
   }

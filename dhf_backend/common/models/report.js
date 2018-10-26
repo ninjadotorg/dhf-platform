@@ -63,6 +63,7 @@ module.exports = function(Report) {
               name: project.name,
               createdDate: project.createdDate,
               deadline: project.deadline,
+              initBalance: project.fundingAmount,
               currentBalance: currentBalance,
               returnPercent: returnPercent,
               growthPercent: growthPercent,
@@ -81,12 +82,75 @@ module.exports = function(Report) {
     });
   };
 
+  Report.completed = function(callback) {
+    let error = new Error();
+    let result = {
+      cumulativeEarnings: 0,
+      cumulativeReturn: 0,
+      numberOfProjects: 0,
+      totalFundRaised: 0,
+      projects: [],
+    };
+    Report.app.models.Project.find({
+      where: {
+        state: PROJECT_STATE.WITHDRAW,
+        userId: Report.app.currentUserId,
+      },
+    }, function(err, projects) {
+      if (err) {
+        return callback(err);
+      }
+      async.eachSeries(projects, function(project, callback) {
+        // Return(%) = (Current balance - Initial balance) / Initial balance) *100
+        // Growth (%)= (Return - previous return)/previous return ) * 100
+        // Withdrawal request (%) = ⅀ (Fund share of each investor)
+        // Your earnings = (Current balance - init balance) * Commission rate
+        let returnPercent = ((project.retractAmount - project.fundingAmount) / project.fundingAmount) * 100;
+        let yourEarnings =  (project.retractAmount - project.fundingAmount) * project.commission;
+        let growthPercent = 'NA';
+        result.cumulativeEarnings += yourEarnings;
+        result.cumulativeReturn += returnPercent;
+        result.numberOfProjects += 1;
+        result.totalFundRaised += project.fundingAmount;
+        result.projects.push({
+          name: project.name,
+          createdDate: project.createdDate,
+          deadline: project.deadline,
+          initBalance: project.fundingAmount,
+          finalBalance: project.retractAmount,
+          returnPercent: returnPercent,
+          growthPercent: growthPercent,
+          yourEarnings: yourEarnings,
+        });
+        callback();
+      }, function done(err) {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, result);
+        }
+      });
+    });
+  };
+
   Report.remoteMethod(
     'running',
     {
       accepts: [],
       http: {
         path: '/running-project',
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Report.remoteMethod(
+    'completed',
+    {
+      accepts: [],
+      http: {
+        path: '/completed-project',
         verb: 'GET',
       },
       returns: {arg: 'data', root: true, type: 'Object'},
