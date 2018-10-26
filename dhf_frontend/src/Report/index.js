@@ -69,6 +69,8 @@ class Report extends React.Component {
       runningProjects: {},
       balance: {},
       projectId: 0,
+      completedProjects: {},
+      investorProjects: {},
       value: 0,
     };
   }
@@ -94,62 +96,287 @@ class Report extends React.Component {
         });
       })
       .catch(error => {});
-  };
-
-  fetchBalances = () => {
     request({
       method: 'get',
-      url: '/infos/balance',
-      params: {
-        projectId: this.state.projectId,
-      },
+      url: '/reports/completed-project',
     })
       .then(response => {
         this.setState({
-          balance: response,
+          completedProjects: response,
         });
       })
-      .catch(error => {
+      .catch(error => {});
+    request({
+      method: 'get',
+      url: '/reports/investor-project',
+    })
+      .then(response => {
         this.setState({
-          balance: {},
+          investorProjects: response,
         });
-      });
-  }
-
-  balanceTable = () => {
-    return Object.keys(this.state.balance).map((item, i) => (
-      <TableRow>
-        <TableCell>{item}</TableCell>
-        <TableCell>{Number(this.state.balance[item].free) + Number(this.state.balance[item].locked)}</TableCell>
-        <TableCell>{this.state.balance[item].free}</TableCell>
-        <TableCell>{this.state.balance[item].locked}</TableCell>
-      </TableRow>
-    ));
-  }
+      })
+      .catch(error => {});
+  };
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value }, this.fetchBalances);
   };
 
-  TabContainer = (props) => {
+  TabContainerRunningProjects = (props) => {
     return (
       <div>
-        {JSON.stringify(this.state.runningProjects)}
-        {this.state.runningProjects.cumulativeEarnings}
-        <Table style={{ padding: 8 * 3 }}>
+
+        <Typography variant="body2" gutterBottom>
+        Cumulative Earnings (ETH):
+          {' '}
+          {this.state.runningProjects.cumulativeEarnings}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Cumulative Return (%):
+          {' '}
+          {this.state.runningProjects.cumulativeReturn}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Total funds raised (ETH):
+          {' '}
+          {this.state.runningProjects.totalFundRaised}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Number of projects  :
+          {' '}
+          {this.state.runningProjects.numberOfProjects}
+        </Typography>
+        <Table style={{ padding: 8 * 3, marginBottom: 30 }}>
           <TableHead>
             <TableRow>
-              <TableCell>Coin Name</TableCell>
-              <TableCell>Balance</TableCell>
-              <TableCell>Available for trading</TableCell>
-              <TableCell>In order</TableCell>
+              <TableCell>Project</TableCell>
+              <TableCell>Start date</TableCell>
+              <TableCell>End date</TableCell>
+              <TableCell>Initial Balance</TableCell>
+              <TableCell>Current balance</TableCell>
+              <TableCell>Return (%)</TableCell>
+              <TableCell>
+                Commission
+                <sup>*</sup>
+                {' '}
+                (%)
+              </TableCell>
+              <TableCell>Your earnings</TableCell>
+              {/* <TableCell>Withdrawal requests</TableCell> */}
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.value}
-            {Object.keys(this.state.balance).length > 0
-              ? this.balanceTable()
-              : (<div style={{ margin: 20 }}>No data</div>)}
+            {this.state.runningProjects && this.state.runningProjects.projects && this.state.runningProjects.projects.map((item, key) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{item.deadline}</TableCell>
+                  <TableCell>{item.initBalance}</TableCell>
+                  <TableCell>{item.currentBalance}</TableCell>
+                  <TableCell>
+                    {item.returnPercent}
+%
+                  </TableCell>
+                  <TableCell>
+                    {item.commission}
+%
+                  </TableCell>
+                  <TableCell>{item.yourEarnings}</TableCell>
+                  {/* <TableCell>Withdrawal requests</TableCell> */}
+                  <TableCell><Link to="fund-allocation">View Balance</Link></TableCell>
+                </TableRow>
+              );
+            })
+            }
+          </TableBody>
+        </Table>
+
+      </div>
+    );
+  }
+
+
+  TabContainerCompletedProjects = (props) => {
+    return (
+      <div>
+
+        <Typography variant="body2" gutterBottom>
+        Cumulative Earnings (ETH):
+          {' '}
+          {this.state.completedProjects.cumulativeEarnings}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Cumulative Return (%):
+          {' '}
+          {this.state.completedProjects.cumulativeReturn}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Total funds raised (ETH):
+          {' '}
+          {this.state.completedProjects.totalFundRaised}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Number of projects  :
+          {' '}
+          {this.state.completedProjects.numberOfProjects}
+        </Typography>
+        <Table style={{ padding: 8 * 3, marginBottom: 30 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Project</TableCell>
+              <TableCell>Start date</TableCell>
+              <TableCell>End date</TableCell>
+              <TableCell>Initial Balance</TableCell>
+              <TableCell>Final balance</TableCell>
+              <TableCell>Return (%)</TableCell>
+              <TableCell>
+                Commission
+                <sup>*</sup>
+                {' '}
+                (%)
+              </TableCell>
+              <TableCell>Your earnings</TableCell>
+              {/* <TableCell>Withdrawal requests</TableCell> */}
+              <TableCell>Number of investors</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.completedProjects && this.state.completedProjects.projects && this.state.completedProjects.projects.map((item, key) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{item.deadline}</TableCell>
+                  <TableCell>{item.initBalance}</TableCell>
+                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>
+                    {item.returnPercent}
+%
+                  </TableCell>
+                  <TableCell>
+                    {item.commission}
+%
+                  </TableCell>
+                  <TableCell>{item.yourEarnings}</TableCell>
+                  {/* <TableCell>Withdrawal requests</TableCell> */}
+                  <TableCell>{item.numberOfInvestors}</TableCell>
+                </TableRow>
+              );
+            })
+            }
+          </TableBody>
+        </Table>
+
+      </div>
+    );
+  }
+
+  TabContainerInvestorProjects = (props) => {
+    return (
+      <div>
+        <Table style={{ padding: 8 * 3, marginBottom: 30 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Investor ID</TableCell>
+              <TableCell>Action</TableCell>
+              <TableCell>Date & Time</TableCell>
+              <TableCell>Amount (ETH)</TableCell>
+              <TableCell>Project</TableCell>
+              <TableCell>Invest Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.investorProjects && this.state.investorProjects.projects && this.state.investorProjects.projects.map((item, key) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{item.deadline}</TableCell>
+                  <TableCell>{item.initBalance}</TableCell>
+                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>
+                    {item.returnPercent}
+%
+                  </TableCell>
+                  <TableCell>
+                    {item.commission}
+%
+                  </TableCell>
+                  <TableCell>{item.yourEarnings}</TableCell>
+                  {/* <TableCell>Withdrawal requests</TableCell> */}
+                  <TableCell>{item.numberOfInvestors}</TableCell>
+                </TableRow>
+              );
+            })
+            }
+          </TableBody>
+        </Table>
+
+      </div>
+    );
+  }
+
+  TabContainerInvestorProjects = (props) => {
+    return (
+      <div>
+
+        {/* <Typography variant="body2" gutterBottom>
+        Cumulative Earnings (ETH):
+          {' '}
+          {this.state.runningProjects.cumulativeEarnings}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Cumulative Return (%):
+          {' '}
+          {this.state.runningProjects.cumulativeReturn}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Total funds raised (ETH):
+          {' '}
+          {this.state.runningProjects.totalFundRaised}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+        Number of projects  :
+          {' '}
+          {this.state.runningProjects.numberOfProjects}
+        </Typography> */}
+        <Table style={{ padding: 8 * 3 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Investor ID</TableCell>
+              <TableCell>Action</TableCell>
+              <TableCell>Date & Time</TableCell>
+              <TableCell>Amount (ETH)</TableCell>
+              <TableCell>Project</TableCell>
+              <TableCell>Invest Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.investorProjects && this.state.investorProjects.projects && this.state.investorProjects.projects.map((item, key) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{item.deadline}</TableCell>
+                  <TableCell>{item.initBalance}</TableCell>
+                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>
+                    {item.returnPercent}
+%
+                  </TableCell>
+                  <TableCell>
+                    {item.commission}
+%
+                  </TableCell>
+                  <TableCell>{item.yourEarnings}</TableCell>
+                  {/* <TableCell>Withdrawal requests</TableCell> */}
+                  <TableCell>{item.numberOfInvestors}</TableCell>
+                </TableRow>
+              );
+            })
+            }
           </TableBody>
         </Table>
 
@@ -166,16 +393,16 @@ class Report extends React.Component {
             Project Reports
         </Typography>
         <Paper className={classes.root}>
-          <AppBar position="static">
+          <AppBar position="sticky" style={{ left: 0, right: 0 }}>
             <Tabs value={value} onChange={this.handleTabChange}>
               <Tab label="Running Project" />
               <Tab label="Completed Project" />
               <Tab label="Investor Project" />
             </Tabs>
           </AppBar>
-          {value === 0 && <this.TabContainer value={0} />}
-          {value === 1 && <this.TabContainer value={1} />}
-          {value === 2 && <this.TabContainer value={2} />}
+          {value === 0 && <div style={{ margin: '15px 20px' }}><this.TabContainerRunningProjects value={0} /></div>}
+          {value === 1 && <div style={{ margin: '15px 20px' }}><this.TabContainerCompletedProjects value={1} /></div>}
+          {value === 2 && <div style={{ margin: '15px 20px' }}><this.TabContainerInvestorProjects value={2} /></div>}
         </Paper>
       </div>
     );

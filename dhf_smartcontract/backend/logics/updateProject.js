@@ -5,12 +5,6 @@ const EventLog = require('../common/models/event')
 const Project = require('../common/models/project')
 const User = require('../common/models/user')
 const Funding = require('../common/models/funding')
-const client = new HedgeFundAPI('v2', false)
-
-!(async function () {
-  await client._init()
-  start()
-})()
 
 function getState (n) {
   if (n == '0') return 'NEW'
@@ -21,19 +15,19 @@ function getState (n) {
   if (n == '5') return 'WITHDRAW'
 }
 
-async function start () {
+async function start(client, version) {
   let newEvent = await EventLog.model
     .findOne({ getTransaction: false })
     .sort({ blockNumber: -1 })
-  if (!newEvent) return setTimeout(start, 1000)
+  if (!newEvent) return setTimeout(start, 1000,client, version)
 
   if (!newEvent.projectID) {
     await EventLog.update({ _id: newEvent._id }, { getTransaction: true })
-    return start()
+    return start(client, version)
   }
 
-  //update project ingormation
-  let id = newEvent.projectID.replace(/^0x/, '').substring(0,24)
+  // update project ingormation
+  let id = newEvent.projectID.replace(/^0x/, '').substring(0, 24)
   let r = await client.getProjectInfo(newEvent.projectID)
   let {
     owner,
@@ -60,33 +54,50 @@ async function start () {
   lifeTime = lifeTime / (24 * 60 * 60)
   state = getState(state)
 
-  let project = await Project.update({_id: id}, {
-    owner, //adress
-    target,
-    max,
-    fundingAmount,
-    availableAmount,
-    releasedAmount,
-    retractAmount,
-    startTime,
-    deadline,
-    lifeTime,
-    state,
-    numberOfFunder: numFunder
-  })
-  if (project)
-    console.log("update ", id, project.state)
-  
-  //update funder
-  let funders = await client.getFunders("0x" + id);
+  let project = await Project.update(
+    { _id: id },
+    {
+      owner, // adress
+      target,
+      max,
+      fundingAmount,
+      availableAmount,
+      releasedAmount,
+      retractAmount,
+      startTime,
+      deadline,
+      lifeTime,
+      state,
+      numberOfFunder: numFunder,
+      smartContractVersion: version
+    }
+  )
+
+  if (project) {
+    // update isTrader
+    console.log('update ', id, project.state)
+    User.update({ _id: project.userId }, { isTrader: true })
+  }
+
+  // update funder
+  let funders = await client.getFunders('0x' + id)
   funders.forEach(i => {
-    Funding.updateUpsert({funder: i, projectId: id}, {funder: i, projectId: id})
+    Funding.updateUpsert(
+      { funder: i, projectId: id },
+      { funder: i, projectId: id }
+    )
   })
-
-
-  //update isTrader
-  User.update({_id: owner}, {isTrader: true})
 
   await EventLog.update({ _id: newEvent._id }, { getTransaction: true })
-  start()
+  start(client, version)
+}
+
+let startVersion = []
+module.exports = function(version) {
+  if (startVersion[version]) {
+    return
+  }
+  startVersion[version] = 1
+  let client = new HedgeFundAPI(version, false)
+  start(client, version)
 }

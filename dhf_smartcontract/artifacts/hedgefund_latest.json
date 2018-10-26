@@ -1,5 +1,7 @@
 {
     "address": "0x2b60582e65b9bed7ea2112b48b521a7d8627f83f",
+    "owner": "",
+    "version": "v1",
     "network": "https://rinkeby.infura.io/LLJy74SjotuIMxZJMUvf",
     "abi": [
       {

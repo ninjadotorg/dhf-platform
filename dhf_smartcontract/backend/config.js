@@ -1,11 +1,9 @@
 var fs = require("fs")
 var Config = {
-    ContractInfo: 'http://35.198.235.226/json/hedgefund_latest.json',
-    eth: {
-        network: "wss://rinkeby.infura.io/ws"
-    },
+    ContractInfo: 'http://35.198.235.226/json/hedgefund_[version].json',
     SmartContractDB: "mongodb://35.198.235.226:27018/SmartContractDB",
-    PlatformDB: "mongodb://35.198.235.226:27018/dhf-platform"
+    PlatformDB: "mongodb://35.198.235.226:27018/dhf-platform",
+    Versions: ["v1"]
 }
 
 
