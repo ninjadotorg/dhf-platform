@@ -23,7 +23,8 @@
     "DisableMethods": {
       "expose": [
         "running",
-        "completed"
+        "completed",
+        "investor"
       ]
     }
   }

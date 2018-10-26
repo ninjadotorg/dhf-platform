@@ -133,6 +133,10 @@ module.exports = function(Report) {
     });
   };
 
+  Report.investor = function(callback) {
+
+  }
+
   Report.remoteMethod(
     'running',
     {
@@ -151,6 +155,19 @@ module.exports = function(Report) {
       accepts: [],
       http: {
         path: '/completed-project',
+        verb: 'GET',
+      },
+      returns: {arg: 'data', root: true, type: 'Object'},
+    }
+  );
+
+  Report.remoteMethod(
+
+    'investor',
+    {
+      accepts: [],
+      http: {
+        path: '/investor-project',
         verb: 'GET',
       },
       returns: {arg: 'data', root: true, type: 'Object'},
