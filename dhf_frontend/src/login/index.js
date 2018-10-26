@@ -146,11 +146,10 @@ class Login extends React.Component {
         localStorage.setItem('userId', response.userId);
       })
       .catch(error => {
-        console.log(error.data.error.message);
         error.data
           && error.data.error
           && error.data.error.message
-          && this.setState({ error: error.data.error.message });
+          && this.setState({ error: error.data.error.message === 'login failed'? 'Username and password didn\'t match' : error.data.error.message });
         return null;
       });
   };
