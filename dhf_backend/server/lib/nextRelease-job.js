@@ -43,7 +43,7 @@ ProjectState.prototype.checkState = function() {
               console.log(err);
               return callback(err);
             }
-            if (project.state !== PROJECT_STATE.RELEASE) {
+            if (!project || project.state !== PROJECT_STATE.RELEASE) {
               return callback('skip processing because state of project was changed');
             }
             currentProject = project;
@@ -59,7 +59,7 @@ ProjectState.prototype.checkState = function() {
                 console.log(err);
                 return callback(err);
               }
-              if (!currentStage.nextStage ||
+              if (!currentStage || !currentStage.nextStage ||
                 currentStage.nextStage.toString() !== stage.id.toString()) {
                 return callback('skip processing because scenario not validated');
               }
