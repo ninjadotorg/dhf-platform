@@ -51,16 +51,21 @@ ProjectState.prototype.checkState = function() {
           });
         },
         function getCurrentStage(callback) {
-          self.ProjectStages.findById(currentProject.currentStage, function(err, currentStage) {
-            if (err) {
-              console.log(err);
-              return callback(err);
-            }
-            if (currentStage.nextStage.toString() !== stage.id.toString()) {
-              return callback('skip processing because scenario not validated');
-            }
+          if (!currentProject.currentStage) {
             callback();
-          });
+          } else {
+            self.ProjectStages.findById(currentProject.currentStage, function(err, currentStage) {
+              if (err) {
+                console.log(err);
+                return callback(err);
+              }
+              if (!currentStage.nextStage ||
+                currentStage.nextStage.toString() !== stage.id.toString()) {
+                return callback('skip processing because scenario not validated');
+              }
+              callback();
+            });
+          }
         },
         function transferMoneyToExchange(callback) {
           console.log('call transfer money to: ', currentProject.id);
