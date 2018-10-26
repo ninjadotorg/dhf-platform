@@ -89,14 +89,20 @@ class Verified extends React.Component {
 
   componentDidMount() {
     request({
-      method: 'post',
+      method: 'get',
       url: 'users/confirm',
+      params: {
+        uid: this.props.location.search.split('=')[2],
+        token: this.props.location.search.split('=')[1].split('&')[0],
+      },
     })
       .then(response => {
         console.log(response);
         this.setState({
-          successMsg: 'Login Successful. Redirecting to dashboard..',
+          successMsg: 'Your account has been verified. Please login to continue...',
           success: true,
+        }, () => {
+          setTimeout(() => { this.props.history.push('/login'); }, 3000);
         });
       })
       .catch(error => {
@@ -104,7 +110,7 @@ class Verified extends React.Component {
         error.data
           && error.data.error
           && error.data.error.message
-          && this.setState({ error: error.data.error.message });
+          && this.setState({ error: error.data.error.code });
         return null;
       });
   }
@@ -118,58 +124,9 @@ class Verified extends React.Component {
     this.setState({ email });
   };
 
-  fetchUserDetails =(userId) => {
-    request({
-      method: 'get',
-      url: `users/${this.props.location.search.split('=')[1]}/verifiy`,
-    })
-      .then(response => {
-        console.log(response);
-        this.setState({
-          successMsg: 'Login Successful. Redirecting to dashboard..',
-          success: true,
-        });
-      })
-      .catch(error => {
-        console.log(error.data.error.message);
-        error.data
-          && error.data.error
-          && error.data.error.message
-          && this.setState({ error: error.data.error.message });
-        return null;
-      });
-  }
 
   handleSubmit = () => {
-    const data = {
-      email: this.state.email,
-      password: this.state.password,
-      userType: 'user',
-      emailVerified: false,
-    };
-    this.setState({
-      error: '',
-      success: false,
-      successMsg: '',
-    });
-    request({
-      method: 'post',
-      url: 'users/login',
-      data,
-    })
-      .then(response => {
-        this.fetchUserDetails(response.userId);
-        localStorage.setItem('token', response.id);
-        localStorage.setItem('userId', response.userId);
-      })
-      .catch(error => {
-        console.log(error.data.error.message);
-        error.data
-          && error.data.error
-          && error.data.error.message
-          && this.setState({ error: error.data.error.message });
-        return null;
-      });
+
   };
 
   render() {
@@ -196,12 +153,21 @@ class Verified extends React.Component {
               <Typography variant="h5" bold>Verify your account</Typography>
 
               <Typography variant="subheading" style={{ marginTop: 10, marginBottom: 10 }}>Thank you for your registration. Please check your inbox to verify your account.</Typography>
-              <FormHelperText id="name-helper-text" error>
-                {this.state.error}
-              </FormHelperText>
-              <Button type="submit" fullWidth variant="raised" color="primary" component={Link} to="/login">
+              {this.state.error && (
+                <FormHelperText id="name-helper-text" error style={{ marginTop: 10, marginBottom: 20 }}>
+                  {this.state.error}
+                </FormHelperText>
+              )}
+              { this.state.success && (
+                <FormHelperText id="name-helper-text" style={{ marginTop: 10, marginBottom: 20, color: '#35C37D' }}>
+                  {this.state.successMsg}
+                </FormHelperText>
+              )}
+              {this.state.successMsg && (
+                              <Button type="submit" fullWidth variant="raised" color="primary" component={Link} to="/login">
                 Login
-              </Button>
+                </Button>
+              )}
             </ValidatorForm>
             <div />
           </main>

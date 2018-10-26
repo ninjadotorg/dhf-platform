@@ -6,9 +6,9 @@ let assert = require('assert');
 var adminUser, accessToken;
 before(function(done) {
   // clean db
-  app.models.user.destroyAll();
-  app.models.RoleMapping.destroyAll();
-  app.models.Role.destroyAll();
+  //app.models.user.destroyAll();
+  //app.models.RoleMapping.destroyAll();
+  //app.models.Role.destroyAll();
   app.models.Role.create({name: 'admin'}, function(err, adminRole) {
         if (err)
             return callback(err);
