@@ -161,4 +161,8 @@ module.exports = function(User) {
       next();
     });
   });
+
+  User.beforeRemote('create', function(context, user, next) {
+    next();
+  });
 };
