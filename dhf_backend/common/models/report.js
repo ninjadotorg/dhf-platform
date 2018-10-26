@@ -97,7 +97,12 @@ module.exports = function(Report) {
         state: PROJECT_STATE.WITHDRAW,
         userId: Report.app.currentUserId,
       },
-      include: ['Funding'],
+      include: {
+        relation: 'Funding',
+        scope: {
+          fields: ['funder'],
+        },
+      },
     }, function(err, projects) {
       if (err) {
         return callback(err);
