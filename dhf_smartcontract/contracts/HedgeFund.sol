@@ -304,7 +304,7 @@ contract HedgeFund {
         p.releasedAmount = p.releasedAmount.add(amount);
         p.availableAmount = p.availableAmount.sub(amount);
         p.releasePeriod[stage] = amount;
-
+        
         emit __changeState(pid, p.state, S.RELEASED);
         p.state = S.RELEASED;
         emit __release(pid, exchange, amount, stage);

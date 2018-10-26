@@ -13,7 +13,8 @@ var schema = {
     eventName: {type: String, index: true},
     params: {type: Schema.Types.Mixed},
     address: {type: String, index: true},
-    getTransaction: {type: Boolean, index: true}
+    getTransaction: {type: Boolean, index: true},
+    version: {type: String, index: true},
 };
 
 //set indexing

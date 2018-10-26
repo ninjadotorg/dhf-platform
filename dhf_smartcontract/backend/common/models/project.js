@@ -19,7 +19,8 @@ var schema = {
     "startTime": String,
     "deadline": Date,
     "lifeTime": Number,
-    "numberOfFunder": Number
+    "numberOfFunder": Number,
+    "smartContractVersion": String
 };
 
 //set indexing
