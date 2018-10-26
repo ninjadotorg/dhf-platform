@@ -142,16 +142,17 @@
       "foreignKey": "userId",
       "required": true
     },
-    "releaseState": {
+    "ReleaseState": {
       "type": "hasMany",
       "model": "release-state",
       "foreignKey": "projectId",
       "required": true
     },
-    "funding": {
+    "Funding": {
       "type": "hasMany",
       "model": "funding",
-      "foreignKey": "",
+      "foreignKey": "projectId",
+      "primaryKey": "",
       "required": true
     },
     "projectWithdraw": {

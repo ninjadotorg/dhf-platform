@@ -97,6 +97,7 @@ module.exports = function(Report) {
         state: PROJECT_STATE.WITHDRAW,
         userId: Report.app.currentUserId,
       },
+      include: ['Funding'],
     }, function(err, projects) {
       if (err) {
         return callback(err);
@@ -113,6 +114,7 @@ module.exports = function(Report) {
         result.cumulativeReturn += returnPercent;
         result.numberOfProjects += 1;
         result.totalFundRaised += project.fundingAmount;
+        console.log(project.toJSON());
         result.projects.push({
           name: project.name,
           createdDate: project.createdDate,
@@ -123,6 +125,7 @@ module.exports = function(Report) {
           returnPercent: returnPercent,
           growthPercent: growthPercent,
           yourEarnings: yourEarnings,
+          numberOfFunder: project.Funding().length,
         });
         callback();
       }, function done(err) {
