@@ -1,6 +1,8 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
 
+const path = require('path');
+const senderAddress = 'noreply@ninja.org';
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
     in: ['admin', 'user', 'backend'],
@@ -141,6 +143,22 @@ module.exports = function(User) {
         console.log('user has been added to role', principal);
       });
     });
-    next();
+    var options = {
+      type: 'email',
+      to: user.email,
+      from: senderAddress,
+      subject: 'Thanks for registering.',
+      template: path.resolve(__dirname, '../../server/assets/email-templates/verify.ejs'),
+      redirect: '/',
+      verifyHref: 'http://35.198.235.226:3000/verified',
+      user: user,
+    };
+    user.verify(options, function(err, response) {
+      if (err) {
+        User.deleteById(user.id);
+        return next(err);
+      }
+      next();
+    });
   });
 };

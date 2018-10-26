@@ -2,6 +2,7 @@
   "name": "user",
   "base": "User",
   "idInjection": true,
+  "emailVerificationRequired": true,
   "strict": true,
   "properties": {
     "firstName": {
@@ -93,6 +94,7 @@
     "DisableMethods": {
       "expose": [
         "create",
+        "confirm",
         "findById",
         "deleteById",
         "replaceById",
