@@ -291,7 +291,7 @@ class Report extends React.Component {
             {this.state.investorProjects && this.state.investorProjects.projects && this.state.investorProjects.projects.map((item, key) => {
               return (
                 <TableRow key={key}>
-                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.id}</TableCell>
                   <TableCell>{item.createdDate}</TableCell>
                   <TableCell>{item.deadline}</TableCell>
                   <TableCell>{item.initBalance}</TableCell>
@@ -354,10 +354,29 @@ class Report extends React.Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.value}
-            {Object.keys(this.state.balance).length > 0
-              ? this.balanceTable()
-              : (<div style={{ margin: 20 }}>No data</div>)}
+            {this.state.investorProjects && this.state.investorProjects.projects && this.state.investorProjects.projects.map((item, key) => {
+              return (
+                <TableRow key={key}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{item.deadline}</TableCell>
+                  <TableCell>{item.initBalance}</TableCell>
+                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>
+                    {item.returnPercent}
+%
+                  </TableCell>
+                  <TableCell>
+                    {item.commission}
+%
+                  </TableCell>
+                  <TableCell>{item.yourEarnings}</TableCell>
+                  {/* <TableCell>Withdrawal requests</TableCell> */}
+                  <TableCell>{item.numberOfInvestors}</TableCell>
+                </TableRow>
+              );
+            })
+            }
           </TableBody>
         </Table>
 
