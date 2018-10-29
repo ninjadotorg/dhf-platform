@@ -222,6 +222,7 @@ module.exports = function(User) {
       return verifyResponse.data.success
     }
     verify(body['g-recaptcha-response']).then(isValid => {
+      delete context.req.body[g-recaptcha-response]
       if (isValid) return next();
       var err = new Error("Captcha not correct");
       err.status = 405;
