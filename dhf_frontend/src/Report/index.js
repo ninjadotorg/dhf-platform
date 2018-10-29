@@ -129,12 +129,12 @@ class Report extends React.Component {
         <Typography variant="body2" gutterBottom>
         Cumulative Earnings (ETH):
           {' '}
-          {this.state.runningProjects.cumulativeEarnings}
+          {parseFloat(this.state.runningProjects.cumulativeEarnings).toFixed('2')}
         </Typography>
         <Typography variant="body2" gutterBottom>
         Cumulative Return (%):
           {' '}
-          {this.state.runningProjects.cumulativeReturn}
+          {parseFloat(this.state.runningProjects.cumulativeReturn).toFixed('2')}
         </Typography>
         <Typography variant="body2" gutterBottom>
         Total funds raised (ETH):
@@ -171,19 +171,19 @@ class Report extends React.Component {
               return (
                 <TableRow key={key}>
                   <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.createdDate}</TableCell>
-                  <TableCell>{item.deadline}</TableCell>
-                  <TableCell>{item.initBalance}</TableCell>
-                  <TableCell>{item.currentBalance}</TableCell>
+                  <TableCell>{moment(item.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{moment(item.deadline).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{parseFloat(item.initBalance).toFixed('2')}</TableCell>
+                  <TableCell>{parseFloat(item.currentBalance).toFixed('2')}</TableCell>
                   <TableCell>
-                    {item.returnPercent}
+                    {item.returnPercent.toFixed('2')}
 %
                   </TableCell>
                   <TableCell>
-                    {item.commission}
+                    {item.commission.toFixed('2')}
 %
                   </TableCell>
-                  <TableCell>{item.yourEarnings}</TableCell>
+                  <TableCell>{item.yourEarnings.toFixed('2')}</TableCell>
                   {/* <TableCell>Withdrawal requests</TableCell> */}
                   <TableCell><Link to="fund-allocation">View Balance</Link></TableCell>
                 </TableRow>
@@ -205,12 +205,12 @@ class Report extends React.Component {
         <Typography variant="body2" gutterBottom>
         Cumulative Earnings (ETH):
           {' '}
-          {this.state.completedProjects.cumulativeEarnings}
+          {this.state.completedProjects.cumulativeEarnings.toFixed('2')}
         </Typography>
         <Typography variant="body2" gutterBottom>
         Cumulative Return (%):
           {' '}
-          {this.state.completedProjects.cumulativeReturn}
+          {this.state.completedProjects.cumulativeReturn.toFixed('2')}
         </Typography>
         <Typography variant="body2" gutterBottom>
         Total funds raised (ETH):
@@ -247,19 +247,19 @@ class Report extends React.Component {
               return (
                 <TableRow key={key}>
                   <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.createdDate}</TableCell>
-                  <TableCell>{item.deadline}</TableCell>
-                  <TableCell>{item.initBalance}</TableCell>
-                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>{moment(item.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{moment(item.deadline).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{parseFloat(item.initBalance).toFixed('2')}</TableCell>
+                  <TableCell>{parseFloat(item.finalBalance).toFixed('2')}</TableCell>
                   <TableCell>
-                    {item.returnPercent}
+                    {item.returnPercent.toFixed('2')}
 %
                   </TableCell>
                   <TableCell>
-                    {item.commission}
+                    {item.commission.toFixed('2')}
 %
                   </TableCell>
-                  <TableCell>{item.yourEarnings}</TableCell>
+                  <TableCell>{item.yourEarnings.toFixed('2')}</TableCell>
                   {/* <TableCell>Withdrawal requests</TableCell> */}
                   <TableCell>{item.numberOfInvestors}</TableCell>
                 </TableRow>
@@ -292,19 +292,19 @@ class Report extends React.Component {
               return (
                 <TableRow key={key}>
                   <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.createdDate}</TableCell>
-                  <TableCell>{item.deadline}</TableCell>
-                  <TableCell>{item.initBalance}</TableCell>
-                  <TableCell>{item.finalBalance}</TableCell>
+                  <TableCell>{moment(item.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{moment(item.deadline).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>{parseFloat(item.initBalance).toFixed('2')}</TableCell>
+                  <TableCell>{parseFloat(item.finalBalance).toFixed('2')}</TableCell>
                   <TableCell>
-                    {item.returnPercent}
+                    {item.returnPercent.toFixed('2')}
 %
                   </TableCell>
                   <TableCell>
-                    {item.commission}
+                    {item.commission.toFixed('2')}
 %
                   </TableCell>
-                  <TableCell>{item.yourEarnings}</TableCell>
+                  <TableCell>{item.yourEarnings.toFixed('2')}</TableCell>
                   {/* <TableCell>Withdrawal requests</TableCell> */}
                   <TableCell>{item.numberOfInvestors}</TableCell>
                 </TableRow>
@@ -358,7 +358,7 @@ class Report extends React.Component {
               return (
                 <TableRow key={key}>
                   <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.createdDate}</TableCell>
+                  <TableCell>{moment(item.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell>{item.deadline}</TableCell>
                   <TableCell>{item.initBalance}</TableCell>
                   <TableCell>{item.finalBalance}</TableCell>
