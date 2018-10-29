@@ -2,6 +2,7 @@
 const {USER_TYPE} = require('../lib/constants');
 const axios = require("axios")
 const path = require('path');
+const querystring = require("querystring")
 const senderAddress = 'cs@ninja.org';
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
@@ -213,12 +214,12 @@ module.exports = function(User) {
     async function verify (captcha) {
       var verifyResponse = await axios.post(
         `https://www.google.com/recaptcha/api/siteverify`,
-        {
+        querystring.stringify({
           secret: '6LfgU3cUAAAAAJPR774SNLQ2BPbqmnsh0U4Ghm6o',
           response: captcha
-        }
+        })
       );
-      return verifyResponse.success
+      return verifyResponse.data.success
     }
     verify(body['g-recaptcha-response']).then(isValid => {
       if (isValid) return next();
