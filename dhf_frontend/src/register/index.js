@@ -94,7 +94,7 @@ class Register extends React.Component {
     if (this.captchaDemo) {
       console.log("started, just a second...")
       this.captchaDemo.reset();
-      this.captchaDemo.execute();
+      // this.captchaDemo.execute();
     }
   }
 
