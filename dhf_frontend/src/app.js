@@ -23,11 +23,12 @@ import profile from '@/profile';
 import changePassword from '@/changePassword';
 import fundAllocation from '@/fundAllocation';
 import Report from '@/Report';
+import ForgotPassword from '@/ForgotPassword';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
-import { loadReCaptcha } from 'react-recaptcha-google'
+import { loadReCaptcha } from 'react-recaptcha-google';
 
 const theme = createMuiTheme({
   palette: {
@@ -197,6 +198,7 @@ class App extends React.Component {
               <Route path="/register" component={Register} />
               <Route path="/login" component={Login} />
               <Route path="/verify" component={Verify} />
+              <Route path="/forgot-password" component={ForgotPassword} />
               <Route path="/verified" component={Verified} />
               <Route path="/" exact component={LandingPage} />
               <Route path="/test" component={Test} />

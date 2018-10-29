@@ -72,7 +72,7 @@ const styles = theme => ({
 });
 
 
-class Login extends React.Component {
+class ForgotPassword extends React.Component {
   constructor(props) {
     super(props);
     const email = this.props.history.location.state && this.props.history.location.state.email
@@ -84,7 +84,6 @@ class Login extends React.Component {
       error: '',
       success: false,
       successMsg: '',
-      resendStatus: false,
     };
   }
 
@@ -99,36 +98,13 @@ class Login extends React.Component {
     this.setState({ email });
   };
 
-  fetchUserDetails =(userId) => {
-    request({
-      method: 'get',
-      url: `users/${userId}`,
-      data: {
-        id: userId,
-      },
-    })
-      .then(response => {
-        localStorage.setItem('user', JSON.stringify(response));
-        this.setState({
-          successMsg: 'Login Successful. Redirecting to dashboard..',
-          success: true,
-        });
-      })
-      .catch(error => {
-        console.log(error.data.error.message);
-        error.data
-          && error.data.error
-          && error.data.error.message
-          && this.setState({ error: error.data.error.message });
-        return null;
-      });
-  }
 
   handleSubmit = () => {
     const data = {
       email: this.state.email,
       password: this.state.password,
       userType: 'user',
+      emailVerified: false,
     };
     this.setState({
       error: '',
@@ -155,29 +131,6 @@ class Login extends React.Component {
       });
   };
 
-  resendEmail = () => {
-    const data = {
-      email: this.state.email,
-    };
-    request({
-      method: 'post',
-      url: 'users//resent-verify',
-      data,
-    })
-      .then(response => {
-        this.setState({
-          resendStatus: true,
-        });
-      })
-      .catch(error => {
-        error.data
-          && error.data.error
-          && error.data.error.message
-          && this.setState({ error: error.data.error.message === 'login failed' ? 'Username and password didn\'t match' : error.data.error.message });
-        return null;
-      });
-  }
-
   render() {
     const { classes } = this.props;
     return (
@@ -186,7 +139,6 @@ class Login extends React.Component {
           <CssBaseline />
           <Header
             brand="Ninja Fund"
-            rightLinks={<HeaderLinks />}
           />
           <div
             className={classes.pageHeader}
@@ -220,27 +172,10 @@ class Login extends React.Component {
                   errorMessages={['this field is required']}
                   value={this.state.password}
                 />
-                <Typography style={{ marginTop: 10, textAlign: 'right' }}>
-                  <Link to="/forgot-password" color="primary">Forgot Password ?</Link>
-
-                </Typography>
               </FormControl>
               <FormHelperText id="name-helper-text" error>
                 {this.state.error}
               </FormHelperText>
-
-              {this.state.error === 'login failed as the email has not been verified' && !this.state.resendStatus && (
-                <Button type="button" fullWidth variant="raised" color="primary" className={classes.submit} onClick={this.resendEmail}>
-                Resend verification email
-                </Button>
-              )}
-              {
-                this.state.resendStatus && (
-                  <Typography style={{ textAlign: 'left', marginTop: 10 }}>
-                Please check your inbox to verify your account.
-                  </Typography>
-                )
-              }
               <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                 Submit
               </Button>
@@ -264,8 +199,8 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {
+ForgotPassword.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withStyles(styles))(Login);
+export default compose(withStyles(styles))(ForgotPassword);
