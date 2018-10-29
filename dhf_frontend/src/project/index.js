@@ -299,10 +299,11 @@ class createProject extends React.Component {
                   </Grid>
                   <Grid item xs>
                     <FormControl fullWidth margin="normal" className={classes.margin}>
-                      <InputLabel htmlFor="lifeTime">Life Time</InputLabel>
+                      <InputLabel htmlFor="lifeTime">Investment period</InputLabel>
                       <Input
                         id="lifeTime"
                         name="lifeTime"
+                        required
                         type="number"
                         value={this.state.lifeTime}
                         onChange={this.handleTextChange}
@@ -321,6 +322,7 @@ class createProject extends React.Component {
                         id="commission"
                         label="Commission"
                         name="commission"
+                        required
                         helperText="Please indicate the percent of profit you want to share with investors."
                         autoComplete="commission"
                         autoFocus
