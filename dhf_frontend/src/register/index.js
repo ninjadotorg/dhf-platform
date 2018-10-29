@@ -15,6 +15,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Header from 'components/Header/Header.jsx';
 import HeaderLinks from 'components/Header/HeaderLinks.jsx';
 import image from 'assets/img/bg7.jpg';
+import { ReCaptcha } from 'react-recaptcha-google';
 
 const styles = theme => ({
   layout: {
@@ -82,10 +83,20 @@ class Register extends React.Component {
       username: '',
       password: '',
       error: '',
+      reCaptchaResponse: '',
+
     };
+    this.onLoadRecaptcha = this.onLoadRecaptcha.bind(this);
+    this.verifyCallback = this.verifyCallback.bind(this);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    if (this.captchaDemo) {
+      console.log("started, just a second...")
+      this.captchaDemo.reset();
+      this.captchaDemo.execute();
+    }
+  }
 
   handleChange = event => {
     this.setState({ password: event.target.value });
@@ -111,6 +122,7 @@ class Register extends React.Component {
       password: this.state.password,
       userType: 'user',
       emailVerified: true,
+      'g-recaptcha-response': this.state.reCaptchaResponse
     };
     this.setState({
       error: '',
@@ -133,6 +145,18 @@ class Register extends React.Component {
           && this.setState({ error: error.data.error.message });
       });
   };
+
+  onLoadRecaptcha() {
+      if (this.captchaDemo) {
+          this.captchaDemo.reset();
+          // this.captchaDemo.execute();
+      }
+  }
+  verifyCallback(reCaptchaResponse) {
+    // Here you will get the final reCaptchaResponse!!!  
+    console.log(reCaptchaResponse, "<= your recaptcha token");
+    this.setState({ reCaptchaResponse })
+  }
 
   render() {
     const { classes } = this.props;
@@ -209,6 +233,14 @@ class Register extends React.Component {
               <FormHelperText id="name-helper-text" error>
                 {this.state.error}
               </FormHelperText>
+              <ReCaptcha
+                  ref={(el) => {this.captchaDemo = el;}}
+                  size="normal"
+                  render="explicit"
+                  sitekey="6LfgU3cUAAAAAGmXWJkMeQhL-WwhoOSiVRiEfJNQ"
+                  onloadCallback={this.onLoadRecaptcha}
+                  verifyCallback={this.verifyCallback}
+              />
               <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                   Register
               </Button>
