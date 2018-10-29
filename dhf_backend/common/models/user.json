@@ -68,6 +68,13 @@
       "property": "listTrader"
     },
     {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "resentVerify"
+    },
+    {
        "accessType": "EXECUTE",
        "property":"updatePassword",
        "principalType": "ROLE",
@@ -95,6 +102,7 @@
       "expose": [
         "create",
         "confirm",
+        "resentVerify",
         "findById",
         "deleteById",
         "replaceById",
