@@ -1,5 +1,6 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
+const template = require('../lib/user-helper');
 const axios = require("axios");
 const path = require('path');
 const querystring = require("querystring");
@@ -207,6 +208,7 @@ module.exports = function(User) {
 
   //send an email with instructions to reset an existing user's password
   User.requestPasswordReset = function(email, callback){
+    let ttl = User.settings.resetPasswordTokenTTL || 'DEFAULT_RESET_PW_TTL';
     User.findOne(
       {
         where: {
@@ -225,7 +227,12 @@ module.exports = function(User) {
           return callback(err)
         }
         const options = { ...optionsSentEmailRestPass, to: user.email, user: user };
-        User.app.models.Email.send(options, callback);
+        let tp = template.template(options.template);
+        user.accessTokens.create({ttl: ttl}, function(err, accessToken) {
+          const verifyHref = options.verifyHref + '?access_token=' + accessToken.id;
+          options.html = tp({verifyHref});
+          User.app.models.Email.send(options, callback);
+        });
       }
     )
   };
