@@ -75,6 +75,13 @@
       "property": "resentVerify"
     },
     {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "requestPasswordReset"
+    },
+    {
        "accessType": "EXECUTE",
        "property":"updatePassword",
        "principalType": "ROLE",
@@ -103,6 +110,7 @@
         "create",
         "confirm",
         "resentVerify",
+        "requestPasswordReset",
         "findById",
         "deleteById",
         "replaceById",
