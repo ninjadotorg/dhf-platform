@@ -20,7 +20,6 @@
     },
     "targetEarning": {
       "type": "string",
-      "required": true,
       "default": "0"
     },
     "exchange": {
