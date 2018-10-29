@@ -27,9 +27,15 @@ class SubmitInitProject extends React.Component {
     validateNetwork = async () => {
         let isValidated = true;
         if (this.props.walletType === MetaMask) {
-            const metaMaskNetwork = await this.hedgeFundApi.getMetamaskNetwork();
-            isValidated = metaMaskNetwork === HedgeFundAPI.NETWORK_TYPE.RINKEBY;
-            this.setState({ isValidated, msg: 'Wrong current network in MetaMask, Please choose Rinkeby' });
+            try {
+                await this.hedgeFundApi.getAccount(null);
+                const metaMaskNetwork = await this.hedgeFundApi.getMetamaskNetwork();
+                isValidated = metaMaskNetwork === HedgeFundAPI.NETWORK_TYPE.RINKEBY;
+                this.setState({ isValidated, msg: 'Wrong current network in MetaMask, Please choose Rinkeby' });
+            } catch (err) {
+                isValidated = false;
+                this.setState({ isValidated, msg: 'Not login metamask' });
+            }
             return isValidated;
         }
         return isValidated;
