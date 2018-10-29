@@ -251,16 +251,18 @@ class ProjectList extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <Table className={classes.table}>
+        <Table className={classes.table} padding={0}>
           <TableHead>
             <TableRow>
-              <TableCell>Project Name</TableCell>
-              <TableCell>Date & Time</TableCell>
-              <TableCell>Exchange</TableCell>
-              <TableCell>Amount of Funds raised</TableCell>
-              <TableCell>Progress</TableCell>
-              <TableCell>State</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Project Name</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Date & Time</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Exchange</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Amount of Funds raised</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Progress</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Min</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Max</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>State</TableCell>
+              <TableCell style={{ paddingRight: 0 }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -272,18 +274,28 @@ class ProjectList extends React.Component {
                   <TableCell component="th" scope="row">
                     {n.name}
                   </TableCell>
-                  <TableCell>{moment(n.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>{moment(n.createdDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell style={{ textTransform: 'capitalize' }}>{n.exchange}</TableCell>
-                  <TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>
                     {`${n.fundingAmount} ${n.currency}`}
                     <br />
                     {n.numberOfFunder || 0}
                     {' '}
                     {n.numberOfFunder > 0 ? 'Investors' : 'Investor'}
                   </TableCell>
-                  <TableCell>{`${progressAmount}%`}</TableCell>
-                  <TableCell>{this.changeStateText(n)}</TableCell>
-                  <TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>{`${progressAmount}%`}</TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>
+                    {n.min}
+                    {' '}
+ETH
+                  </TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>
+                    {n.max}
+                    {' '}
+ETH
+                  </TableCell>
+                  <TableCell style={{ paddingRight: 0 }}>{this.changeStateText(n)}</TableCell>
+                  <TableCell style={{ paddingRight: 10 }}>
                     <ActionButton currentItem={n}
                       onClickInit={() => this.initFund({ data: n })}
                       onClickDelete={() => this.deleteProject({ data: n })}
