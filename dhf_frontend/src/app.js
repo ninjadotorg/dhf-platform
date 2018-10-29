@@ -27,6 +27,7 @@ import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
+import { loadReCaptcha } from 'react-recaptcha-google'
 
 const theme = createMuiTheme({
   palette: {
@@ -132,6 +133,7 @@ const styles = theme => ({
 class App extends React.Component {
   componentDidMount() {
     this.props.dispatch({ type: 'TEST_SAGA' });
+    loadReCaptcha();
   }
 
   PrivateRoute = () => {
