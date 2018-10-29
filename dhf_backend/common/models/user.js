@@ -224,7 +224,7 @@ module.exports = function(User) {
           err.message = "User was not verified or not existed.";
           return callback(err)
         }
-        const options = { ...optionsSentEmailVerify, to: user.email, user: user };
+        const options = { ...optionsSentEmailRestPass, to: user.email, user: user };
         User.app.models.Email.send(options, callback);
       }
     )
