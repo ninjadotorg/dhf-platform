@@ -1,6 +1,6 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
-
+const axios = require("axios")
 const path = require('path');
 const senderAddress = 'cs@ninja.org';
 module.exports = function(User) {
@@ -204,14 +204,14 @@ module.exports = function(User) {
   });
 
   User.beforeRemote('create', function (context, user, next) {
-    let body = context.req.body
+    var body = context.req.body
     if (!body['g-recaptcha-response']) {
-      let err = new Error("Need Captcha Response");
+      var err = new Error("Need Captcha Response");
       err.status = 405;
       return next(err);
     }
     async function verify (captcha) {
-      let verifyResponse = await axios.post(
+      var verifyResponse = await axios.post(
         `https://www.google.com/recaptcha/api/siteverify`,
         {
           secret: '6LfgU3cUAAAAAJPR774SNLQ2BPbqmnsh0U4Ghm6o',
@@ -222,7 +222,13 @@ module.exports = function(User) {
     }
     verify(body['g-recaptcha-response']).then(isValid => {
       if (isValid) return next();
-      return next(new Error('Captcha not correct'))
+      var err = new Error("Captcha not correct");
+      err.status = 405;
+      return next(err)
+    }).catch(err=>{
+      var err = new Error("Cannot verify captcha at this time");
+      err.status = 405;
+      return next(err)
     })
   })
 };
