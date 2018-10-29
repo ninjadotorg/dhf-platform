@@ -1,6 +1,6 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
-
+const axios = require("axios")
 const path = require('path');
 const senderAddress = 'cs@ninja.org';
 module.exports = function(User) {
@@ -222,7 +222,13 @@ module.exports = function(User) {
     }
     verify(body['g-recaptcha-response']).then(isValid => {
       if (isValid) return next();
-      return next(new Error('Captcha not correct'))
+      let err = new Error("Captcha not correct");
+      err.status = 405;
+      return next(err)
+    }).catch(err=>{
+      let err = new Error("Cannot verify captcha at this time");
+      err.status = 405;
+      return next(err)
     })
   })
 };
