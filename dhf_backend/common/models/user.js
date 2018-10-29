@@ -1,9 +1,19 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
-const axios = require("axios")
+const axios = require("axios");
 const path = require('path');
-const querystring = require("querystring")
-const senderAddress = 'cs@ninja.org';
+const querystring = require("querystring");
+const optionsSentEmailVerify = {
+  type: 'email',
+  from: 'cs@ninja.org',
+  subject: 'Thanks for registering.',
+  template: path.resolve(
+    __dirname,
+    '../../server/assets/email-templates/verify.ejs'
+  ),
+  redirect: '/',
+  verifyHref: 'http://35.198.235.226:3000/verified',
+};
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
     in: ['admin', 'user', 'backend'],
@@ -145,6 +155,46 @@ module.exports = function(User) {
     http: { path: '/list-trader', verb: 'get' }
   });
 
+  User.resentVerify = function (email, callback) {
+    User.findOne(
+      {
+        where: {
+          email: email,
+          emailVerified: false
+        }
+      },
+      function (err, user) {
+        if (err) {
+          return callback(err)
+        }
+        if(!user) {
+          let err = new Error();
+          err.status = 405;
+          err.message = "User was verified or not existed.";
+          return callback(err)
+        }
+        console.log(user);
+        const options = { ...optionsSentEmailVerify, to: user.email, user: user };
+        user.verify(options, function (err, response) {
+          if (err) {
+            //User.deleteById(user.id);
+            return callback(err);
+          }
+          callback();
+        })
+      }
+    )
+  };
+
+  User.remoteMethod('resentVerify', {
+    description: 'Resent email verify',
+    accepts: [
+      {arg: 'email', type: 'string', required: true},
+    ],
+    returns: { arg: 'data', root: true, type: 'Object' },
+    http: { path: '/resent-verify', verb: 'post' }
+  });
+
   User.observe('before save', function (ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
       if (
@@ -182,19 +232,7 @@ module.exports = function(User) {
         }
       )
     });
-    const options = {
-      type: 'email',
-      to: user.email,
-      from: senderAddress,
-      subject: 'Thanks for registering.',
-      template: path.resolve(
-        __dirname,
-        '../../server/assets/email-templates/verify.ejs'
-      ),
-      redirect: '/',
-      verifyHref: 'http://35.198.235.226:3000/verified',
-      user: user
-    };
+    const options = { ...optionsSentEmailVerify, to: user.email, user: user };
     user.verify(options, function (err, response) {
       if (err) {
         User.deleteById(user.id);
@@ -205,9 +243,9 @@ module.exports = function(User) {
   });
 
   User.beforeRemote('create', function (context, user, next) {
-    var body = context.req.body
+    const body = context.req.body;
     if (!body['g-recaptcha-response']) {
-      var err = new Error("Need Captcha Response");
+      let err = new Error("Need Captcha Response");
       err.status = 405;
       return next(err);
     }
@@ -222,13 +260,13 @@ module.exports = function(User) {
       return verifyResponse.data.success
     }
     verify(body['g-recaptcha-response']).then(isValid => {
-      delete context.req.body['g-recaptcha-response']
+      delete context.req.body['g-recaptcha-response'];
       if (isValid) return next();
-      var err = new Error("Captcha not correct");
+      let err = new Error("Captcha not correct");
       err.status = 405;
       return next(err)
     }).catch(err=>{
-      var err = new Error("Cannot verify captcha at this time");
+      let err = new Error("Cannot verify captcha at this time");
       err.status = 405;
       return next(err)
     })
