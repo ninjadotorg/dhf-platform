@@ -1,13 +1,13 @@
-'use strict'
-const { USER_TYPE } = require('../lib/constants')
-const axios = require('axios')
-const path = require('path')
-const senderAddress = 'noreply@ninja.org'
-module.exports = function (User) {
+'use strict';
+const {USER_TYPE} = require('../lib/constants');
+
+const path = require('path');
+const senderAddress = 'cs@ninja.org';
+module.exports = function(User) {
   User.validatesInclusionOf('userType', {
     in: ['admin', 'user', 'backend'],
     message: 'must be an user'
-  })
+  });
 
   User.updateProfile = function (
     firstName,
@@ -31,9 +31,9 @@ module.exports = function (User) {
         } else if (!user) {
           let mess =
             'No match between provided current logged user and email or username'
-          let newErr = new Error(mess)
-          newErr.statusCode = 405
-          newErr.code = 'LOGIN_FAILED_EMAIL'
+          let newErr = new Error(mess);
+          newErr.statusCode = 405;
+          newErr.code = 'LOGIN_FAILED_EMAIL';
           callback(newErr)
         } else {
           user.updateAttributes(
@@ -53,7 +53,7 @@ module.exports = function (User) {
         }
       }
     )
-  }
+  };
 
   User.remoteMethod('updateProfile', {
     description: 'Update user profile',
@@ -66,10 +66,10 @@ module.exports = function (User) {
     ],
     returns: { arg: 'data', root: true, type: 'Object' },
     http: { path: '/update-profile', verb: 'put' }
-  })
+  });
 
   User.updatePassword = function (oldPassword, newPassword, callback) {
-    let newErrMsg, newErr
+    let newErrMsg, newErr;
     try {
       this.findOne(
         { where: { id: User.app.currentUserId.toString() } },
@@ -90,10 +90,10 @@ module.exports = function (User) {
                   }
                 })
               } else {
-                newErrMsg = 'User specified wrong current password !'
-                newErr = new Error(newErrMsg)
-                newErr.statusCode = 405
-                newErr.code = 'LOGIN_FAILED_PWD'
+                newErrMsg = 'User specified wrong current password !';
+                newErr = new Error(newErrMsg);
+                newErr.statusCode = 405;
+                newErr.code = 'LOGIN_FAILED_PWD';
                 return callback(newErr)
               }
             })
@@ -101,10 +101,10 @@ module.exports = function (User) {
         }
       )
     } catch (err) {
-      logger.error(err)
+      logger.error(err);
       callback(err)
     }
-  }
+  };
 
   User.remoteMethod('updatePassword', {
     description: 'Allows a logged user to change his/her password.',
@@ -124,7 +124,7 @@ module.exports = function (User) {
       }
     ],
     returns: { arg: 'passwordChange', type: 'boolean' }
-  })
+  });
 
   User.listTrader = function (next) {
     User.find(
@@ -136,13 +136,13 @@ module.exports = function (User) {
       },
       next
     )
-  }
+  };
 
   User.remoteMethod('listTrader', {
     description: 'Get all trader',
     returns: { arg: 'data', root: true, type: 'Object' },
     http: { path: '/list-trader', verb: 'get' }
-  })
+  });
 
   User.observe('before save', function (ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
@@ -151,37 +151,37 @@ module.exports = function (User) {
           ctx.instance.userType === USER_TYPE.BACKEND) &&
         ctx.instance.realm !== 'backend'
       ) {
-        let err = new Error()
-        err.status = 405
+        let err = new Error();
+        err.status = 405;
         err.message = "Admin type can't create from rest api"
         return next(err)
       }
     }
     next()
-  })
+  });
 
   User.afterRemote('create', function (context, user, next) {
     /*
     add user to role
     * */
-    let models = User.app.models
+    let models = User.app.models;
     models.Role.findOne({ where: { name: user.userType } }, function (
       err,
       role
     ) {
-      if (err) return next(err)
+      if (err) return next(err);
       role.principals.create(
         {
           principalType: models.RoleMapping.USER,
           principalId: user.id
         },
         function (err, principal) {
-          if (err) return next(err)
+          if (err) return next(err);
           console.log('user has been added to role', principal)
         }
       )
-    })
-    var options = {
+    });
+    const options = {
       type: 'email',
       to: user.email,
       from: senderAddress,
@@ -193,22 +193,22 @@ module.exports = function (User) {
       redirect: '/',
       verifyHref: 'http://35.198.235.226:3000/verified',
       user: user
-    }
+    };
     user.verify(options, function (err, response) {
       if (err) {
-        User.deleteById(user.id)
-        return next(err)
+        User.deleteById(user.id);
+        return next(err);
       }
-      next()
+      next();
     })
-  })
+  });
 
   User.beforeRemote('create', function (context, user, next) {
     let body = context.req.body
     if (!body['g-recaptcha-response']) {
-      let err = new Error("Need Captcha Response")
-      err.status = 405
-      return next(err)
+      let err = new Error("Need Captcha Response");
+      err.status = 405;
+      return next(err);
     }
     async function verify (captcha) {
       let verifyResponse = await axios.post(
@@ -217,12 +217,12 @@ module.exports = function (User) {
           secret: '6LfgU3cUAAAAAJPR774SNLQ2BPbqmnsh0U4Ghm6o',
           response: captcha
         }
-      )
+      );
       return verifyResponse.success
     }
     verify(body['g-recaptcha-response']).then(isValid => {
-      if (isValid) return next()
+      if (isValid) return next();
       return next(new Error('Captcha not correct'))
     })
   })
-}
+};
