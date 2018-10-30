@@ -1,0 +1,63 @@
+{
+  "name": "voteStop",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "strict": true,
+  "properties": {
+    "userId": {
+      "type": "string",
+      "required": true
+    },
+    "projectId": {
+      "type": "ObjectId",
+      "required": true
+    },
+    "funder": {
+      "type": "string",
+      "required": true
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "amount": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "User": {
+      "type": "belongsTo",
+      "model": "user",
+      "foreignKey": "",
+      "required": true
+    },
+    "Project": {
+      "type": "belongsTo",
+      "model": "project",
+      "foreignKey": "projectId",
+      "primaryKey": "id",
+      "required": true
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {},
+  "mixins": {
+    "DisableMethods": {
+      "expose": [
+      ]
+    }
+  }
+}
