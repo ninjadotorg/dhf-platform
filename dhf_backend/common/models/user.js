@@ -1,5 +1,6 @@
 'use strict';
 const {USER_TYPE} = require('../lib/constants');
+const template = require('../lib/user-helper');
 const axios = require("axios");
 const path = require('path');
 const querystring = require("querystring");
@@ -13,6 +14,17 @@ const optionsSentEmailVerify = {
   ),
   redirect: '/',
   verifyHref: 'http://35.198.235.226:3000/verified',
+};
+const optionsSentEmailRestPass = {
+  type: 'email',
+  from: 'cs@ninja.org',
+  subject: 'Ninja Fund Account Password Reset.',
+  template: path.resolve(
+    __dirname,
+    '../../server/assets/email-templates/resetpass.ejs'
+  ),
+  redirect: '/',
+  verifyHref: 'http://35.198.235.226:3000/reset-password',
 };
 module.exports = function(User) {
   User.validatesInclusionOf('userType', {
@@ -173,14 +185,13 @@ module.exports = function(User) {
           err.message = "User was verified or not existed.";
           return callback(err)
         }
-        console.log(user);
         const options = { ...optionsSentEmailVerify, to: user.email, user: user };
         user.verify(options, function (err, response) {
           if (err) {
             //User.deleteById(user.id);
             return callback(err);
           }
-          callback();
+          callback(null, true);
         })
       }
     )
@@ -194,6 +205,46 @@ module.exports = function(User) {
     returns: { arg: 'data', root: true, type: 'Object' },
     http: { path: '/resent-verify', verb: 'post' }
   });
+
+  //send an email with instructions to reset an existing user's password
+  User.requestPasswordReset = function(email, callback){
+    User.findOne(
+      {
+        where: {
+          email: email,
+          emailVerified: true
+        }
+      },
+      function (err, user) {
+        if (err) {
+          return callback(err)
+        }
+        if(!user) {
+          let err = new Error();
+          err.status = 405;
+          err.message = "User was not verified or not existed.";
+          return callback(err)
+        }
+        const options = { ...optionsSentEmailRestPass, to: user.email, user: user };
+        let tp = template.template(options.template);
+        user.accessTokens.create({ttl: 15 * 60}, function(err, accessToken) {
+          const verifyHref = options.verifyHref + '?access_token=' + accessToken.id;
+          options.html = tp({verifyHref});
+          User.app.models.Email.send(options, callback);
+        });
+      }
+    )
+  };
+
+  User.remoteMethod('requestPasswordReset', {
+    description: 'request reset password',
+    accepts: [
+      {arg: 'email', type: 'string', required: true},
+    ],
+    returns: { arg: 'data', root: true, type: 'Object' },
+    http: { path: '/request-password-reset', verb: 'post' }
+  });
+
 
   User.observe('before save', function (ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {

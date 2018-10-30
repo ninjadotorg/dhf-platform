@@ -143,9 +143,18 @@ module.exports = function(Report) {
     });
   };
 
-  Report.investor = function(callback) {
-
-  }
+  Report.investor = function(projectId, callback) {
+    let result = {};
+    async.series([
+      function activities(callback) {
+        callback();
+      },
+    ], function onComplete(err) {
+      if (err)
+        return callback(err);
+      callback(null, result);
+    });
+  };
 
   Report.remoteMethod(
     'running',
@@ -175,7 +184,9 @@ module.exports = function(Report) {
 
     'investor',
     {
-      accepts: [],
+      accepts: [
+        {arg: 'projectId', type: 'string', required: true, http: {source: 'query'}},
+      ],
       http: {
         path: '/investor-project',
         verb: 'GET',

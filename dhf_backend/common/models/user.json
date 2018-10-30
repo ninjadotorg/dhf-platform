@@ -46,10 +46,7 @@
     "accessToken": {
       "type": "hasMany",
       "model": "accessToken",
-      "foreignKey": "userId",
-      "options": {
-        "disableInclude": true
-      }
+      "foreignKey": "userId"
     }
   },
   "acls": [
@@ -75,10 +72,24 @@
       "property": "resentVerify"
     },
     {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "requestPasswordReset"
+    },
+    {
        "accessType": "EXECUTE",
        "property":"updatePassword",
        "principalType": "ROLE",
        "principalId": "$authenticated",
+       "permission": "ALLOW"
+     },
+    {
+       "accessType": "EXECUTE",
+       "property":"setPassword",
+       "principalType": "ROLE",
+       "principalId": "user",
        "permission": "ALLOW"
      },
     {
@@ -103,6 +114,8 @@
         "create",
         "confirm",
         "resentVerify",
+        "setPassword",
+        "requestPasswordReset",
         "findById",
         "deleteById",
         "replaceById",
