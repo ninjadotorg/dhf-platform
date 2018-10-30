@@ -3,6 +3,7 @@
   "base": "User",
   "idInjection": true,
   "emailVerificationRequired": true,
+  "restrictResetPasswordTokenScope": true,
   "strict": true,
   "properties": {
     "firstName": {
@@ -89,9 +90,22 @@
        "accessType": "EXECUTE",
        "property":"setPassword",
        "principalType": "ROLE",
-       "principalId": "user",
+       "principalId": "$everyone",
        "permission": "ALLOW"
      },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "updateAttributes"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW"
+    },
     {
        "accessType": "EXECUTE",
        "property":"updatePassword",
