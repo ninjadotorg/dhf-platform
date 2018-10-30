@@ -3,7 +3,7 @@
   "base": "User",
   "idInjection": true,
   "emailVerificationRequired": true,
-  "restrictResetPasswordTokenScope": false,
+  "restrictResetPasswordTokenScope": true,
   "strict": true,
   "properties": {
     "firstName": {
