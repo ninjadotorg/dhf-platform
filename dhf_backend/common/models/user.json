@@ -108,6 +108,7 @@
         "create",
         "confirm",
         "resentVerify",
+        "setPassword",
         "requestPasswordReset",
         "findById",
         "deleteById",
