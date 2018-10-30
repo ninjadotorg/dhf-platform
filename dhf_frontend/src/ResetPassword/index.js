@@ -72,36 +72,48 @@ const styles = theme => ({
 });
 
 
-class ForgotPassword extends React.Component {
+class ResetPassword extends React.Component {
   constructor(props) {
     super(props);
     const email = this.props.history.location.state && this.props.history.location.state.email
       ? this.props.history.location.state.email
       : '';
     this.state = {
-      email,
       password: '',
       error: '',
       success: false,
       successMsg: '',
+      user: {
+        password: '',
+        repeatPassword: '',
+      },
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // custom rule will have name 'isPasswordMatch'
+    ValidatorForm.addValidationRule('isPasswordMatch', (value) => {
+      if (value !== this.state.user.password) {
+        return false;
+      }
+      return true;
+    });
+  }
 
-  handleChange = event => {
-    this.setState({ password: event.target.value });
-  };
+handleChange = (event) => {
+  const { user } = this.state;
+  user[event.target.name] = event.target.value;
+  this.setState({ user });
+}
 
-  handleChangeEmail = event => {
-    const email = event.target.value;
-    this.setState({ email });
-  };
+handleSubmit = () => {
+  // your submit logic
+}
 
 
   handleSubmit = () => {
     const data = {
-      email: this.state.email,
+      newPassword: this.state.user.password,
     };
     this.setState({
       error: '',
@@ -111,13 +123,16 @@ class ForgotPassword extends React.Component {
     });
     request({
       method: 'post',
-      url: 'users/request-password-reset',
+      url: 'users/reset-password',
       data,
+      params: {
+        access_token: this.props.location.search.split('=')[1],
+      },
     })
       .then(response => {
         this.setState({
           success: true,
-          successMsg: 'Please click on the link sent to your email address to reset your password.',
+          successMsg: 'Your password has been reset successfully. Click on the button below to Login.',
         });
       })
       .catch(error => {
@@ -131,6 +146,7 @@ class ForgotPassword extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { user } = this.state;
     return (
       <React.Fragment>
         <div style={{ backgroundColor: '#fff' }}>
@@ -147,42 +163,65 @@ class ForgotPassword extends React.Component {
             }}
           />
           <main className={classes.layout}>
-
             <ValidatorForm className={classes.form} onSubmit={this.handleSubmit}>
-              <Typography variant="h5" bold>Enter your email address</Typography>
-              <FormControl margin="normal" required fullWidth>
-                <TextValidator
-                  label="Email *"
-                  onChange={this.handleChangeEmail}
-                  name="email"
-                  value={this.state.email}
-                  validators={['required', 'isEmail']}
-                  errorMessages={['this field is required', 'email is not valid']}
-                />
-              </FormControl>
+              <Typography variant="h5" bold>Reset Password</Typography>
+              {!this.state.success && (
+                <div>
+                  <FormControl margin="normal" required fullWidth>
+                    <TextValidator
+                      label="Password"
+                      onChange={this.handleChange}
+                      name="password"
+                      required
+                      type="password"
+                      validators={['required']}
+                      errorMessages={['this field is required']}
+                      value={user.password}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth>
+                    <TextValidator
+                      label="Repeat password"
+                      onChange={this.handleChange}
+                      required
+                      name="repeatPassword"
+                      type="password"
+                      validators={['isPasswordMatch', 'required']}
+                      errorMessages={['password mismatch', 'this field is required']}
+                      value={user.repeatPassword}
+                    />
+                  </FormControl>
+
+                </div>
+              )}
               <FormHelperText id="name-helper-text" error>
                 {this.state.error}
               </FormHelperText>
-              <Typography>
-                {this.state.successMsg}
-              </Typography>
-              { !this.state.successMsg && (
+              {!this.state.success && (
                 <Button type="submit" fullWidth variant="raised" color="primary" className={classes.submit}>
                 Submit
                 </Button>
               )}
+              )}
+              <Typography>
+                {this.state.successMsg }
+              </Typography>
+              {this.state.success
+                && (
+                  <Button type="button" fullWidth variant="raised" color="primary" className={classes.submit} component={Link} to="/login">
+                Login
+                  </Button>
+                )}
             </ValidatorForm>
-            <div />
           </main>
-
         </div>
       </React.Fragment>
     );
   }
 }
 
-ForgotPassword.propTypes = {
+ResetPassword.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default compose(withStyles(styles))(ForgotPassword);
+export default compose(withStyles(styles))(ResetPassword);

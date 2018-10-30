@@ -24,6 +24,7 @@ import changePassword from '@/changePassword';
 import fundAllocation from '@/fundAllocation';
 import Report from '@/Report';
 import ForgotPassword from '@/ForgotPassword';
+import ResetPassword from '@/ResetPassword';
 import Test from '@/test';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -199,6 +200,7 @@ class App extends React.Component {
               <Route path="/login" component={Login} />
               <Route path="/verify" component={Verify} />
               <Route path="/forgot-password" component={ForgotPassword} />
+              <Route path="/reset-password" component={ResetPassword} />
               <Route path="/verified" component={Verified} />
               <Route path="/" exact component={LandingPage} />
               <Route path="/test" component={Test} />

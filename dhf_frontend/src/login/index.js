@@ -222,7 +222,6 @@ class Login extends React.Component {
                 />
                 <Typography style={{ marginTop: 10, textAlign: 'right' }}>
                   <Link to="/forgot-password" color="primary">Forgot Password ?</Link>
-
                 </Typography>
               </FormControl>
               <FormHelperText id="name-helper-text" error>
