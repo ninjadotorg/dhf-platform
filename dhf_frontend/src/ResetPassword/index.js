@@ -126,7 +126,8 @@ handleSubmit = () => {
       url: 'users/reset-password',
       data,
       params: {
-        access_token: this.props.location.search.split('=')[1],
+        access_token: this.props.location.search.split('=')[1].split('&')[0],
+        userId: this.props.location.search.split('=')[2],
       },
     })
       .then(response => {
