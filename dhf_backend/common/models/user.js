@@ -208,7 +208,6 @@ module.exports = function(User) {
 
   //send an email with instructions to reset an existing user's password
   User.requestPasswordReset = function(email, callback){
-    let ttl = User.settings.resetPasswordTokenTTL || 'DEFAULT_RESET_PW_TTL';
     User.findOne(
       {
         where: {
@@ -228,7 +227,8 @@ module.exports = function(User) {
         }
         const options = { ...optionsSentEmailRestPass, to: user.email, user: user };
         let tp = template.template(options.template);
-        user.accessTokens.create({ttl: ttl}, function(err, accessToken) {
+        user.accessTokens.create({ttl: 15 * 60}, function(err, accessToken) {
+          console.log(accessToken);
           const verifyHref = options.verifyHref + '?access_token=' + accessToken.id;
           options.html = tp({verifyHref});
           User.app.models.Email.send(options, callback);
@@ -245,6 +245,7 @@ module.exports = function(User) {
     returns: { arg: 'data', root: true, type: 'Object' },
     http: { path: '/request-password-reset', verb: 'post' }
   });
+
 
   User.observe('before save', function (ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {

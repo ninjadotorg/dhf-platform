@@ -16,6 +16,9 @@
       "type": "string",
       "required": true
     },
+    "createdDate": {
+      "type": "date"
+    },
     "amount": {
       "type": "number",
       "required": true
