@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import history from '@/utils/history';
 import { Button } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
+import Done from '@material-ui/icons/PlayCircleFilled';
 import BarChart from '@material-ui/icons/BarChart';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
@@ -146,9 +147,9 @@ class ActionButton extends React.Component {
                       )}
                       {(currentItem.state === 'READY') && (
                         <MenuItem onClick={onClickStart}
-                          style={{ color: red }}
+                          style={{ color: green }}
                         >
-                          <CancelIcon style={{ fontSize: 15, marginRight: 10 }} />
+                          <Done style={{ fontSize: 15, marginRight: 10 }} />
                               Start
                         </MenuItem>
                       )}
