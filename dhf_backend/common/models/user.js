@@ -228,7 +228,7 @@ module.exports = function(User) {
         const options = { ...optionsSentEmailRestPass, to: user.email, user: user };
         let tp = template.template(options.template);
         user.accessTokens.create({ttl: 15 * 60}, function(err, accessToken) {
-          const verifyHref = options.verifyHref + '?access_token=' + accessToken.id;
+          const verifyHref = options.verifyHref + '?access_token=' + accessToken.id + '&userId=' + user.id;
           options.html = tp({verifyHref});
           User.app.models.Email.send(options, callback);
         });
