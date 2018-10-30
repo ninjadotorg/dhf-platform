@@ -236,6 +236,7 @@ module.exports = function(User) {
     )
   };
 
+
   User.remoteMethod('requestPasswordReset', {
     description: 'request reset password',
     accepts: [

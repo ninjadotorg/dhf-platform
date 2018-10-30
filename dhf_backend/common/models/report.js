@@ -147,7 +147,7 @@ module.exports = function(Report) {
     let result = {};
     async.series([
       function activities(callback) {
-        callback();
+
       },
     ], function onComplete(err) {
       if (err)
